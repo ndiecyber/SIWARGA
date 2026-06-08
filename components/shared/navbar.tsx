@@ -1,64 +1,169 @@
-import { HouseIcon } from "lucide-react";
+"use client";
 
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { fraunces } from "@/lib/fonts";
 import { Button } from "@/components/ui/button";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { LogIn } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+const navItems = [
+  {
+    title: "Beranda",
+    href: "#home",
+  },
+  {
+    title: "Fitur",
+    href: "#features",
+  },
+  {
+    title: "Cara Kerja",
+    href: "#how-it-works",
+  },
+  {
+    title: "Modul",
+    href: "#modules",
+  },
+  {
+    title: "Testimoni",
+    href: "#testimonials",
+  },
+  {
+    title: "FAQ",
+    href: "#faq",
+  },
+  {
+    title: "Kontak",
+    href: "#contact",
+  },
+];
 
 function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(true);
+
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      setIsScrolled(currentScrollY > 10);
+
+      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleSmoothScroll = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    event.preventDefault();
+
+    const targetId = href.replace("#", "");
+    const targetElement = document.getElementById(targetId);
+
+    if (!targetElement) return;
+
+    targetElement.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  const navbarVisibilityClass = showNavbar
+    ? "translate-y-0"
+    : "-translate-y-full";
+
+  const navbarBackgroundClass = isScrolled
+    ? "bg-background/80 backdrop-blur-md shadow-sm border-b-border"
+    : "bg-transparent border-transparent";
+
   return (
-    <header className="hidden w-full border-b border-b-border md:block">
-      <div className="flex items-center justify-between w-full px-4 py-4 mx-auto max-w-275">
-        <Link href="/" className="flex items-center gap-2 pl-2 pr-4">
-          <div className="p-2 rounded-md bg-primary text-primary-foreground">
-            <HouseIcon size={24} />
-          </div>
-          <div className="flex flex-col items-start gap-1">
-            <h1 className={cn(fraunces.className, "text-xl font-bold")}>
-              Logo
-            </h1>
-            <span className="text-xs font-semibold text-muted-foreground">
-              RT 04 RW 02
-            </span>
-          </div>
-        </Link>
+    <>
+      {/* Desktop Navbar */}
+      <header
+        className={`hidden md:block fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-300 ease-in-out
+          ${navbarVisibilityClass}
+          ${navbarBackgroundClass}
+        `}
+      >
+        <div className="flex items-center justify-between w-full px-4 py-2 mx-auto max-w-275">
+          <Link href="/" className="flex items-center gap-2 pl-2 pr-4">
+            <Image
+              src="/logo/logo-versi-1.png"
+              alt="Logo"
+              width={128}
+              height={128}
+              priority
+            />
+          </Link>
 
-        <nav>
-          <ul className="flex items-center gap-4">
-            <li>
-              <Button variant="ghost">
-                <Link href="#">Beranda</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost">
-                <Link href="#">Fitur</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost">
-                <Link href="#">Modul</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost">
-                <Link href="#">FAQ</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost">
-                <Link href="#">Kontak</Link>
-              </Button>
-            </li>
-          </ul>
-        </nav>
+          <nav>
+            <ul className="flex items-center gap-4">
+              {navItems.map((item) => (
+                <li key={item.title}>
+                  <Button variant="ghost" asChild>
+                    <Link
+                      href={item.href}
+                      onClick={(event) => handleSmoothScroll(event, item.href)}
+                    >
+                      {item.title}
+                    </Link>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <div className="space-x-2">
-          <Button variant="outline">Sign-in</Button>
-          <Button variant="default">Register</Button>
+          <div className="space-x-2">
+            <Button asChild>
+              <Link href="/login">
+                <LogIn />
+                Masuk
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Navbar */}
+      <header
+        className={`flex md:hidden fixed top-0 left-0 right-0 z-50 h-16 shrink-0 items-center justify-between gap-2 border-b transition-all duration-300 ease-in-out
+          ${navbarVisibilityClass}
+          ${navbarBackgroundClass}
+        `}
+      >
+        <div className="flex items-center gap-2 px-3">
+          <Link
+            href="#home"
+            onClick={(event) => handleSmoothScroll(event, "#home")}
+          >
+            <Image
+              src="/logo/logo-versi-1.png"
+              alt="Logo"
+              width={102}
+              height={102}
+              priority
+            />
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-2 px-3">
+          <SidebarTrigger />
+        </div>
+      </header>
+    </>
   );
 }
 

@@ -46,7 +46,10 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section className="overflow-hidden bg-primary py-18 text-white">
+    <section
+      id="how-it-works"
+      className="overflow-hidden bg-primary py-18 text-white"
+    >
       <div className="mx-auto max-w-275 px-6 space-y-6">
         <div className="text-center">
           <Badge className="inline-flex items-center gap-1.5 rounded-[20px] border border-primary/20 bg-secondary px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.4px] text-primary">
