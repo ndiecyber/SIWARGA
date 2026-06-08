@@ -6,7 +6,10 @@ import { Home, ShieldCheck, UserRoundPlus } from "lucide-react";
 
 function ContactLanding() {
   return (
-    <section className="flex flex-col items-center justify-center w-full gap-6 px-6 py-16 bg-primary text-primary-foreground md:px-0">
+    <section
+      id="contact"
+      className="flex flex-col items-center justify-center w-full gap-6 px-6 py-16 bg-primary text-primary-foreground md:px-0"
+    >
       <Badge className="inline-flex items-center gap-1.5 rounded-full px-3.5 text-xs font-semibold uppercase tracking-tight bg-secondary/25 text-white">
         <Home /> <span>Kata Warga</span>
       </Badge>

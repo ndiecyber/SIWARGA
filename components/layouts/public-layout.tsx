@@ -1,22 +1,20 @@
 "use client";
 
+import { AppSidebar } from "../shared/app-sidebar";
 import Footer from "../shared/footer";
 import Navbar from "../shared/navbar";
-import MobileSidebar from "../shared/sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "../ui/sidebar";
+import { SidebarInset, SidebarProvider } from "../ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
+  const isMobile = useIsMobile();
+
   return (
-    <SidebarProvider className="min-h-screen">
-      <MobileSidebar />
+    <SidebarProvider>
+      <AppSidebar isShow={!isMobile} />
       <SidebarInset>
         <Navbar />
-
-        <main>
-          <SidebarTrigger className="md:hidden" />
-          {children}
-        </main>
-
+        <main>{children}</main>
         <Footer />
       </SidebarInset>
     </SidebarProvider>

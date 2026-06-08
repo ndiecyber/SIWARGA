@@ -40,7 +40,7 @@ const FAQItems = [
 
 const FAQSection = () => {
   return (
-    <section className="py-24">
+    <section className="py-24" id="faq">
       <div className="mx-auto max-w-275 px-6">
         <div className="text-center space-y-6">
           <Badge className="inline-flex items-center gap-1.5 rounded-[20px] border px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.4px] border-primary/20 bg-secondary text-primary">
