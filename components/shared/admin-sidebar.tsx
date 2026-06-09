@@ -58,15 +58,9 @@ const sidebarData: SidebarData[] = [
     icon: undefined,
     items: [
       {
-        title: "User",
+        title: "Data Warga",
         href: "/admin/users",
         icon: User2,
-        items: [],
-      },
-      {
-        title: "Data Warga",
-        href: "/admin/warga",
-        icon: Users,
         items: [],
       },
       {

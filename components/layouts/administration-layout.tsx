@@ -6,10 +6,10 @@ function AdministrationLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AdministrationSidebar />
       <SidebarInset>
-        <header className="w-full flex justify-between border-b border-b-border sticky top-0 z-50 py-4 px-2">
-          <SidebarTrigger />
+        <header className="w-full flex justify-between border-b border-b-border sticky top-0 z-50 py-4 px-2 bg-background">
+          <SidebarTrigger layoutAdministration />
         </header>
-        <main>{children}</main>
+        <main className="p-4 bg-muted/24">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
