@@ -416,7 +416,7 @@ export function DataTable({ columns, data }: DataTableProps) {
       {/* Table */}
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-primary-foreground">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
