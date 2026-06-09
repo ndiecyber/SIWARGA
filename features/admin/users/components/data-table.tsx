@@ -358,7 +358,7 @@ export function DataTable({ columns, data }: DataTableProps) {
         <div className="relative max-w-md w-full">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Cari nama, "
+            placeholder="Cari nama ... "
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="pl-9"
@@ -366,35 +366,10 @@ export function DataTable({ columns, data }: DataTableProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Unified filter dropdown */}
           <FilterDropdown
             activeFilters={activeFilters}
             onAddFilter={handleAddFilter}
           />
-
-          {/* Column Visibility */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9 gap-1.5">
-                Kolom <ChevronDown className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {table
-                .getAllColumns()
-                .filter((col) => col.getCanHide())
-                .map((col) => (
-                  <DropdownMenuCheckboxItem
-                    key={col.id}
-                    className="capitalize"
-                    checked={col.getIsVisible()}
-                    onCheckedChange={(val) => col.toggleVisibility(val)}
-                  >
-                    {col.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </div>
       </div>
 
@@ -423,8 +398,7 @@ export function DataTable({ columns, data }: DataTableProps) {
           Total:{" "}
           <strong className="text-foreground">{data.length} warga</strong>
         </span>
-        <span>·</span>
-        <span>
+        {/* <span>
           Lunas:{" "}
           <strong className="text-emerald-600">
             {data.filter((d) => d.duesStatus === "LUNAS").length}
@@ -436,7 +410,7 @@ export function DataTable({ columns, data }: DataTableProps) {
           <strong className="text-red-600">
             {data.filter((d) => d.duesStatus === "MENUNGGAK").length}
           </strong>
-        </span>
+        </span> */}
       </div>
 
       {/* Table */}
