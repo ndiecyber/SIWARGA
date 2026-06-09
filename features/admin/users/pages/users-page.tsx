@@ -7,6 +7,38 @@ import React from "react";
 import { DataTable } from "../components/data-table";
 import { usersDummy } from "@/seed/users-dummy";
 import { columns } from "../components/columns";
+import { FilterCategory } from "@/lib/types/filter";
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const FILTER_CATEGORIES: FilterCategory[] = [
+  {
+    id: "duesStatus",
+    label: "Status Iuran",
+    options: [
+      {
+        label: "Lunas",
+        value: "LUNAS",
+        icon: (
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+        ),
+      },
+      {
+        label: "Menunggak",
+        value: "MENUNGGAK",
+        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+      },
+    ],
+  },
+  {
+    id: "role",
+    label: "Role",
+    options: [
+      { label: "Admin", value: "ADMIN" },
+      { label: "Warga", value: "WARGA" },
+    ],
+  },
+];
 
 const UserPage = () => {
   return (
@@ -35,7 +67,11 @@ const UserPage = () => {
       </div>
 
       <div className="bg-white">
-        <DataTable data={usersDummy} columns={columns} />
+        <DataTable
+          data={usersDummy}
+          columns={columns}
+          filterCategories={FILTER_CATEGORIES}
+        />
       </div>
     </section>
   );
