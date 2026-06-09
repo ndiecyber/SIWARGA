@@ -41,7 +41,7 @@ type SidebarData = {
 const sidebarData: SidebarData[] = [
   {
     title: "",
-    href: "/",
+    href: "",
     icon: undefined,
     items: [
       {
@@ -59,25 +59,25 @@ const sidebarData: SidebarData[] = [
     items: [
       {
         title: "User",
-        href: "/users",
+        href: "/admin/users",
         icon: User2,
         items: [],
       },
       {
         title: "Data Warga",
-        href: "/warga",
+        href: "/admin/warga",
         icon: Users,
         items: [],
       },
       {
         title: "Data Iuran",
-        href: "/iuran",
+        href: "/admin/iuran",
         icon: Banknote,
         items: [],
       },
       {
         title: "Pengumuman",
-        href: "/pengumuman",
+        href: "/admin/pengumuman",
         icon: Megaphone,
         items: [],
       },
@@ -90,13 +90,13 @@ const sidebarData: SidebarData[] = [
     items: [
       {
         title: "Keuangan",
-        href: "/keuangan",
+        href: "/admin/keuangan",
         icon: ScrollText,
         items: [],
       },
       {
         title: "Laporan",
-        href: "/laporan",
+        href: "/admin/laporan",
         icon: BookMarked,
         items: [],
       },
