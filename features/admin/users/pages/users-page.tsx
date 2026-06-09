@@ -1,13 +1,15 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import React from "react";
+
 import { AlertTriangle } from "lucide-react";
 
-import React from "react";
-import { DataTable } from "../components/data-table";
 import { usersDummy } from "@/seed/users-dummy";
-import { columns } from "../components/columns";
 import { FilterCategory } from "@/lib/types/filter";
+import { DataTable } from "@/components/shared/data-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+import { columns } from "../components/columns";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
