@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, UsersRoundIcon } from "lucide-react";
 
 import { usersDummy } from "@/seed/users-dummy";
 import { FilterCategory } from "@/lib/types/filter";
