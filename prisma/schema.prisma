@@ -1,10 +1,10 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
 generator zod {
   provider = "prisma-zod-generator"
+  output   = "../generated/zod"
+}
+
+generator client {
+  provider = "prisma-client"
   output   = "../generated/prisma"
 }
 
