@@ -41,20 +41,35 @@ const FILTER_CATEGORIES: FilterCategory[] = [
     ],
   },
 ];
+import { CreateUserDialog } from "../components/create-user-dialog";
 
 const UserPage = () => {
   return (
     <section className="space-y-8">
       <div className="space-y-4">
-        <div>
-          <h2 className="text-xl font-medium">
-            Data Penduduk RT 04 Perum Arjamukti Kencana Raya
-          </h2>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="rounded-md bg-primary p-2.5">
+              <UsersRoundIcon className="text-white" />
+            </div>
 
-          <p className="text-muted-foreground">
-            Kelola dan perbarui data penduduk RT 04 Perum Arjamukti Kencana Raya
-            secara akurat.
-          </p>
+            <div>
+              <h2 className="text-xl font-medium">
+                Data Penduduk RT 04 Perum Arjamukti Kencana Raya
+              </h2>
+
+              <p className="text-muted-foreground">
+                Kelola dan perbarui data penduduk RT 04 Perum Arjamukti Kencana
+                Raya secara akurat.
+              </p>
+            </div>
+          </div>
+
+          {/* <Button className="w-full sm:w-auto">
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Warga
+          </Button> */}
+          <CreateUserDialog />
         </div>
 
         <Alert className="border-yellow-200 bg-yellow-50 text-yellow-800">

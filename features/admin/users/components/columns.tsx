@@ -2,8 +2,19 @@ import { UserDummy } from "@/seed/users-dummy";
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Link, SquareArrowUpRight } from "lucide-react";
+import { Eye, Pencil, SquareArrowUpRight, Trash2 } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -20,15 +31,15 @@ const formatDate = (dateStr: string) =>
   });
 
 export const columns: ColumnDef<UserDummy>[] = [
-  {
-    accessorKey: "residentCode",
-    header: "Kode Warga",
-    cell: ({ row }) => (
-      <span className="font-mono text-sm font-medium text-muted-foreground">
-        {row.original.residentCode}
-      </span>
-    ),
-  },
+  // {
+  //   accessorKey: "residentCode",
+  //   header: "Kode Warga",
+  //   cell: ({ row }) => (
+  //     <span className="font-mono text-sm font-medium text-muted-foreground">
+  //       {row.original.residentCode}
+  //     </span>
+  //   ),
+  // },
   {
     accessorKey: "name",
     header: "Nama",
@@ -57,70 +68,30 @@ export const columns: ColumnDef<UserDummy>[] = [
     accessorKey: "phoneNumber",
     header: "Nomor Telepon",
   },
-  // {
-  //   accessorKey: "role",
-  //   header: "Role",
-  //   cell: ({ row }) => {
-  //     const role = row.original.role;
-  //     return (
-  //       <Badge variant={role === "ADMIN" ? "default" : "secondary"}>
-  //         {role}
-  //       </Badge>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "duesStatus",
-  //   header: "Status Iuran",
-  //   cell: ({ row }) => {
-  //     const status = row.original.duesStatus;
-  //     return (
-  //       <Badge
-  //         variant={status === "LUNAS" ? "default" : "destructive"}
-  //         className={
-  //           status === "LUNAS"
-  //             ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200"
-  //             : "bg-red-100 text-red-700 hover:bg-red-100 border-red-200"
-  //         }
-  //       >
-  //         {status}
-  //       </Badge>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: "duesAmount",
-  //   header: "Nominal Iuran",
-  //   cell: ({ row }) => (
-  //     <span className="tabular-nums">
-  //       {formatCurrency(row.original.duesAmount)}
-  //     </span>
-  //   ),
-  // },
   {
     accessorKey: "kkUrl",
     header: "Lampiran",
     cell: ({ row }) => (
       <ButtonGroup>
-        <Button variant={"outline"}>
-          <SquareArrowUpRight />
+        <Button variant="outline" asChild>
           <a
-            className="text-xs"
             href={row.original.kkUrl}
             target="_blank"
             rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs"
           >
+            <SquareArrowUpRight className="h-3.5 w-3.5" />
             Lihat KK
           </a>
-        </Button>{" "}
-        <Button variant={"outline"}>
-          <Link />
+        </Button>
+        <Button variant="outline" asChild>
           <a
-            className="text-xs"
             href={row.original.ktpUrl}
             target="_blank"
             rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-xs"
           >
+            <SquareArrowUpRight className="h-3.5 w-3.5" />
             Lihat KTP
           </a>
         </Button>
@@ -128,30 +99,85 @@ export const columns: ColumnDef<UserDummy>[] = [
     ),
   },
   {
-    accessorKey: "ktpUrl",
-    header: "KTP",
-    cell: ({ row }) => (
-      <Button variant={"outline"}>
-        <Link />
-        <a
-          href={row.original.ktpUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className=""
-        >
-          Lihat KTP
-        </a>
-      </Button>
-    ),
+    id: "aksi",
+    header: "Aksi",
+    enableHiding: false,
+    cell: ({ row }) => {
+      const user = row.original;
+
+      return (
+        <div className="flex items-center gap-1">
+          {/* View */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              // TODO: buka dialog/sheet detail
+              console.log("View:", user.id);
+            }}
+            title="Lihat detail"
+          >
+            <Eye className="h-4 w-4" />
+            <span className="sr-only">Lihat detail</span>
+          </Button>
+
+          {/* Edit */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-blue-600"
+            onClick={() => {
+              // TODO: buka form edit
+              console.log("Edit:", user.id);
+            }}
+            title="Edit"
+          >
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit</span>
+          </Button>
+
+          {/* Delete */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                title="Hapus"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Hapus</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Hapus warga?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Data{" "}
+                  <span className="font-semibold text-foreground">
+                    {user.name}
+                  </span>{" "}
+                  ({user.residentCode}) akan dihapus secara permanen dan tidak
+                  dapat dikembalikan.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Batal</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  onClick={() => {
+                    // TODO: panggil API delete
+                    console.log("Delete:", user.id);
+                  }}
+                >
+                  Hapus
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      );
+    },
   },
-  // {
-  //   accessorKey: "createdAt",
-  //   header: "Tanggal Dibuat",
-  //   cell: ({ row }) => formatDate(row.original.createdAt),
-  // },
-  // {
-  //   accessorKey: "updatedAt",
-  //   header: "Terakhir Diubah",
-  //   cell: ({ row }) => formatDate(row.original.updatedAt),
-  // },
 ];
