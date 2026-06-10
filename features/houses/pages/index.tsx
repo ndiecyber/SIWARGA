@@ -3,7 +3,6 @@ import { FilterCategory } from "@/lib/types/filter";
 import { HouseStatus } from "@/generated/prisma/enums";
 import { DataTable } from "@/components/shared/data-table";
 
-import { House, User } from "../actions";
 import { columns } from "../components/columns";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -40,6 +39,26 @@ const FILTER_CATEGORIES: FilterCategory[] = [
     ],
   },
 ];
+
+type User = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  phoneNumber: string;
+};
+
+type House = {
+  id: string;
+  houseNumber: string;
+  block: string;
+  status: HouseStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  ownerId: string | null;
+  owner: User;
+  residents?: number;
+};
 
 export const dummyUsers: User[] = [
   {
