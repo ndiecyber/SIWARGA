@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -20,13 +19,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, UserPlus } from "lucide-react";
 import * as React from "react";
@@ -34,15 +26,14 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { CreateUserSchema, createUserSchema } from "../schema";
 import FileUploadField from "./file-upload-field";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { createUserAction } from "../action";
 
 type CreateUserInput = z.input<typeof createUserSchema>;
 type CreateUserValues = z.output<typeof createUserSchema>;
 
-interface CreateUserDialogProps {
-  onSuccess?: (values: CreateUserSchema) => void | Promise<void>;
-}
-
-export function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
+export function CreateUserDialog() {
   const [open, setOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -51,46 +42,67 @@ export function CreateUserDialog({ onSuccess }: CreateUserDialogProps) {
     defaultValues: {
       name: "",
       phoneNumber: "",
-      role: undefined,
+      role: "USER",
       kkFile: undefined,
       ktpFile: undefined,
     },
+    mode: "onChange",
   });
 
-  React.useEffect(() => {
-    if (open) {
+  const { mutateAsync: handleCreateUser } = useMutation({
+    mutationKey: ["create-user"],
+
+    mutationFn: async (values: CreateUserSchema) => {
+      const result = await createUserAction(values);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result;
+    },
+
+    onMutate: () => {
+      toast.loading("Data warga sedang ditambahkan. Mohon tunggu sebentar 😄", {
+        id: "create-user",
+      });
+    },
+
+    onError: (error) => {
+      toast.error(
+        error.message || "Data warga gagal ditambahkan. Silahkan coba lagi 😫",
+        {
+          id: "create-user",
+        },
+      );
+    },
+
+    onSuccess: () => {
+      toast.success("Data warga berhasil ditambahkan 🤗", {
+        id: "create-user",
+      });
+
       form.reset({
         name: "",
         phoneNumber: "",
-        role: undefined,
+        role: "USER",
         kkFile: undefined,
         ktpFile: undefined,
       });
-    }
-  }, [open, form]);
+
+      setOpen(false);
+    },
+
+    onSettled: () => {
+      setIsSubmitting(false);
+    },
+  });
 
   const onSubmit = async (values: CreateUserSchema) => {
-    setIsSubmitting(true);
-
+    await handleCreateUser(values);
     try {
-      // Contoh:
-      // const kkUrl = await uploadFile(values.kkFile);
-      // const ktpUrl = await uploadFile(values.ktpFile);
-      // await createUser({ ...values, kkUrl, ktpUrl });
-
-      console.log({ values });
-
-      // await onSuccess?.(values);
-      setOpen(false);
-    } catch (err) {
-      // Contoh:
-      // form.setError("phoneNumber", {
-      //   message: "Nomor sudah terdaftar",
-      // });
-
-      console.error(err);
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // Sudah ditangani oleh onError
     }
   };
 
