@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { UserDummy } from "@/seed/users-dummy";
+import { User } from "../types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -51,44 +51,44 @@ interface FilterOption {
 }
 
 interface FilterCategory {
-  id: keyof Pick<UserDummy, "duesStatus" | "role">;
+  id: keyof Pick<User, "role">;
   label: string;
   options: FilterOption[];
 }
 
 interface ActiveFilter {
-  categoryId: keyof Pick<UserDummy, "duesStatus" | "role">;
+  categoryId: keyof Pick<User, "role">;
   categoryLabel: string;
   value: string;
   valueLabel: string;
 }
 
 interface DataTableProps {
-  columns: ColumnDef<UserDummy>[];
-  data: UserDummy[];
+  columns: ColumnDef<User>[];
+  data: User[];
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const FILTER_CATEGORIES: FilterCategory[] = [
-  {
-    id: "duesStatus",
-    label: "Status Iuran",
-    options: [
-      {
-        label: "Lunas",
-        value: "LUNAS",
-        icon: (
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-        ),
-      },
-      {
-        label: "Menunggak",
-        value: "MENUNGGAK",
-        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
-      },
-    ],
-  },
+  // {
+  //   id: "duesStatus",
+  //   label: "Status Iuran",
+  //   options: [
+  //     {
+  //       label: "Lunas",
+  //       value: "LUNAS",
+  //       icon: (
+  //         <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+  //       ),
+  //     },
+  //     {
+  //       label: "Menunggak",
+  //       value: "MENUNGGAK",
+  //       icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+  //     },
+  //   ],
+  // },
   {
     id: "role",
     label: "Role",

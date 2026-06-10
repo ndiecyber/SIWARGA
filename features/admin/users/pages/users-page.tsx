@@ -7,8 +7,16 @@ import { DataTable } from "../components/data-table";
 import { usersDummy } from "@/seed/users-dummy";
 import { columns } from "../components/columns";
 import { CreateUserDialog } from "../components/create-user-dialog";
+import { UserModelSchema } from "@/generated/zod/schemas";
+import z from "zod";
+import { Role } from "@/generated/prisma/enums";
+import { User } from "../types";
 
-const UserPage = () => {
+export type UserPageProps = {
+  users: User[];
+};
+
+const UserPage = (props: UserPageProps) => {
   return (
     <section className="space-y-8">
       <div className="space-y-4">
@@ -49,7 +57,7 @@ const UserPage = () => {
       </div>
 
       <div className="bg-white">
-        <DataTable data={usersDummy} columns={columns} />
+        <DataTable data={props.users} columns={columns} />
       </div>
     </section>
   );
