@@ -1,11 +1,46 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, Plus, UsersRoundIcon } from "lucide-react";
-import { DataTable } from "../components/data-table";
+import React from "react";
+
+import { AlertTriangle, UsersRoundIcon } from "lucide-react";
+
 import { usersDummy } from "@/seed/users-dummy";
+import { FilterCategory } from "@/lib/types/filter";
+import { DataTable } from "@/components/shared/data-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import { columns } from "../components/columns";
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const FILTER_CATEGORIES: FilterCategory[] = [
+  {
+    id: "duesStatus",
+    label: "Status Iuran",
+    options: [
+      {
+        label: "Lunas",
+        value: "LUNAS",
+        icon: (
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+        ),
+      },
+      {
+        label: "Menunggak",
+        value: "MENUNGGAK",
+        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+      },
+    ],
+  },
+  {
+    id: "role",
+    label: "Role",
+    options: [
+      { label: "Admin", value: "ADMIN" },
+      { label: "Warga", value: "WARGA" },
+    ],
+  },
+];
 import { CreateUserDialog } from "../components/create-user-dialog";
 import { UserModelSchema } from "@/generated/zod/schemas";
 import z from "zod";
@@ -57,7 +92,11 @@ const UserPage = (props: UserPageProps) => {
       </div>
 
       <div className="bg-white">
-        <DataTable data={props.users} columns={columns} />
+        <DataTable
+          data={props.users}
+          columns={columns}
+          filterCategories={FILTER_CATEGORIES}
+        />
       </div>
     </section>
   );

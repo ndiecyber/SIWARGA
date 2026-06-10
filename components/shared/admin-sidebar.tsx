@@ -3,6 +3,7 @@
 import {
   Banknote,
   BookMarked,
+  Home,
   LayoutDashboard,
   LogOut,
   LucideIcon,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
 import { Button } from "../ui/button";
@@ -29,7 +31,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "../ui/sidebar";
-import { cn } from "@/lib/utils";
 
 type SidebarData = {
   title: string;
@@ -67,6 +68,12 @@ const sidebarData: SidebarData[] = [
         title: "Data Iuran",
         href: "/admin/iuran",
         icon: Banknote,
+        items: [],
+      },
+      {
+        title: "Houses",
+        href: "/admin/houses",
+        icon: Home,
         items: [],
       },
       {
