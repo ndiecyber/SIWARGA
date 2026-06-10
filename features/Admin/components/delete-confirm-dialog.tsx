@@ -1,0 +1,81 @@
+"use client";
+
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { deleteAnnouncement } from "@/app/admin/announcment/actions";
+
+type Props = {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  announcementId: number;
+  announcementTitle: string;
+};
+
+export function DeleteConfirmDialog({
+  open,
+  onOpenChange,
+  announcementId,
+  announcementTitle,
+}: Props) {
+  const [isPending, startTransition] = useTransition();
+
+  function handleDelete() {
+    startTransition(async () => {
+      try {
+        await deleteAnnouncement(announcementId);
+        toast.success("Pengumuman berhasil dihapus!");
+        onOpenChange(false);
+      } catch (error) {
+        console.error(error);
+        toast.error("Terjadi kesalahan. Silakan coba lagi.");
+      }
+    });
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+              <AlertTriangle className="size-5 text-destructive" />
+            </div>
+            <DialogTitle>Hapus Pengumuman</DialogTitle>
+          </div>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground">
+          Apakah Anda yakin ingin menghapus pengumuman{" "}
+          <span className="font-medium text-foreground">
+            &ldquo;{announcementTitle}&rdquo;
+          </span>
+          ? Tindakan ini tidak dapat dibatalkan.
+        </p>
+        <DialogFooter className="gap-2">
+          <DialogClose asChild>
+            <Button variant="outline" disabled={isPending}>
+              Batal
+            </Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            disabled={isPending}
+            onClick={handleDelete}
+          >
+            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+            Hapus
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
