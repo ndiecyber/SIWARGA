@@ -8,8 +8,9 @@ import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useFieldDialog } from "@/components/shared/field-dialog";
+import { HouseStatus } from "@/generated/prisma/enums";
 import { HouseCreateInput } from "@/generated/prisma/models";
+import { useFieldDialog } from "@/components/shared/field-dialog";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import {
   Popover,
@@ -37,7 +38,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { HouseStatus } from "@/generated/prisma/enums";
 
 export interface ActionResponse<T = any> {
   success: boolean;
@@ -123,67 +123,74 @@ export function HouseCreateForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-2 sm:p-5 md:p-8 w-full rounded-md gap-2 max-w-3xl mx-auto"
+      className="w-full rounded-md gap-2 max-w-3xl mx-auto"
     >
       <FieldGroup className="grid md:grid-cols-6 gap-4 mb-6">
-        <Controller
-          name="houseNumber"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field
-              data-invalid={fieldState.invalid}
-              className="gap-1 col-span-full"
-            >
-              <FieldLabel htmlFor="house-number">Nomor Rumah *</FieldLabel>
-              <Input
-                {...field}
-                id="house-number"
-                type="text"
-                aria-invalid={fieldState.invalid}
-                placeholder="Masukkan nomor rumah"
-              />
+        <div className="grid gap-1 col-span-full">
+          <FieldLabel>House Number *</FieldLabel>
 
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+          <div className="flex gap-2">
+            <Controller
+              name="block"
+              control={form.control}
+              render={({ field, fieldState }) => {
+                const options = [
+                  { value: "a", label: "A" },
+                  { value: "b", label: "B" },
+                  { value: "c", label: "C" },
+                  { value: "d", label: "D" },
+                ];
+                return (
+                  <Field
+                    data-invalid={fieldState.invalid}
+                    className="gap-1 md:col-span-2"
+                  >
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-24 shrink-0">
+                        <SelectValue placeholder="Pilih Blok Rumah" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {options.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                );
+              }}
+            />
 
-        <Controller
-          name="block"
-          control={form.control}
-          render={({ field, fieldState }) => {
-            const options = [
-              { value: "a", label: "A" },
-              { value: "b", label: "B" },
-              { value: "c", label: "C" },
-              { value: "d", label: "D" },
-            ];
-            return (
-              <Field
-                data-invalid={fieldState.invalid}
-                className="gap-1 md:col-span-2"
-              >
-                <FieldLabel htmlFor="block">Blok Rumah *</FieldLabel>
+            <Controller
+              name="houseNumber"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field
+                  data-invalid={fieldState.invalid}
+                  className="gap-1 col-span-full"
+                >
+                  <Input
+                    {...field}
+                    id="house-number"
+                    type="text"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Masukkan nomor rumah"
+                    autoComplete="off"
+                    className="flex"
+                  />
 
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih Blok Rumah" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {options.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            );
-          }}
-        />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
+        </div>
 
         <Controller
           name="status"
@@ -259,6 +266,7 @@ export function HouseCreateForm() {
                       <CommandInput
                         placeholder="tap to search..."
                         className="h-10"
+                        autoComplete="off"
                       />
                       <CommandList>
                         <CommandEmpty>No items found.</CommandEmpty>
@@ -295,7 +303,7 @@ export function HouseCreateForm() {
           }}
         />
       </FieldGroup>
-      <div className="flex justify-end items-center w-full">
+      <div className="flex justify-end items-center w-full gap-2">
         <Button
           type="reset"
           variant="outline"

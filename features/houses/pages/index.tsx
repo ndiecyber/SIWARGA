@@ -1,9 +1,13 @@
-// app/houses/page.tsx
+import { Plus } from "lucide-react";
+
+import { fraunces } from "@/lib/fonts";
 import { FilterCategory } from "@/lib/types/filter";
 import { HouseStatus } from "@/generated/prisma/enums";
 import { DataTable } from "@/components/shared/data-table";
+import { FieldDialog } from "@/components/shared/field-dialog";
 
 import { columns } from "../components/columns";
+import { HouseCreateForm } from "../components/create-form";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -135,12 +139,23 @@ export const dummyHouses: House[] = [
 
 export default async function HousesIndex() {
   return (
-    <div className="container mx-auto py-10">
+    <main className="container mx-auto py-10">
+      <header className="flex items-center justify-between py-4 md:py-6">
+        <h1 className={(fraunces.className, "text-3xl font-bold")}>Houses</h1>
+        <FieldDialog
+          label="Add new house"
+          title="Add new house"
+          icon={<Plus className="mr-2" />}
+        >
+          <HouseCreateForm />
+        </FieldDialog>
+      </header>
+
       <DataTable
         columns={columns}
         data={dummyHouses}
         filterCategories={FILTER_CATEGORIES}
       />
-    </div>
+    </main>
   );
 }
