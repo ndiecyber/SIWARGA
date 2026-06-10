@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { User } from "../types";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -30,7 +31,7 @@ const formatDate = (dateStr: string) =>
     year: "numeric",
   });
 
-export const columns: ColumnDef<UserDummy>[] = [
+export const columns: ColumnDef<User>[] = [
   // {
   //   accessorKey: "residentCode",
   //   header: "Kode Warga",
@@ -47,7 +48,7 @@ export const columns: ColumnDef<UserDummy>[] = [
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
         <span className="font-mono text-xs text-muted-foreground">
-          {row.original.nik}
+          {/* {row.original.resident_number} */}
         </span>
       </div>
     ),
@@ -56,13 +57,13 @@ export const columns: ColumnDef<UserDummy>[] = [
     accessorKey: "block",
     header: "Blok",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.original.block}</span>
+      <span className="font-semibold">{/* {row.original.block} */}A</span>
     ),
   },
   {
     accessorKey: "familyMembers",
     header: "Anggota Keluarga",
-    cell: ({ row }) => <span>{row.original.familyMembers} orang</span>,
+    cell: ({ row }) => <span>{/* {row.original.familyMembers} */}7 orang</span>,
   },
   {
     accessorKey: "phoneNumber",
@@ -158,8 +159,9 @@ export const columns: ColumnDef<UserDummy>[] = [
                   <span className="font-semibold text-foreground">
                     {user.name}
                   </span>{" "}
-                  ({user.residentCode}) akan dihapus secara permanen dan tidak
-                  dapat dikembalikan.
+                  {/* ({user.residentCode})  */}
+                  327806xxxxxxxxxx akan dihapus secara permanen dan tidak dapat
+                  dikembalikan.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
