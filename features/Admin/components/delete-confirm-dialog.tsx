@@ -12,6 +12,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Loader2, AlertTriangle } from "lucide-react";
+import { deleteAnnouncement } from "@/app/admin/announcment/actions";
 
 type Props = {
   open: boolean;
@@ -23,16 +24,21 @@ type Props = {
 export function DeleteConfirmDialog({
   open,
   onOpenChange,
+  announcementId,
   announcementTitle,
 }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
     startTransition(async () => {
-      // TODO: connect to server action when DB is ready
-      await new Promise((r) => setTimeout(r, 500));
-      toast.success("Pengumuman berhasil dihapus!");
-      onOpenChange(false);
+      try {
+        await deleteAnnouncement(announcementId);
+        toast.success("Pengumuman berhasil dihapus!");
+        onOpenChange(false);
+      } catch (error) {
+        console.error(error);
+        toast.error("Terjadi kesalahan. Silakan coba lagi.");
+      }
     });
   }
 

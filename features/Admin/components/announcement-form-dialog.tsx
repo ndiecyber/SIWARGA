@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
+import { createAnnouncement, updateAnnouncement } from "@/app/admin/announcment/actions";
 
 type Announcement = {
   id: number;
@@ -37,6 +38,7 @@ type Props = {
   onOpenChange: (v: boolean) => void;
   /** Pass an announcement to edit; undefined/null = create mode */
   announcement?: Announcement | null;
+  existingCategories?: string[];
 };
 
 const CATEGORIES = [
@@ -74,37 +76,77 @@ export function AnnouncementFormDialog({
   open,
   onOpenChange,
   announcement,
+  existingCategories = [],
 }: Props) {
   const isEdit = !!announcement;
   const [isPending, startTransition] = useTransition();
 
+  const categoriesList = useMemo(() => {
+    return Array.from(
+      new Set([
+        ...CATEGORIES,
+        ...existingCategories.filter(
+          (cat) => cat && cat !== "custom" && cat.trim() !== ""
+        ),
+      ])
+    );
+  }, [existingCategories]);
+
+  const [isCustomCategory, setIsCustomCategory] = useState(() =>
+    announcement ? !categoriesList.includes(announcement.category) : false
+  );
+
   const [form, setForm] = useState<FormData>(() =>
     announcement
       ? {
-          category: announcement.category,
-          title: announcement.title,
-          description: announcement.description,
-          eventDate: announcement.eventDate
-            ? announcement.eventDate.toISOString().split("T")[0]
-            : "",
-          status: announcement.status,
-        }
+        category: announcement.category,
+        title: announcement.title,
+        description: announcement.description ?? "",
+        eventDate: announcement.eventDate
+          ? new Date(announcement.eventDate).toISOString().split("T")[0]
+          : "",
+        status: announcement.status,
+      }
       : { ...empty }
   );
 
-  function handleOpenChange(v: boolean) {
-    if (v) {
+  useEffect(() => {
+    if (open) {
+      setIsCustomCategory(
+        announcement ? !categoriesList.includes(announcement.category) : false
+      );
       setForm(
         announcement
           ? {
-              category: announcement.category,
-              title: announcement.title,
-              description: announcement.description,
-              eventDate: announcement.eventDate
-                ? announcement.eventDate.toISOString().split("T")[0]
-                : "",
-              status: announcement.status,
-            }
+            category: announcement.category,
+            title: announcement.title,
+            description: announcement.description ?? "",
+            eventDate: announcement.eventDate
+              ? new Date(announcement.eventDate).toISOString().split("T")[0]
+              : "",
+            status: announcement.status,
+          }
+          : { ...empty }
+      );
+    }
+  }, [open, announcement, categoriesList]);
+
+  function handleOpenChange(v: boolean) {
+    if (v) {
+      setIsCustomCategory(
+        announcement ? !categoriesList.includes(announcement.category) : false
+      );
+      setForm(
+        announcement
+          ? {
+            category: announcement.category,
+            title: announcement.title,
+            description: announcement.description ?? "",
+            eventDate: announcement.eventDate
+              ? new Date(announcement.eventDate).toISOString().split("T")[0]
+              : "",
+            status: announcement.status,
+          }
           : { ...empty }
       );
     }
@@ -113,16 +155,48 @@ export function AnnouncementFormDialog({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const categoryVal = form.category.trim();
+    const titleVal = form.title.trim();
+    const descVal = form.description.trim() || null;
+    const dateVal = form.eventDate.trim();
+
+    if (!categoryVal) {
+      toast.error("Kategori wajib dipilih atau diisi.");
+      return;
+    }
+    if (!titleVal) {
+      toast.error("Judul wajib diisi.");
+      return;
+    }
+    if (!dateVal) {
+      toast.error("Tanggal Acara wajib diisi.");
+      return;
+    }
+
     startTransition(async () => {
-      // TODO: connect to server action when DB is ready
-      await new Promise((r) => setTimeout(r, 600)); // simulate delay
-      if (isEdit) {
-        toast.success("Pengumuman berhasil diperbarui!");
-      } else {
-        toast.success("Pengumuman berhasil ditambahkan!");
+      try {
+        const data = {
+          category: categoryVal,
+          title: titleVal,
+          description: descVal,
+          eventDate: dateVal,
+          status: form.status,
+        };
+
+        if (isEdit && announcement) {
+          await updateAnnouncement(announcement.id, data);
+          toast.success("Pengumuman berhasil diperbarui!");
+        } else {
+          await createAnnouncement(data);
+          toast.success("Pengumuman berhasil ditambahkan!");
+        }
+        onOpenChange(false);
+        setForm({ ...empty });
+      } catch (error) {
+        console.error(error);
+        toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
-      onOpenChange(false);
-      setForm({ ...empty });
     });
   }
 
@@ -142,28 +216,59 @@ export function AnnouncementFormDialog({
         >
           {/* Kategori */}
           <div className="space-y-1.5">
-            <Label htmlFor="category">Kategori</Label>
+            <Label htmlFor="category">
+              Kategori <span className="text-destructive">*</span>
+            </Label>
             <Select
-              value={form.category}
-              onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}
+              value={isCustomCategory ? "custom" : form.category}
+              onValueChange={(v) => {
+                if (v === "custom") {
+                  setIsCustomCategory(true);
+                  setForm((f) => ({ ...f, category: "" }));
+                } else {
+                  setIsCustomCategory(false);
+                  setForm((f) => ({ ...f, category: v }));
+                }
+              }}
               required
             >
               <SelectTrigger id="category" className="w-full">
                 <SelectValue placeholder="Pilih kategori..." />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORIES.map((cat) => (
+                {categoriesList.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
                   </SelectItem>
                 ))}
+                <SelectItem value="custom">Kustom (Input Manual)...</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/* Kategori Kustom */}
+          {isCustomCategory && (
+            <div className="space-y-1.5 animate-in fade-in duration-200">
+              <Label htmlFor="customCategory">
+                Nama Kategori Baru <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="customCategory"
+                placeholder="Masukkan nama kategori baru..."
+                value={form.category}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, category: e.target.value }))
+                }
+                required
+              />
+            </div>
+          )}
+
           {/* Judul */}
           <div className="space-y-1.5">
-            <Label htmlFor="title">Judul</Label>
+            <Label htmlFor="title">
+              Judul <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="title"
               placeholder="Judul pengumuman..."
@@ -177,7 +282,12 @@ export function AnnouncementFormDialog({
 
           {/* Deskripsi */}
           <div className="space-y-1.5">
-            <Label htmlFor="description">Deskripsi</Label>
+            <Label htmlFor="description">
+              Deskripsi{" "}
+              <span className="text-muted-foreground text-xs font-normal">
+                (opsional)
+              </span>
+            </Label>
             <Textarea
               id="description"
               placeholder="Isi pengumuman..."
@@ -186,13 +296,14 @@ export function AnnouncementFormDialog({
               onChange={(e) =>
                 setForm((f) => ({ ...f, description: e.target.value }))
               }
-              required
             />
           </div>
 
           {/* Tanggal Acara */}
           <div className="space-y-1.5">
-            <Label htmlFor="eventDate">Tanggal Acara (opsional)</Label>
+            <Label htmlFor="eventDate">
+              Tanggal Acara <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="eventDate"
               type="date"
@@ -200,12 +311,15 @@ export function AnnouncementFormDialog({
               onChange={(e) =>
                 setForm((f) => ({ ...f, eventDate: e.target.value }))
               }
+              required
             />
           </div>
 
           {/* Status */}
           <div className="space-y-1.5">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status">
+              Status <span className="text-destructive">*</span>
+            </Label>
             <Select
               value={form.status}
               onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -73,8 +73,17 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export function AnnouncementDashboard({ announcements }: Props) {
+  const dbCategories = useMemo(() => {
+    return Array.from(new Set(announcements.map((a) => a.category)));
+  }, [announcements]);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   // Form dialog state
   const [formOpen, setFormOpen] = useState(false);
@@ -95,8 +104,21 @@ export function AnnouncementDashboard({ announcements }: Props) {
       a.category.toLowerCase().includes(search.toLowerCase()) ||
       a.description.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || a.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchCategory = categoryFilter === "all" || a.category === categoryFilter;
+    return matchSearch && matchStatus && matchCategory;
   });
+
+  // Reset page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter, categoryFilter, pageSize]);
+
+  // Paginated list calculations
+  const totalItems = filtered.length;
+  const totalPages = Math.ceil(totalItems / pageSize) || 1;
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalItems);
+  const paginated = filtered.slice(startIndex, endIndex);
 
   function openCreate() {
     setEditTarget(null);
@@ -178,19 +200,36 @@ export function AnnouncementDashboard({ announcements }: Props) {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <Filter className="size-4 text-muted-foreground shrink-0" />
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-44" id="filter-status">
-                <SelectValue placeholder="Semua Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="upcoming">Akan Datang</SelectItem>
-                <SelectItem value="ongoing">Berlangsung</SelectItem>
-                <SelectItem value="done">Selesai</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Filter className="size-4 text-muted-foreground shrink-0" />
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-44" id="filter-category">
+                  <SelectValue placeholder="Semua Kategori" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kategori</SelectItem>
+                  {dbCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-44" id="filter-status">
+                  <SelectValue placeholder="Semua Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="upcoming">Akan Datang</SelectItem>
+                  <SelectItem value="ongoing">Berlangsung</SelectItem>
+                  <SelectItem value="done">Selesai</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
@@ -240,11 +279,12 @@ export function AnnouncementDashboard({ announcements }: Props) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {filtered.map((a, idx) => {
+                  {paginated.map((a, idx) => {
                     const status =
                       STATUS_CONFIG[a.status] ?? STATUS_CONFIG.done;
                     const catColor =
                       CATEGORY_COLORS[a.category] ?? CATEGORY_COLORS.Lainnya;
+                    const globalIdx = startIndex + idx + 1;
 
                     return (
                       <tr
@@ -253,7 +293,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
                       >
                         {/* No */}
                         <td className="px-4 py-3.5 text-muted-foreground font-medium w-8">
-                          {idx + 1}
+                          {globalIdx}
                         </td>
 
                         {/* Judul + preview */}
@@ -344,8 +384,61 @@ export function AnnouncementDashboard({ announcements }: Props) {
                   })}
                 </tbody>
               </table>
-              <div className="border-t px-4 py-3 text-xs text-muted-foreground">
-                Menampilkan {filtered.length} dari {total} pengumuman
+              <div className="border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+                <div>
+                  Menampilkan <span className="font-medium text-foreground">{totalItems === 0 ? 0 : startIndex + 1}</span> sampai{" "}
+                  <span className="font-medium text-foreground">{endIndex}</span> dari{" "}
+                  <span className="font-medium text-foreground">{totalItems}</span> pengumuman
+                  {filtered.length !== announcements.length && (
+                    <span> (difilter dari {total} total)</span>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                  {/* Page Size Selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs">Baris per halaman:</span>
+                    <Select
+                      value={String(pageSize)}
+                      onValueChange={(v) => setPageSize(Number(v))}
+                    >
+                      <SelectTrigger className="h-8 w-16 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="5">5</SelectItem>
+                        <SelectItem value="10">10</SelectItem>
+                        <SelectItem value="20">20</SelectItem>
+                        <SelectItem value="50">50</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2"
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Sebelumnya
+                    </Button>
+                    <span className="text-xs font-medium px-2">
+                      Halaman {currentPage} dari {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-2"
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Selanjutnya
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -357,6 +450,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
         open={formOpen}
         onOpenChange={setFormOpen}
         announcement={editTarget}
+        existingCategories={dbCategories}
       />
 
       {deleteTarget && (

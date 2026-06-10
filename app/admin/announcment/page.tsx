@@ -1,17 +1,14 @@
-import AdministrationLayout from "@/components/layouts/administration-layout";
 import AnnouncmentPage from "@/features/Admin/pages/announcments-page";
+import { getAnnouncements } from "./actions";
 
 export const metadata = {
   title: "Pengumuman | SIWARGA Admin",
   description: "Kelola pengumuman warga perumahan",
 };
 
-function Page() {
-  return (
-    <AdministrationLayout>
-      <AnnouncmentPage />
-    </AdministrationLayout>
-  );
+async function Page() {
+  const announcements = await getAnnouncements();
+  return <AnnouncmentPage announcements={announcements} />;
 }
 
 export default Page;
