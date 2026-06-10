@@ -1,58 +1,36 @@
-import { z } from "zod";
+"use server";
 
-import {
-  HouseCreateInputObjectZodSchema,
-  HouseModelSchema,
-  HouseResidentModelSchema,
-  HouseStatusSchema,
-  HouseUpdateInputObjectZodSchema,
-  UserModelSchema,
-} from "@/generated/zod/schemas";
+import prisma from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { HouseStatus } from "@/generated/prisma/enums";
 
-export type createHouseSchema = z.infer<typeof HouseCreateInputObjectZodSchema>;
-export type updateHouseSchema = z.infer<typeof HouseUpdateInputObjectZodSchema>;
-const house = HouseModelSchema.pick({
-  id: true,
-  houseNumber: true,
-  block: true,
-  status: true,
-  ownerId: true,
-  createdAt: true,
-  updatedAt: true,
-  owner: true,
-});
+import { InputFormSchema } from "./schemas";
+import { ActionResponse } from "@/lib/types";
 
-const resident = HouseResidentModelSchema.pick({
-  id: true,
-  userId: true,
-  houseId: true,
-  user: true,
-  house: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export async function createHouseAction(
+  data: InputFormSchema,
+): Promise<ActionResponse> {
+  try {
+    const result = await prisma.house.create({
+      data: {
+        ownerId: data.ownerId,
+        block: data.block,
+        status: data.status as HouseStatus,
+        houseNumber: data.houseNumber,
+      },
+    });
 
-const user = UserModelSchema.pick({
-  id: true,
-  name: true,
-  phoneNumber: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type House = z.infer<typeof house>;
-export type HouseResident = z.infer<typeof resident>;
-export type User = z.infer<typeof user>;
-
-export async function createHouse(data: createHouseSchema): Promise<House> {
-  return {
-    id: "1",
-    houseNumber: "1",
-    block: "1",
-    status: HouseStatusSchema.enum.OCCUPIED,
-    ownerId: null,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    owner: null,
-  };
+    return {
+      success: true,
+      message: "Data rumah berhasil ditambahkan",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Data rumah gagal ditambahkan",
+      errors: error instanceof Error ? { message: [error.message] } : {},
+    };
+  } finally {
+    revalidatePath("/admin/houses");
+  }
 }

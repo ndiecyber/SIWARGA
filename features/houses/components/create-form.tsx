@@ -38,26 +38,10 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-
-export interface ActionResponse<T = any> {
-  success: boolean;
-  message: string;
-  errors?: {
-    [K in keyof T]?: string[];
-  };
-  inputs?: T;
-}
-
-const formSchema = z.object({
-  ownerId: z.string().optional(),
-  block: z.string().min(1, "Blok wajib diisi"),
-  status: z
-    .enum([HouseStatus.OCCUPIED, HouseStatus.VACANT])
-    .default(HouseStatus.OCCUPIED),
-  houseNumber: z.string().min(1, "Nomor rumah wajib diisi"),
-}) satisfies z.ZodType<HouseCreateInput>;
-
-type InputFormSchema = z.input<typeof formSchema>;
+import { formSchema, InputFormSchema } from "../schemas";
+import { useMutation } from "@tanstack/react-query";
+import { createHouseAction } from "../actions";
+import { toast } from "sonner";
 
 export function HouseCreateForm() {
   const { close } = useFieldDialog();
@@ -76,16 +60,38 @@ export function HouseCreateForm() {
     formState: { isSubmitting, isSubmitSuccessful },
   } = form;
 
-  const handleSubmit = form.handleSubmit(async (data: InputFormSchema) => {
-    try {
-      // TODO: implement form submission
-      console.log(data);
-      form.reset();
+  const { mutate } = useMutation({
+    mutationKey: ["create-house"],
+    mutationFn: async (data: InputFormSchema) => {
+      const response = await createHouseAction(data);
 
+      if (!response.success) {
+        throw new Error(response.message);
+      }
+
+      return response;
+    },
+    onSuccess: () => {
+      toast.success("Data rumah berhasil ditambahkan", { id: "create-house" });
       close();
-    } catch (error) {
-      // TODO: handle error
-    }
+    },
+    onMutate: () => {
+      toast.loading("Data rumah sedang ditambahkan. Mohon tunggu sebentar", {
+        id: "create-house",
+      });
+    },
+    onError: () => {
+      toast.error("Terjadi kesalahan. Silakan coba lagi.", {
+        id: "create-house",
+      });
+    },
+    onSettled: () => {
+      form.reset();
+    },
+  });
+
+  const handleSubmit = form.handleSubmit(async (data: InputFormSchema) => {
+    await mutate(data);
   });
 
   if (isSubmitSuccessful) {
