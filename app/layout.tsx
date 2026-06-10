@@ -44,6 +44,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>{children}</TooltipProvider>
+            <Toaster />
           </ThemeProvider>
         </ReactQueryProvider>
       </body>

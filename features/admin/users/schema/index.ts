@@ -17,6 +17,7 @@ const fileSchema = (message: string) =>
       message: "Format file harus JPG, PNG, atau PDF",
     });
 
+// Create User Schema
 export const createUserSchema = z.object({
   name: z
     .string()
@@ -37,3 +38,8 @@ export const createUserSchema = z.object({
 });
 
 export type CreateUserSchema = z.infer<typeof createUserSchema>
+
+// Update User Schema
+export const updateUserSchema = createUserSchema
+
+export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
