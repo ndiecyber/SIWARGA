@@ -1,6 +1,8 @@
 "use client";
 
-import { z } from "zod";
+import { useState } from "react";
+
+import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 
@@ -8,8 +10,9 @@ import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useDebounce } from "@uidotdev/usehooks";
 import { HouseStatus } from "@/generated/prisma/enums";
-import { HouseCreateInput } from "@/generated/prisma/models";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFieldDialog } from "@/components/shared/field-dialog";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import {
@@ -38,12 +41,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+
 import { formSchema, InputFormSchema } from "../schemas";
-import { useMutation } from "@tanstack/react-query";
-import { createHouseAction } from "../actions";
-import { toast } from "sonner";
+import { createHouseAction, getOwnersLookupAction } from "../actions";
 
 export function HouseCreateForm() {
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+
   const { close } = useFieldDialog();
 
   const form = useForm({
@@ -60,19 +65,40 @@ export function HouseCreateForm() {
     formState: { isSubmitting, isSubmitSuccessful },
   } = form;
 
+  // Query configuration
+  const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
+    queryKey: ["users-search", debouncedSearch],
+    queryFn: async () => {
+      const response = await getOwnersLookupAction(debouncedSearch);
+
+      if (!response.success) {
+        throw new Error(response.globalError || response.message);
+      }
+
+      return response.data.map((user) => ({
+        value: user.id,
+        label: user.name,
+      }));
+    },
+    enabled: true,
+  });
+
   const { mutate } = useMutation({
     mutationKey: ["create-house"],
     mutationFn: async (data: InputFormSchema) => {
       const response = await createHouseAction(data);
 
       if (!response.success) {
-        throw new Error(response.message);
+        throw new Error(response.globalError || response.message);
       }
 
       return response;
     },
-    onSuccess: () => {
-      toast.success("Data rumah berhasil ditambahkan", { id: "create-house" });
+    onSuccess: (response) => {
+      toast.success(response.message || "Data rumah berhasil ditambahkan", {
+        id: "create-house",
+      });
+      form.reset();
       close();
     },
     onMutate: () => {
@@ -80,8 +106,8 @@ export function HouseCreateForm() {
         id: "create-house",
       });
     },
-    onError: () => {
-      toast.error("Terjadi kesalahan. Silakan coba lagi.", {
+    onError: (error: any) => {
+      toast.error(error.message || "Terjadi kesalahan. Silakan coba lagi.", {
         id: "create-house",
       });
     },
@@ -94,38 +120,38 @@ export function HouseCreateForm() {
     await mutate(data);
   });
 
-  if (isSubmitSuccessful) {
-    return (
-      <div className="p-2 sm:p-5 md:p-8 w-full rounded-md gap-2 border">
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, stiffness: 300, damping: 25 }}
-          className="h-full py-6 px-3"
-        >
-          <motion.div
-            initial={{ scale: 0.5 }}
-            animate={{ scale: 1 }}
-            transition={{
-              delay: 0.3,
-              type: "spring",
-              stiffness: 500,
-              damping: 15,
-            }}
-            className="mb-4 flex justify-center border rounded-full w-fit mx-auto p-2"
-          >
-            <Check className="size-8" />
-          </motion.div>
-          <h2 className="text-center text-2xl text-pretty font-bold mb-2">
-            Thank you
-          </h2>
-          <p className="text-center text-lg text-pretty text-muted-foreground">
-            Form submitted successfully, we will get back to you soon
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
+  // if (isSubmitSuccessful) {
+  //   return (
+  //     <div className="p-2 sm:p-5 md:p-8 w-full rounded-md gap-2 border">
+  //       <motion.div
+  //         initial={{ opacity: 0, y: -16 }}
+  //         animate={{ opacity: 1, y: 0 }}
+  //         transition={{ duration: 0.4, stiffness: 300, damping: 25 }}
+  //         className="h-full py-6 px-3"
+  //       >
+  //         <motion.div
+  //           initial={{ scale: 0.5 }}
+  //           animate={{ scale: 1 }}
+  //           transition={{
+  //             delay: 0.3,
+  //             type: "spring",
+  //             stiffness: 500,
+  //             damping: 15,
+  //           }}
+  //           className="mb-4 flex justify-center border rounded-full w-fit mx-auto p-2"
+  //         >
+  //           <Check className="size-8" />
+  //         </motion.div>
+  //         <h2 className="text-center text-2xl text-pretty font-bold mb-2">
+  //           Thank you
+  //         </h2>
+  //         <p className="text-center text-lg text-pretty text-muted-foreground">
+  //           Form submitted successfully, we will get back to you soon
+  //         </p>
+  //       </motion.div>
+  //     </div>
+  //   );
+  // }
   return (
     <form
       onSubmit={handleSubmit}
@@ -235,10 +261,6 @@ export function HouseCreateForm() {
           name="ownerId"
           control={form.control}
           render={({ field, fieldState }) => {
-            const options = [
-              { value: "asep", label: "Asep" },
-              { value: "spanish", label: "Spanish" },
-            ];
             return (
               <Field
                 data-invalid={fieldState.invalid}
@@ -257,9 +279,8 @@ export function HouseCreateForm() {
                       )}
                     >
                       {field.value
-                        ? field.options.find(
-                            (option) => option.value === field.value,
-                          )?.label
+                        ? owners.find((option) => option.value === field.value)
+                            ?.label
                         : "Pilih Pemilik Rumah"}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
@@ -268,18 +289,28 @@ export function HouseCreateForm() {
                     className="p-0 min-w-(--radix-popper-anchor-width) w-full"
                     align="start"
                   >
-                    <Command>
+                    <Command shouldFilter={false}>
                       <CommandInput
                         placeholder="tap to search..."
                         className="h-10"
                         autoComplete="off"
+                        value={search}
+                        onValueChange={setSearch}
                       />
                       <CommandList>
-                        <CommandEmpty>No items found.</CommandEmpty>
+                        {isLoadingOwners && (
+                          <div className="p-4 text-sm text-center text-muted-foreground flex justify-center items-center gap-2">
+                            <Loader2 className="animate-spin size-4" /> Loading
+                            users...
+                          </div>
+                        )}
+                        {!isLoadingOwners && owners.length === 0 && (
+                          <CommandEmpty>No items found.</CommandEmpty>
+                        )}
                         <CommandGroup>
-                          {options.map(({ label, value }) => (
+                          {owners.map(({ label, value }) => (
                             <CommandItem
-                              value={value}
+                              value={label}
                               key={value}
                               onSelect={() => {
                                 form.setValue("ownerId", value);

@@ -6,10 +6,11 @@ import { HouseStatus } from "@/generated/prisma/enums";
 
 import { InputFormSchema } from "./schemas";
 import { ActionResponse } from "@/lib/types";
+import { House } from "@/generated/prisma/browser";
 
 export async function createHouseAction(
   data: InputFormSchema,
-): Promise<ActionResponse> {
+): Promise<ActionResponse<House | null, InputFormSchema>> {
   try {
     const result = await prisma.house.create({
       data: {
@@ -20,17 +21,58 @@ export async function createHouseAction(
       },
     });
 
+    // Revalidate BEFORE returning
+    revalidatePath("/admin/houses");
+
     return {
       success: true,
       message: "Data rumah berhasil ditambahkan",
+      data: result,
     };
   } catch (error) {
     return {
       success: false,
       message: "Data rumah gagal ditambahkan",
-      errors: error instanceof Error ? { message: [error.message] } : {},
+      globalError:
+        error instanceof Error ? error.message : "Unknown error occurred",
     };
-  } finally {
-    revalidatePath("/admin/houses");
+  }
+}
+
+export async function getOwnersLookupAction(
+  search: string = "",
+): Promise<ActionResponse<{ id: string; name: string }[]>> {
+  const sanitizedSearch = search.trim();
+
+  try {
+    const owners = await prisma.user.findMany({
+      where: {
+        name: {
+          contains: sanitizedSearch,
+          mode: "insensitive",
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+      take: 10,
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    return {
+      success: true,
+      message: "Data pemilik berhasil diambil",
+      data: owners,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Gagal mengambil data pemilik",
+      globalError:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
 }
