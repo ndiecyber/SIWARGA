@@ -28,10 +28,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-type HouseWithOwner = HouseGetPayload<{
-  include: { owner: true };
-}>;
+import { HouseWithOwner } from "../types";
+import DetailHouseView from "./detail-view";
+import HouseShow from "../pages/show";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
@@ -50,7 +49,7 @@ function SortableHeader({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8 gap-1 font-medium"
+      className="h-8 gap-1 -ml-3 font-medium"
       onClick={() => column.toggleSorting(sorted === "asc")}
     >
       {label}
@@ -130,13 +129,13 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
       const name: string = row.getValue("owner");
       return name ? (
         <DetailUserDialog user={row.original.owner!}>
-          <Button variant="outline" className="w-full justify-between">
+          <Button variant="outline" className="justify-between w-full">
             {name}
             <ArrowUpRight />
           </Button>
         </DetailUserDialog>
       ) : (
-        <span className="text-muted-foreground italic">—</span>
+        <span className="italic text-muted-foreground">—</span>
       );
     },
   },
@@ -184,37 +183,35 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
     header: "Aksi",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original;
+      const house = row.original;
 
       return (
         <div className="flex items-center gap-1">
           {/* View */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              // TODO: buka dialog/sheet detail
-              console.log("View:", user.id);
-            }}
-            title="Lihat detail"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="sr-only">Lihat detail</span>
-          </Button>
+          <HouseShow house={house}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-8 h-8 text-muted-foreground hover:text-foreground"
+              title="Lihat detail"
+            >
+              <Eye className="w-4 h-4" />
+              <span className="sr-only">Lihat detail</span>
+            </Button>
+          </HouseShow>
 
           {/* Edit */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-blue-600"
+            className="w-8 h-8 text-muted-foreground hover:text-blue-600"
             onClick={() => {
               // TODO: buka form edit
-              console.log("Edit:", user.id);
+              console.log("Edit:", house.id);
             }}
             title="Edit"
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="w-4 h-4" />
             <span className="sr-only">Edit</span>
           </Button>
 
@@ -224,10 +221,10 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                className="w-8 h-8 text-muted-foreground hover:text-destructive"
                 title="Hapus"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="w-4 h-4" />
                 <span className="sr-only">Hapus</span>
               </Button>
             </AlertDialogTrigger>
@@ -250,7 +247,7 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={() => {
                     // TODO: panggil API delete
-                    console.log("Delete:", user.id);
+                    console.log("Delete:", house.id);
                   }}
                 >
                   Hapus
