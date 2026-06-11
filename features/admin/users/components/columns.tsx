@@ -4,18 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, SquareArrowUpRight, Trash2 } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 import { User } from "../types";
+import { UpdateUserDialog } from "./update-user-dialog";
+import { DeleteUserDialog } from "./delete-user-dialog";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -123,61 +115,11 @@ export const columns: ColumnDef<User>[] = [
             <span className="sr-only">Lihat detail</span>
           </Button>
 
-          {/* Edit */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-blue-600"
-            onClick={() => {
-              // TODO: buka form edit
-              console.log("Edit:", user.id);
-            }}
-            title="Edit"
-          >
-            <Pencil className="h-4 w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
+          {/* Update */}
+          <UpdateUserDialog id={row.original.id} />
 
           {/* Delete */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                title="Hapus"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Hapus</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Hapus warga?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Data{" "}
-                  <span className="font-semibold text-foreground">
-                    {user.name}
-                  </span>{" "}
-                  {/* ({user.residentCode})  */}
-                  327806xxxxxxxxxx akan dihapus secara permanen dan tidak dapat
-                  dikembalikan.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  onClick={() => {
-                    // TODO: panggil API delete
-                    console.log("Delete:", user.id);
-                  }}
-                >
-                  Hapus
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteUserDialog user={user} />
         </div>
       );
     },

@@ -31,6 +31,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "../ui/sidebar";
+import Image from "next/image";
 
 type SidebarData = {
   title: string;
@@ -157,8 +158,15 @@ function RenderSidebarItem({ item }: { item: SidebarData }) {
 function AdministrationSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader className="bg-primary border-b border-b-border/25 py-8">
-        Header
+      <SidebarHeader className="bg-primary py-2">
+        <div className="flex items-center justify-center bg-muted rounded-md border border-white">
+          <Image
+            src="/logo/logo-versi-1.png"
+            alt="Logo SIWARGA"
+            width={172}
+            height={172}
+          />
+        </div>
       </SidebarHeader>
       <SidebarContent className="bg-primary">
         <SidebarMenu>
