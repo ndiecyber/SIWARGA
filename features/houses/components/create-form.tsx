@@ -106,8 +106,9 @@ export function HouseCreateForm() {
         id: "create-house",
       });
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Terjadi kesalahan. Silakan coba lagi.", {
+    onError: (error) => {
+      const errorMessage = error instanceof Error ? error.message : undefined;
+      toast.error(errorMessage || "Terjadi kesalahan. Silakan coba lagi.", {
         id: "create-house",
       });
     },
@@ -175,7 +176,7 @@ export function HouseCreateForm() {
                 return (
                   <Field
                     data-invalid={fieldState.invalid}
-                    className="gap-1 md:col-span-2"
+                    className="gap-2 md:col-span-2"
                   >
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-24 shrink-0">
@@ -203,7 +204,7 @@ export function HouseCreateForm() {
               render={({ field, fieldState }) => (
                 <Field
                   data-invalid={fieldState.invalid}
-                  className="gap-1 col-span-full"
+                  className="gap-2 col-span-full"
                 >
                   <Input
                     {...field}
@@ -231,7 +232,7 @@ export function HouseCreateForm() {
             return (
               <Field
                 data-invalid={fieldState.invalid}
-                className="gap-1 md:col-span-2"
+                className="gap-2 md:col-span-2"
               >
                 <FieldLabel htmlFor="status">Status Hunian *</FieldLabel>
 
@@ -264,7 +265,7 @@ export function HouseCreateForm() {
             return (
               <Field
                 data-invalid={fieldState.invalid}
-                className="gap-2 col-span-full"
+                className="gap-2 col-span-4"
               >
                 <FieldLabel htmlFor="ownerId">Pemilik *</FieldLabel>
 
@@ -315,16 +316,9 @@ export function HouseCreateForm() {
                               onSelect={() => {
                                 form.setValue("ownerId", value);
                               }}
+                              className="cursor-pointer flex justify-between w-full"
                             >
                               {label}
-                              <Check
-                                className={cn(
-                                  "ml-auto",
-                                  value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
                             </CommandItem>
                           ))}
                         </CommandGroup>
