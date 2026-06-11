@@ -14,7 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { House, HouseStatus } from "@/generated/prisma/browser";
+import { HouseStatus } from "@/generated/prisma/browser";
+import { HouseGetPayload } from "@/generated/prisma/models";
+import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,7 +28,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { HouseGetPayload } from "@/generated/prisma/models";
 
 type HouseWithOwner = HouseGetPayload<{
   include: { owner: true };
@@ -128,10 +129,12 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
     cell: ({ row }) => {
       const name: string = row.getValue("owner");
       return name ? (
-        <Button variant="outline" className="w-full justify-between">
-          {name}
-          <ArrowUpRight />
-        </Button>
+        <DetailUserDialog user={row.original.owner!}>
+          <Button variant="outline" className="w-full justify-between">
+            {name}
+            <ArrowUpRight />
+          </Button>
+        </DetailUserDialog>
       ) : (
         <span className="text-muted-foreground italic">—</span>
       );
