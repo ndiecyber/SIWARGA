@@ -102,7 +102,17 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center gap-1">
           {/* View */}
-          <DetailUserDialog user={user} />
+          <DetailUserDialog user={user}>
+            <Button
+              variant={"ghost"}
+              className="size-8 text-muted-foreground hover:text-foreground"
+              title="Lihat Detail"
+              size={"icon"}
+            >
+              <Eye className="size-4" />
+              <span className="sr-only">Lihat Detail</span>
+            </Button>
+          </DetailUserDialog>
 
           {/* Update */}
           <UpdateUserDialog id={row.original.id} />

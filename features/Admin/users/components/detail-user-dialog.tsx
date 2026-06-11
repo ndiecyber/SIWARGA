@@ -22,8 +22,10 @@ import {
   IdCard,
   Info,
   Copy,
+  LucideIcon,
 } from "lucide-react";
 import { User } from "../types";
+import { ReactNode } from "react";
 
 export type Role = "ADMIN" | "WARGA" | "KETUA_RT";
 
@@ -40,6 +42,7 @@ export type Role = "ADMIN" | "WARGA" | "KETUA_RT";
 
 interface Props {
   user: User;
+  children: ReactNode;
 }
 
 const formatDate = (d: string | Date) =>
@@ -48,7 +51,7 @@ const formatDate = (d: string | Date) =>
     timeStyle: "short",
   });
 
-function Field({
+export function Field({
   icon: Icon,
   label,
   children,
@@ -74,20 +77,10 @@ function Field({
   );
 }
 
-export default function DetailUserDialog({ user }: Props) {
+export default function DetailUserDialog({ user, children }: Props) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          title="Lihat detail"
-        >
-          <Eye className="h-4 w-4" />
-          <span className="sr-only">Lihat detail</span>
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-lg md:max-w-5xl">
         <DialogHeader>
           <DialogTitle>Detail Warga</DialogTitle>
@@ -135,8 +128,10 @@ export default function DetailUserDialog({ user }: Props) {
 
         {/* section 2 */}
         <div className="grid gap-4 md:grid-cols-2">
-          <Field icon={Shield} label="Role">
-            <Badge variant="outline">{user.role}</Badge>
+          <Field icon={Shield} label="Peran">
+            <Badge variant="outline">
+              {user.role === "ADMIN" ? "Pengurus" : "Warga"}
+            </Badge>
           </Field>
           <Field icon={Calendar} label="Terdaftar">
             {formatDate(user.createdAt)}
