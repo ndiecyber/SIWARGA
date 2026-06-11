@@ -40,13 +40,11 @@ export function DeleteUserDialog({ user }: DeleteUserDialogProps) {
       <AlertDialogTrigger asChild>
         <Button
           variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-destructive"
-          title="Hapus"
+          className="w-full justify-start gap-2"
           disabled={isDeleting}
         >
           <Trash2 className="h-4 w-4" />
-          <span className="sr-only">Hapus</span>
+          <span>Hapus</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

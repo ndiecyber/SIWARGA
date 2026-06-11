@@ -149,14 +149,9 @@ export function UpdateUserDialog(props: UpdateUserDialog) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-blue-600"
-          title="Edit"
-        >
+        <Button variant="ghost" className="w-full justify-start gap-2">
           <Pencil className="h-4 w-4" />
-          <span className="sr-only">Edit</span>
+          <span>Ubah</span>
         </Button>
       </DialogTrigger>
 
