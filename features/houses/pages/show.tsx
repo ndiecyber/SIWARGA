@@ -1,7 +1,11 @@
+import { Info } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -27,10 +31,15 @@ function HouseShow({ house, children }: HouseShowProps) {
           </DialogDescription>
           <DetailHouseView house={house} />
         </DialogHeader>
-        {/* <DialogFooter className="flex items-center justify-end">
-          <Button >Tutup</Button>
-          <Button>Edit</Button>
-        </DialogFooter> */}
+        <DialogFooter className="flex-col">
+          <div className="flex items-center justify-between w-full">
+            <span className="flex items-center text-xs text-muted-foreground">
+              <Info className="mr-2" size={16} />
+              Data hanya dapat dilihat, tidak dapat diubah
+            </span>
+            <Button variant="secondary">Tutup</Button>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
