@@ -7,7 +7,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -42,10 +41,15 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
+import { HouseWithOwner } from "../types";
 import { formSchema, InputFormSchema } from "../schemas";
-import { createHouseAction, getOwnersLookupAction } from "../actions";
+import { getOwnersLookupAction, updateHouseAction } from "../actions";
 
-export function HouseCreateForm() {
+interface HouseEditFormProps {
+  house: HouseWithOwner;
+}
+
+export function HouseEditForm({ house }: HouseEditFormProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
@@ -55,17 +59,18 @@ export function HouseCreateForm() {
     resolver: standardSchemaResolver(formSchema),
     mode: "onChange",
     defaultValues: {
-      status: HouseStatus.OCCUPIED,
-      block: "",
-      houseNumber: "",
-      ownerId: "",
+      status: house.status as HouseStatus,
+      block: house.block,
+      houseNumber: house.houseNumber,
+      ownerId: house.ownerId || "",
     },
   });
+
   const {
-    formState: { isSubmitting, isSubmitSuccessful },
+    formState: { isSubmitting },
   } = form;
 
-  // Query configuration
+  // Query configuration with initialData so current owner displays immediately
   const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
     queryKey: ["users-search", debouncedSearch],
     queryFn: async () => {
@@ -80,14 +85,20 @@ export function HouseCreateForm() {
         label: user.name,
       }));
     },
+
+    // Populate with the existing owner data initially if search is empty
+    initialData:
+      !debouncedSearch && house.owner
+        ? [{ value: house.owner.id, label: house.owner.name }]
+        : undefined,
     enabled: true,
   });
 
-  // Mutation configuration
+  // Mutation configuration passing the house ID to the server action
   const { mutateAsync } = useMutation({
-    mutationKey: ["create-house"],
+    mutationKey: ["update-house", house.id],
     mutationFn: async (data: InputFormSchema) => {
-      const response = await createHouseAction(data);
+      const response = await updateHouseAction(house.id, data);
 
       if (!response.success) {
         throw new Error(response.globalError || response.message);
@@ -101,9 +112,9 @@ export function HouseCreateForm() {
     const mutationPromise = mutateAsync(data);
 
     toast.promise(mutationPromise, {
-      loading: "Data rumah sedang ditambahkan. Mohon tunggu sebentar...",
+      loading: "Data rumah sedang diperbarui. Mohon tunggu sebentar...",
       success: (response) =>
-        response.message || "Data rumah berhasil ditambahkan",
+        response.message || "Data rumah berhasil diperbarui",
       error: (error) =>
         error instanceof Error
           ? error.message
@@ -112,7 +123,6 @@ export function HouseCreateForm() {
 
     try {
       await mutationPromise;
-      form.reset();
       close();
     } catch (error) {
       console.error(error);
@@ -146,7 +156,7 @@ export function HouseCreateForm() {
                   >
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-24 shrink-0">
-                        <SelectValue placeholder="Pilih Blok Rumah" />
+                        <SelectValue placeholder="Pilih Blok" />
                       </SelectTrigger>
                       <SelectContent>
                         {options.map((option) => (
@@ -280,7 +290,9 @@ export function HouseCreateForm() {
                               value={label}
                               key={value}
                               onSelect={() => {
-                                form.setValue("ownerId", value);
+                                form.setValue("ownerId", value, {
+                                  shouldValidate: true,
+                                });
                               }}
                               className="flex justify-between w-full cursor-pointer"
                             >
@@ -302,21 +314,21 @@ export function HouseCreateForm() {
       </FieldGroup>
       <div className="flex items-center justify-end w-full gap-2">
         <Button
-          type="reset"
+          type="button"
           variant="outline"
           disabled={isSubmitting}
           onClick={() => form.reset()}
         >
-          Reset
+          Reset Changes
         </Button>
         <Button disabled={isSubmitting}>
           {isSubmitting ? (
-            <span>
+            <span className="flex items-center">
               <Loader2 className="mr-2 animate-spin" />
-              Submitting...
+              Saving...
             </span>
           ) : (
-            "Submit"
+            "Save Changes"
           )}
         </Button>
       </div>
