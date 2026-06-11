@@ -1,27 +1,146 @@
-import { columns, Payment } from "../components/columns";
-import { DataTable } from "../components/data-table";
+// app/houses/page.tsx
+import { FilterCategory } from "@/lib/types/filter";
+import { HouseStatus } from "@/generated/prisma/enums";
+import { DataTable } from "@/components/shared/data-table";
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+import { columns } from "../components/columns";
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const FILTER_CATEGORIES: FilterCategory[] = [
+  {
+    id: "block",
+    label: "Block",
+    options: [
+      {
+        label: "A",
+        value: "A",
+        icon: (
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+        ),
+      },
+      {
+        label: "B",
+        value: "B",
+        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+      },
+      {
+        label: "C",
+        value: "C",
+        icon: (
+          <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+        ),
+      },
+      {
+        label: "D",
+        value: "D",
+        icon: <span className="inline-block h-2 w-2 rounded-full bg-sky-500" />,
+      },
+    ],
+  },
+];
+
+type User = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  phoneNumber: string;
+};
+
+type House = {
+  id: string;
+  houseNumber: string;
+  block: string;
+  status: HouseStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  ownerId: string | null;
+  owner: User;
+  residents?: number;
+};
+
+export const dummyUsers: User[] = [
+  {
+    id: "usr_001",
+    createdAt: new Date("2025-01-10T08:00:00Z"),
+    updatedAt: new Date("2025-01-10T08:00:00Z"),
+    name: "John Doe",
+    phoneNumber: "+6281234567890",
+  },
+  {
+    id: "usr_002",
+    createdAt: new Date("2025-01-12T09:30:00Z"),
+    updatedAt: new Date("2025-03-01T14:20:00Z"),
+    name: "Jane Smith",
+    phoneNumber: "+6289876543210",
+  },
+  {
+    id: "usr_003",
+    createdAt: new Date("2025-02-05T11:15:00Z"),
+    updatedAt: new Date("2025-02-20T16:45:00Z"),
+    name: "Michael Johnson",
+    phoneNumber: "+628111223344",
+  },
+];
+
+export const dummyHouses: House[] = [
+  {
+    id: "house_001",
+    houseNumber: "A1",
+    block: "A",
+    status: HouseStatus.OCCUPIED,
+    createdAt: new Date("2025-01-15T08:00:00Z"),
+    updatedAt: new Date("2025-02-01T10:00:00Z"),
+    ownerId: dummyUsers[0].id,
+    owner: dummyUsers[0],
+  },
+  {
+    id: "house_002",
+    houseNumber: "A2",
+    block: "A",
+    status: HouseStatus.OCCUPIED,
+    createdAt: new Date("2025-01-16T08:00:00Z"),
+    updatedAt: new Date("2025-02-02T10:00:00Z"),
+    ownerId: dummyUsers[1].id,
+    owner: dummyUsers[1],
+  },
+  {
+    id: "house_003",
+    houseNumber: "B1",
+    block: "B",
+    status: HouseStatus.OCCUPIED,
+    createdAt: new Date("2025-01-17T08:00:00Z"),
+    updatedAt: new Date("2025-02-03T10:00:00Z"),
+    ownerId: dummyUsers[2].id,
+    owner: dummyUsers[2],
+  },
+  {
+    id: "house_004",
+    houseNumber: "B2",
+    block: "B",
+    status: HouseStatus.VACANT,
+    createdAt: new Date("2025-01-18T08:00:00Z"),
+    updatedAt: new Date("2025-01-18T08:00:00Z"),
+    ownerId: null,
+    owner: {
+      id: "",
+      name: "",
+      phoneNumber: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
     },
-    // ...
-  ];
-}
+  },
+];
 
-async function HousesIndex() {
-  const data = await getData();
-
+export default async function HousesIndex() {
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={dummyHouses}
+        filterCategories={FILTER_CATEGORIES}
+      />
     </div>
   );
 }
-
-export default HousesIndex;

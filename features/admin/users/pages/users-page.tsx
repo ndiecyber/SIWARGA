@@ -1,14 +1,57 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, Plus, UsersRoundIcon } from "lucide-react";
-import { DataTable } from "../components/data-table";
-import { usersDummy } from "@/seed/users-dummy";
-import { columns } from "../components/columns";
-import { CreateUserDialog } from "../components/create-user-dialog";
+import React from "react";
 
-const UserPage = () => {
+import { AlertTriangle, UsersRoundIcon } from "lucide-react";
+
+import { usersDummy } from "@/seed/users-dummy";
+import { FilterCategory } from "@/lib/types/filter";
+import { DataTable } from "@/components/shared/data-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
+import { columns } from "../components/columns";
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const FILTER_CATEGORIES: FilterCategory[] = [
+  {
+    id: "duesStatus",
+    label: "Status Iuran",
+    options: [
+      {
+        label: "Lunas",
+        value: "LUNAS",
+        icon: (
+          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+        ),
+      },
+      {
+        label: "Menunggak",
+        value: "MENUNGGAK",
+        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+      },
+    ],
+  },
+  {
+    id: "role",
+    label: "Role",
+    options: [
+      { label: "Admin", value: "ADMIN" },
+      { label: "Warga", value: "WARGA" },
+    ],
+  },
+];
+import { CreateUserDialog } from "../components/create-user-dialog";
+import { UserModelSchema } from "@/generated/zod/schemas";
+import z from "zod";
+import { Role } from "@/generated/prisma/enums";
+import { User } from "../types";
+
+export type UserPageProps = {
+  users: User[];
+};
+
+const UserPage = (props: UserPageProps) => {
   return (
     <section className="space-y-8">
       <div className="space-y-4">
@@ -49,7 +92,11 @@ const UserPage = () => {
       </div>
 
       <div className="bg-white">
-        <DataTable data={usersDummy} columns={columns} />
+        <DataTable
+          data={props.users}
+          columns={columns}
+          filterCategories={FILTER_CATEGORIES}
+        />
       </div>
     </section>
   );

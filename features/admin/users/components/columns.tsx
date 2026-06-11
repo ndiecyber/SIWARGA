@@ -4,17 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, SquareArrowUpRight, Trash2 } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
+import { User } from "../types";
+import { UpdateUserDialog } from "./update-user-dialog";
+import { DeleteUserDialog } from "./delete-user-dialog";
+import DetailUserDialog from "./detail-user-dialog";
+import ButtonActionDropdownProps from "@/components/shared/button-action-dropdown";
+import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -30,7 +26,7 @@ const formatDate = (dateStr: string) =>
     year: "numeric",
   });
 
-export const columns: ColumnDef<UserDummy>[] = [
+export const columns: ColumnDef<User>[] = [
   // {
   //   accessorKey: "residentCode",
   //   header: "Kode Warga",
@@ -47,7 +43,7 @@ export const columns: ColumnDef<UserDummy>[] = [
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
         <span className="font-mono text-xs text-muted-foreground">
-          {row.original.nik}
+          {/* {row.original.resident_number} */}
         </span>
       </div>
     ),
@@ -56,13 +52,13 @@ export const columns: ColumnDef<UserDummy>[] = [
     accessorKey: "block",
     header: "Blok",
     cell: ({ row }) => (
-      <span className="font-semibold">{row.original.block}</span>
+      <span className="font-semibold">{/* {row.original.block} */}A</span>
     ),
   },
   {
     accessorKey: "familyMembers",
     header: "Anggota Keluarga",
-    cell: ({ row }) => <span>{row.original.familyMembers} orang</span>,
+    cell: ({ row }) => <span>{/* {row.original.familyMembers} */}7 orang</span>,
   },
   {
     accessorKey: "phoneNumber",
@@ -105,78 +101,44 @@ export const columns: ColumnDef<UserDummy>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
-      return (
-        <div className="flex items-center gap-1">
-          {/* View */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              // TODO: buka dialog/sheet detail
-              console.log("View:", user.id);
-            }}
-            title="Lihat detail"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="sr-only">Lihat detail</span>
-          </Button>
+      // return (
+      //   <div className="flex items-center gap-1">
+      //     {/* View */}
+      //     <DetailUserDialog user={user}>
+      //       <Button
+      //         variant={"ghost"}
+      //         className="size-8 text-muted-foreground hover:text-foreground"
+      //         title="Lihat Detail"
+      //         size={"icon"}
+      //       >
+      //         <Eye className="size-4" />
+      //         <span className="sr-only">Lihat Detail</span>
+      //       </Button>
+      //     </DetailUserDialog>
 
-          {/* Edit */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-blue-600"
-            onClick={() => {
-              // TODO: buka form edit
-              console.log("Edit:", user.id);
-            }}
-            title="Edit"
-          >
-            <Pencil className="h-4 w-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
+      //     {/* Update */}
+      //     <UpdateUserDialog id={row.original.id} />
+
+      //     {/* Delete */}
+      //     <DeleteUserDialog user={user} />
+      //   </div>
+      // );
+      return (
+        <ButtonActionDropdown>
+          {/* Detail */}
+          <DetailUserDialog user={user}>
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <Eye className="size-4" />
+              <span>Detail</span>
+            </Button>
+          </DetailUserDialog>
+
+          {/* Update */}
+          <UpdateUserDialog id={row.original.id} />
 
           {/* Delete */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                title="Hapus"
-              >
-                <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Hapus</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Hapus warga?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Data{" "}
-                  <span className="font-semibold text-foreground">
-                    {user.name}
-                  </span>{" "}
-                  ({user.residentCode}) akan dihapus secara permanen dan tidak
-                  dapat dikembalikan.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  onClick={() => {
-                    // TODO: panggil API delete
-                    console.log("Delete:", user.id);
-                  }}
-                >
-                  Hapus
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+          <DeleteUserDialog user={user} />
+        </ButtonActionDropdown>
       );
     },
   },

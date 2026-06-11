@@ -20,24 +20,49 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, UserPlus } from "lucide-react";
+import { Loader2, Pencil, UserPlus } from "lucide-react";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v4";
-import { CreateUserSchema, createUserSchema } from "../schema";
+import {
+  CreateUserSchema,
+  createUserSchema,
+  UpdateUserSchema,
+  updateUserSchema,
+} from "../schema";
 import FileUploadField from "./file-upload-field";
 import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
-import { createUserAction } from "../action";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createUserAction, updateUserAction } from "../action";
 
-type CreateUserInput = z.input<typeof createUserSchema>;
-type CreateUserValues = z.output<typeof createUserSchema>;
+type UpdateUserInput = z.input<typeof updateUserSchema>;
+type UpdateUserValues = z.output<typeof updateUserSchema>;
 
-export function CreateUserDialog() {
+type UpdateUserDialog = {
+  id: string;
+};
+
+export function UpdateUserDialog(props: UpdateUserDialog) {
   const [open, setOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const form = useForm<CreateUserInput, unknown, CreateUserValues>({
+  const { data: dataUser } = useQuery({
+    queryKey: ["update-user", props.id],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${props.id}`);
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      return result.data;
+    },
+    enabled: open && !!props.id,
+    staleTime: 1000 * 60,
+  });
+
+  const form = useForm<UpdateUserInput, unknown, UpdateUserValues>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",
@@ -49,12 +74,24 @@ export function CreateUserDialog() {
     mode: "onChange",
   });
 
-  const { mutateAsync: handleCreateUser } = useMutation({
-    mutationKey: ["create-user"],
+  React.useEffect(() => {
+    if (!dataUser) return;
 
-    mutationFn: async (values: CreateUserSchema) => {
+    form.reset({
+      name: dataUser.name ?? "",
+      phoneNumber: dataUser.phoneNumber ?? "",
+      role: dataUser.role ?? "USER",
+      kkFile: undefined,
+      ktpFile: undefined,
+    });
+  }, [dataUser, form]);
+
+  const { mutateAsync: handleUpdateUser } = useMutation({
+    mutationKey: ["update-user"],
+
+    mutationFn: async (values: UpdateUserSchema) => {
       setIsSubmitting(true);
-      const result = await createUserAction(values);
+      const result = await updateUserAction(values, props.id);
 
       if (!result.success) {
         throw new Error(result.message);
@@ -64,23 +101,25 @@ export function CreateUserDialog() {
     },
 
     onMutate: () => {
-      toast.loading("Data warga sedang ditambahkan. Mohon tunggu sebentar 😄", {
-        id: "create-user",
+      toast.loading("Data warga sedang dirubah. Mohon tunggu sebentar 😄", {
+        id: "update-user",
       });
     },
 
     onError: (error) => {
       toast.error(
-        error.message || "Data warga gagal ditambahkan. Silahkan coba lagi 😫",
+        error instanceof Error
+          ? error.message
+          : "Data warga gagal dirubah. Silahkan coba lagi 😫",
         {
-          id: "create-user",
+          id: "update-user",
         },
       );
     },
 
     onSuccess: () => {
-      toast.success("Data warga berhasil ditambahkan 🤗", {
-        id: "create-user",
+      toast.success("Data warga berhasil dirubah 🤗", {
+        id: "update-user",
       });
 
       form.reset({
@@ -99,9 +138,9 @@ export function CreateUserDialog() {
     },
   });
 
-  const onSubmit = async (values: CreateUserSchema) => {
+  const onSubmit = async (values: UpdateUserSchema) => {
     try {
-      await handleCreateUser(values);
+      await handleUpdateUser(values);
     } catch {
       // Sudah ditangani oleh onError
     }
@@ -110,20 +149,20 @@ export function CreateUserDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Tambah Warga
+        <Button variant="ghost" className="w-full justify-start gap-2">
+          <Pencil className="h-4 w-4" />
+          <span>Ubah</span>
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Tambah warga baru</DialogTitle>
+          <DialogTitle>Ubah data warga</DialogTitle>
           <DialogDescription>
-            Isi data lengkap warga beserta dokumen KK dan KTP.
+            Perbarui data warga jika ada informasi yang salah atau sudah
+            berubah.
           </DialogDescription>
         </DialogHeader>
-
         <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
           <FieldGroup>
             {/* Nama */}
@@ -132,12 +171,12 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-name">
+                  <FieldLabel htmlFor="update-user-name">
                     Nama lengkap
                   </FieldLabel>
                   <Input
                     {...field}
-                    id="create-user-name"
+                    id="update-user-name"
                     placeholder="Budi Santoso"
                     aria-invalid={fieldState.invalid}
                     autoComplete="name"
@@ -155,12 +194,12 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-phone">
+                  <FieldLabel htmlFor="update-user-phone">
                     Nomor telepon
                   </FieldLabel>
                   <Input
                     {...field}
-                    id="create-user-phone"
+                    id="update-user-phone"
                     placeholder="Format: 08xxxxxx"
                     type="tel"
                     aria-invalid={fieldState.invalid}
@@ -179,10 +218,10 @@ export function CreateUserDialog() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-role">Role</FieldLabel>
+                  <FieldLabel htmlFor="update-user-role">Role</FieldLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger
-                      id="create-user-role"
+                      id="update-user-role"
                       aria-invalid={fieldState.invalid}
                     >
                       <SelectValue placeholder="Pilih role..." />
@@ -219,12 +258,12 @@ export function CreateUserDialog() {
 
                   return (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-kk-file">
+                      <FieldLabel htmlFor="update-user-kk-file">
                         Kartu Keluarga (KK)
                       </FieldLabel>
 
                       <FileUploadField
-                        id="create-user-kk-file"
+                        id="update-user-kk-file"
                         label="Unggah file KK"
                         description="JPG, PNG, atau PDF · maks. 5 MB"
                         accept=".jpg,.jpeg,.png,.pdf"
@@ -251,12 +290,12 @@ export function CreateUserDialog() {
 
                   return (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-ktp-file">
+                      <FieldLabel htmlFor="update-user-ktp-file">
                         KTP
                       </FieldLabel>
 
                       <FileUploadField
-                        id="create-user-ktp-file"
+                        id="update-user-ktp-file"
                         label="Unggah file KTP"
                         description="JPG, PNG, atau PDF · maks. 5 MB"
                         accept=".jpg,.jpeg,.png,.pdf"
