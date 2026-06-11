@@ -29,17 +29,6 @@ import { ReactNode } from "react";
 
 export type Role = "ADMIN" | "WARGA" | "KETUA_RT";
 
-// export interface User {
-//   id: string;
-//   name: string;
-//   phoneNumber: string;
-//   role: Role;
-//   kkUrl: string;
-//   ktpUrl: string;
-//   createdAt: string | Date;
-//   updatedAt: string | Date;
-// }
-
 interface Props {
   user: User;
   children: ReactNode;
@@ -81,108 +70,121 @@ export default function DetailUserDialog({ user, children }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg md:max-w-5xl">
-        <DialogHeader>
-          <DialogTitle>Detail Warga</DialogTitle>
-          <DialogDescription>
-            Informasi lengkap warga. Data hanya dapat dilihat.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-hidden p-0 sm:max-w-lg md:max-w-5xl">
+        <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
+          <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
+            <DialogTitle>Detail Warga</DialogTitle>
+            <DialogDescription>
+              Informasi lengkap warga. Data hanya dapat dilihat.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="flex items-center gap-4 rounded-lg border bg-muted/30 p-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-semibold">
-            {user.name
-              .split(" ")
-              .map((n) => n[0])
-              .slice(0, 2)
-              .join("")
-              .toUpperCase()}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-foreground">
-              {user.name}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              NIK: {user.id}
-            </p>
-          </div>
-          <Badge variant="secondary">{user.role}</Badge>
-        </div>
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pt-2 pb-4">
+            <div className="flex items-center gap-4 rounded-lg border bg-muted/30 p-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase()}
+              </div>
 
-        <Separator />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-semibold text-foreground">
+                  {user.name}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">
+                  NIK: {user.id}
+                </p>
+              </div>
 
-        {/* section 1 */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field icon={UserIcon} label="Nama Lengkap">
-            {user.name}
-          </Field>
-          <Field icon={IdCard} label="Nomor Induk Kependudukan">
-            {user.id}
-          </Field>
-          <Field icon={Phone} label="Nomor Telepon">
-            {user.phoneNumber}
-          </Field>
-        </div>
-
-        <Separator />
-
-        {/* section 2 */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field icon={Shield} label="Peran">
-            <Badge variant="outline">
-              {user.role === "ADMIN" ? "Pengurus" : "Warga"}
-            </Badge>
-          </Field>
-          <Field icon={Calendar} label="Terdaftar">
-            {formatDate(user.createdAt)}
-          </Field>
-          <Field icon={FileText} label="Dokumen">
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="sm">
-                <a href={user.kkUrl} target="_blank" rel="noreferrer">
-                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Lihat KK
-                </a>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <a href={user.ktpUrl} target="_blank" rel="noreferrer">
-                  <ExternalLink className="mr-1.5 h-3.5 w-3.5" /> Lihat KTP
-                </a>
-              </Button>
+              <Badge variant="secondary">
+                {user.role === "ADMIN" ? "Pengurus" : "Warga"}
+              </Badge>
             </div>
-          </Field>
 
-          <Field icon={Calendar} label="Diperbarui">
-            {formatDate(user.updatedAt)}
-          </Field>
-        </div>
+            <Separator />
 
-        <DialogFooter className="flex-col items-start gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-2 text-xs text-muted-foreground">
-            <Info className="mt-0.5 h-4 w-4 shrink-0" />
-            <p>
-              Data ini bersifat pribadi dan hanya digunakan untuk keperluan
-              administrasi warga.
-            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field icon={UserIcon} label="Nama Lengkap">
+                {user.name}
+              </Field>
+
+              <Field icon={IdCard} label="Nomor Induk Kependudukan">
+                {user.id}
+              </Field>
+
+              <Field icon={Phone} label="Nomor Telepon">
+                {user.phoneNumber}
+              </Field>
+            </div>
+
+            <Separator />
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field icon={Shield} label="Peran">
+                <Badge variant="outline">
+                  {user.role === "ADMIN" ? "Pengurus" : "Warga"}
+                </Badge>
+              </Field>
+
+              <Field icon={Calendar} label="Terdaftar">
+                {formatDate(user.createdAt)}
+              </Field>
+
+              <Field icon={FileText} label="Dokumen">
+                <div className="flex flex-wrap gap-2">
+                  <Button asChild variant="outline" size="sm">
+                    <a href={user.kkUrl} target="_blank" rel="noreferrer">
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      Lihat KK
+                    </a>
+                  </Button>
+
+                  <Button asChild variant="outline" size="sm">
+                    <a href={user.ktpUrl} target="_blank" rel="noreferrer">
+                      <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
+                      Lihat KTP
+                    </a>
+                  </Button>
+                </div>
+              </Field>
+
+              <Field icon={Calendar} label="Diperbarui">
+                {formatDate(user.updatedAt)}
+              </Field>
+            </div>
           </div>
 
-          <div className="flex w-full gap-2 sm:w-auto">
-            <Button
-              type="button"
-              variant="secondary"
-              className="flex-1 sm:flex-none"
-              onClick={() => navigator.clipboard.writeText(user.id)}
-            >
-              <Copy className="mr-1.5 h-4 w-4" />
-              Salin NIK
-            </Button>
+          <DialogFooter className="shrink-0 flex-col items-start gap-3 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-2 text-xs text-muted-foreground">
+              <Info className="mt-0.5 h-4 w-4 shrink-0" />
+              <p>
+                Data ini bersifat pribadi dan hanya digunakan untuk keperluan
+                administrasi warga.
+              </p>
+            </div>
 
-            <DialogClose asChild>
-              <Button variant="outline" className="flex-1 sm:flex-none">
-                Tutup
+            <div className="flex w-full gap-2 sm:w-auto">
+              <Button
+                type="button"
+                variant="secondary"
+                className="flex-1 sm:flex-none"
+                onClick={() => navigator.clipboard.writeText(user.id)}
+              >
+                <Copy className="mr-1.5 h-4 w-4" />
+                Salin NIK
               </Button>
-            </DialogClose>
-          </div>
-        </DialogFooter>
+
+              <DialogClose asChild>
+                <Button variant="outline" className="flex-1 sm:flex-none">
+                  Tutup
+                </Button>
+              </DialogClose>
+            </div>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
