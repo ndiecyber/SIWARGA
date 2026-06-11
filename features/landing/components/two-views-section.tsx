@@ -4,15 +4,13 @@ import { useRef, useEffect, useState } from "react";
 import {
   User,
   ShieldCheck,
-  Users,
-  Banknote,
-  BarChart3,
-  Receipt,
-  Megaphone,
-  Map,
+  CheckCircle2,
+  ListTodo,
+  FileText,
+  CreditCard,
+  Bell,
+  Sparkles,
 } from "lucide-react";
-
-import { LayoutGrid } from "lucide-react";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -35,315 +33,134 @@ function useReveal() {
   return { ref, visible };
 }
 
-function AdminVisual() {
-  const rows = [
-    {
-      dot: "bg-green-600",
-      name: "Budi Santoso",
-      no: "A01",
-      badge: "bg-green-100 text-green-700",
-      label: "Lunas",
-    },
-    {
-      dot: "bg-green-600",
-      name: "Siti Rahayu",
-      no: "A02",
-      badge: "bg-green-100 text-green-700",
-      label: "Lunas",
-    },
-    {
-      dot: "bg-red-600",
-      name: "Ahmad Fauzi",
-      no: "A03",
-      badge: "bg-red-100 text-red-700",
-      label: "Menunggak",
-    },
-    {
-      dot: "bg-amber-500",
-      name: "Nita Wulandari",
-      no: "B03",
-      badge: "bg-amber-100 text-amber-700",
-      label: "Sebagian",
-    },
-  ];
-  const bars = [
-    { label: "Lunas", pct: "80%", color: "bg-green-600", val: "12" },
-    { label: "Sebagian", pct: "13%", color: "bg-amber-500", val: "2" },
-    { label: "Menunggak", pct: "13%", color: "bg-red-600", val: "2" },
-  ];
-  return (
-    <div
-      id="modules"
-      className="w-full rounded-2xl border border-border bg-card p-7 shadow-[0_16px_48px_hsl(var(--primary)/.08)]"
-    >
-      <p className="mb-3.5 text-[11px] font-semibold uppercase tracking-[.5px] text-muted-foreground">
-        Status iuran warga — Juni 2025
-      </p>
-      <div className="mb-3 flex flex-col gap-1.5">
-        {rows.map((r) => (
-          <div
-            key={r.name}
-            className="flex items-center gap-2.5 rounded-[10px] px-3 py-2.5"
-            style={{ background: "hsl(var(--muted)/0.5)" }}
-          >
-            <div className={`h-2 w-2 flex-shrink-0 rounded-full ${r.dot}`} />
-            <span className="flex-1 text-[13px] font-medium text-foreground">
-              {r.name}
-            </span>
-            <span className="text-[11px] font-semibold text-muted-foreground">
-              {r.no}
-            </span>
-            <span
-              className={`rounded-lg px-2 py-0.5 text-[10px] font-bold ${r.badge}`}
-            >
-              {r.label}
-            </span>
-          </div>
-        ))}
-      </div>
-      <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-[.5px] text-muted-foreground">
-        Distribusi iuran
-      </p>
-      <div className="flex flex-col gap-2">
-        {bars.map((b) => (
-          <div key={b.label} className="flex items-center gap-2.5">
-            <span className="w-[70px] flex-shrink-0 text-[12px] text-muted-foreground">
-              {b.label}
-            </span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-border">
-              <div
-                className={`h-full rounded-full ${b.color}`}
-                style={{ width: b.pct }}
-              />
-            </div>
-            <span className="w-7 text-right text-[12px] font-semibold text-foreground">
-              {b.val}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function WargaVisual() {
-  const announcements = [
-    {
-      borderColor: "#1d4ed8",
-      tags: [
-        { bg: "bg-blue-100 text-blue-700", label: "kegiatan" },
-        { bg: "bg-red-100 text-red-700", label: "Penting" },
-      ],
-      title: "Kerja Bakti Bulanan",
-      sub: "Minggu 15 Jun 2025, 07.00 WIB",
-    },
-    {
-      borderColor: "#16a34a",
-      tags: [{ bg: "bg-green-100 text-green-700", label: "keuangan" }],
-      title: "Tagihan Iuran Juni 2025",
-      sub: "Batas bayar tgl 10 Juni 2025",
-    },
-    {
-      borderColor: "#dc2626",
-      tags: [{ bg: "bg-red-100 text-red-700", label: "keamanan" }],
-      title: "Peringatan Keamanan",
-      sub: "Selalu kunci kendaraan & rumah",
-    },
-  ];
-  return (
-    <div className="w-full rounded-2xl border border-border bg-card p-7 shadow-[0_16px_48px_hsl(var(--primary)/.08)]">
-      <p className="mb-3.5 text-[11px] font-semibold uppercase tracking-[.5px] text-muted-foreground">
-        Pengumuman terbaru
-      </p>
-      <div className="flex flex-col gap-2">
-        {announcements.map((a) => (
-          <div
-            key={a.title}
-            className="overflow-hidden rounded-[10px]"
-            style={{
-              background: "hsl(var(--muted)/0.5)",
-              borderLeft: `3px solid ${a.borderColor}`,
-            }}
-          >
-            <div className="px-3.5 py-3">
-              <div className="mb-1.5 flex gap-1.5">
-                {a.tags.map((t) => (
-                  <span
-                    key={t.label}
-                    className={`rounded-lg px-1.5 py-0.5 text-[10px] font-bold ${t.bg}`}
-                  >
-                    {t.label}
-                  </span>
-                ))}
-              </div>
-              <p className="text-[13px] font-semibold text-foreground">
-                {a.title}
-              </p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground">
-                {a.sub}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ModulItem({
-  iconBg,
-  iconColor,
-  Icon,
-  title,
-  desc,
-}: {
-  iconBg: string;
-  iconColor: string;
-  Icon: React.ElementType;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div className="flex items-start gap-3.5 rounded-[13px] border border-border bg-card p-3.5 transition-colors hover:border-primary/40">
-      <div
-        className={`flex h-[38px] w-[38px] flex-shrink-0 items-center justify-center rounded-[10px] ${iconBg}`}
-      >
-        <Icon className={`h-[18px] w-[18px] ${iconColor}`} />
-      </div>
-      <div>
-        <p className="text-[14px] font-semibold text-foreground">{title}</p>
-        <p className="mt-0.5 text-[13px] leading-[1.5] text-muted-foreground">
-          {desc}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 export function TwoViews() {
-  const { ref: ref1, visible: vis1 } = useReveal();
-  const { ref: ref2, visible: vis2 } = useReveal();
+  const { ref, visible } = useReveal();
 
   return (
-    <section id="modul" className="py-[88px]">
+    <section id="modules" className="py-[88px] bg-background">
       <div className="container mx-auto max-w-[1100px] px-6">
+        {/* Header */}
         <div className="mb-14 text-center">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
-            <LayoutGrid className="h-3.5 w-3.5" />
-            Modul Lengkap
+            <Sparkles className="h-3.5 w-3.5" />
+            Fitur Portal
           </div>
           <h2
             className="font-serif font-bold leading-[1.1] tracking-tight text-foreground"
             style={{
-              fontSize: "clamp(38px, 5.5vw, 62px)",
+              fontSize: "clamp(34px, 4.5vw, 50px)",
               letterSpacing: "-1px",
               marginBottom: "20px",
             }}
           >
-            Dua tampilan,
+            Dua Tampilan,
             <br />
-            <em className="italic text-primary">satu platform</em>
+            <em className="italic text-primary">Satu Sistem Terpadu</em>
           </h2>
+          <p className="mx-auto mt-4 max-w-[540px] text-[15px] leading-[1.7] text-muted-foreground">
+            SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam mengelola administrasi dan warga dalam memantau informasi.
+          </p>
         </div>
 
+        {/* Symmetrical Two Column Grid */}
         <div
-          ref={ref1}
-          className={`grid grid-cols-1 items-center gap-[60px] transition-all duration-700 md:grid-cols-2 ${
-            vis1 ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          ref={ref}
+          className={`grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch transition-all duration-700 ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
           }`}
         >
-          <div>
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[.4px] text-primary">
-              <ShieldCheck className="h-3.5 w-3.5" />
-              Panel Admin
-            </div>
-            <h3
-              className="mb-2 font-serif leading-[1.2] text-foreground"
-              style={{ fontSize: "28px", fontWeight: 600 }}
-            >
-              Kendali penuh
-              <br />
-              di tangan pengurus
-            </h3>
-            <p className="mb-4 text-[14px] leading-[1.7] text-muted-foreground">
-              Pengurus RT mendapat akses lengkap untuk mengelola semua aspek
-              administrasi perumahan dari satu dashboard.
-            </p>
-            <div className="flex flex-col gap-3.5">
-              <ModulItem
-                iconBg="bg-primary/10"
-                iconColor="text-primary"
-                Icon={Users}
-                title="Manajemen warga & KK"
-                desc="Tambah, edit, hapus data warga beserta anggota kartu keluarga"
-              />
-              <ModulItem
-                iconBg="bg-green-100"
-                iconColor="text-green-700"
-                Icon={Banknote}
-                title="Kelola iuran real-time"
-                desc="Update status lunas/sebagian/menunggak dengan satu klik"
-              />
-              <ModulItem
-                iconBg="bg-amber-100"
-                iconColor="text-amber-700"
-                Icon={BarChart3}
-                title="Laporan & ekspor data"
-                desc="Grafik arus kas, rekap iuran, dan ekspor PDF/Excel otomatis"
-              />
-            </div>
-          </div>
-          <AdminVisual />
-        </div>
+          {/* Card 1: Panel Admin */}
+          <div className="flex flex-col justify-between p-8 rounded-2xl border border-border bg-card shadow-[0_4px_12px_rgba(0,0,0,.02)] hover:border-primary/30 transition-all duration-300">
+            <div>
+              {/* Header Badge */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <ShieldCheck className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-foreground leading-tight">
+                    Panel Admin (Pengurus RT)
+                  </h3>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.5px]">
+                    Hak Akses Pengurus
+                  </span>
+                </div>
+              </div>
 
-        <div
-          ref={ref2}
-          className={`mt-[72px] grid grid-cols-1 items-center gap-[60px] transition-all duration-700 md:grid-cols-2 ${
-            vis2 ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-          }`}
-        >
-          <div className="order-last md:order-first">
-            <WargaVisual />
-          </div>
-          <div>
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[.4px] text-primary">
-              <User className="h-3.5 w-3.5" />
-              Portal Warga
+              {/* Minimal Mockup Stats */}
+              <div className="p-4 rounded-xl bg-muted/50 border border-border/60 mb-6 space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">Total Warga Terdata</span>
+                  <span className="font-bold text-foreground">456 Jiwa (114 KK)</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">Okupansi Rumah</span>
+                  <span className="font-bold text-foreground">120 Unit Rumah</span>
+                </div>
+                <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
+                  <div className="h-full bg-primary" style={{ width: "92%" }} />
+                </div>
+              </div>
+
+              {/* Bullet Features */}
+              <ul className="space-y-3.5">
+                {[
+                  { icon: ListTodo, label: "Manajemen Data Kependudukan & KK secara rapi" },
+                  { icon: FileText, label: "Pencatatan kas masuk & pengeluaran iuran bulanan" },
+                  { icon: Bell, label: "Penerbitan surat edaran & pengumuman digital ke warga" },
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <item.icon className="h-4.5 w-4.5 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h3
-              className="mb-2 font-serif leading-[1.2] text-foreground"
-              style={{ fontSize: "28px", fontWeight: 600 }}
-            >
-              Semua info RT
-              <br />
-              dalam satu genggaman
-            </h3>
-            <p className="mb-4 text-[14px] leading-[1.7] text-muted-foreground">
-              Warga dapat memantau status iuran, membaca pengumuman, dan
-              mengakses data keluarga kapanpun dari HP.
-            </p>
-            <div className="flex flex-col gap-3.5">
-              <ModulItem
-                iconBg="bg-violet-100"
-                iconColor="text-violet-700"
-                Icon={Receipt}
-                title="Riwayat iuran pribadi"
-                desc="Lihat status dan riwayat pembayaran dari bulan ke bulan"
-              />
-              <ModulItem
-                iconBg="bg-blue-100"
-                iconColor="text-blue-700"
-                Icon={Megaphone}
-                title="Pengumuman & info RT"
-                desc="Baca pengumuman kegiatan, keamanan, dan berita terkini"
-              />
-              <ModulItem
-                iconBg="bg-amber-100"
-                iconColor="text-amber-700"
-                Icon={Map}
-                title="Peta blok perumahan"
-                desc="Lihat status iuran tetangga secara visual di peta blok"
-              />
+          </div>
+
+          {/* Card 2: Portal Warga */}
+          <div className="flex flex-col justify-between p-8 rounded-2xl border border-border bg-card shadow-[0_4px_12px_rgba(0,0,0,.02)] hover:border-primary/30 transition-all duration-300">
+            <div>
+              {/* Header Badge */}
+              <div className="flex items-center gap-3 mb-6">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
+                  <User className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-foreground leading-tight">
+                    Portal Warga (Mandiri)
+                  </h3>
+                  <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-[0.5px]">
+                    Hak Akses Penduduk
+                  </span>
+                </div>
+              </div>
+
+              {/* Minimal Mockup Status */}
+              <div className="p-4 rounded-xl bg-muted/50 border border-border/60 mb-6 flex justify-between items-center">
+                <div>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Tagihan Juni 2025</span>
+                  <div className="text-base font-bold text-foreground mt-0.5">Rp 25.000</div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-full bg-green-50 text-green-700 border border-green-150 px-3 py-1 text-xs font-bold">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Lunas
+                </span>
+              </div>
+
+              {/* Bullet Features */}
+              <ul className="space-y-3.5">
+                {[
+                  { icon: CreditCard, label: "Cek tagihan & riwayat iuran secara berkala" },
+                  { icon: Bell, label: "Membaca pengumuman penting & surat edaran RT" },
+                  { icon: FileText, label: "Mengirim aduan / aspirasi langsung ke pengurus" },
+                ].map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <item.icon className="h-4.5 w-4.5 text-indigo-600 mt-0.5 flex-shrink-0" />
+                    <span>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -351,3 +168,4 @@ export function TwoViews() {
     </section>
   );
 }
+export default TwoViews;

@@ -41,7 +41,7 @@ export function Hero() {
                         grid-template-columns: 1fr !important;
                         text-align: center;
                     }
-                    .hero-visual { order: -1; }
+                    .hero-visual { order: 1; }
                     .hero-desc   { margin-left: auto; margin-right: auto; }
                     .hero-actions { justify-content: center; }
                     .hero-trust  { justify-content: center; }
@@ -124,9 +124,9 @@ export function Hero() {
                   marginBottom: "20px",
                 }}
               >
-                Kelola RT dengan
+                Satu Platform untuk
                 <br />
-                <em className="italic text-primary">cerdas dan mudah</em>
+                <em className="italic text-primary">Warga, dan Pengurus RT</em>
               </h1>
 
               <p

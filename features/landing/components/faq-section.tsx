@@ -1,14 +1,37 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Accordion as AccordionPrimitive } from "radix-ui";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { CircleQuestionMark, MinusIcon, PlusIcon } from "lucide-react";
+import { CircleQuestionMark } from "lucide-react";
 import React from "react";
+
+function useReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.12 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return { ref, visible };
+}
 
 const FAQItems = [
   {
@@ -39,16 +62,44 @@ const FAQItems = [
 ];
 
 const FAQSection = () => {
+  const { ref, visible } = useReveal();
+
   return (
-    <section className="py-24" id="faq">
-      <div className="mx-auto max-w-275 px-6">
+    <section className="py-24 bg-white text-foreground relative overflow-hidden" id="faq">
+      {/* Decorative Lights */}
+      <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
+        <div
+          className="absolute"
+          style={{
+            top: "10%",
+            right: "5%",
+            width: "450px",
+            height: "450px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+          }}
+        />
+        <div
+          className="absolute"
+          style={{
+            bottom: "10%",
+            left: "5%",
+            width: "450px",
+            height: "450px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
+          }}
+        />
+      </div>
+
+      <div className="mx-auto max-w-275 px-6 relative z-10">
         <div className="text-center space-y-6">
-          <Badge className="inline-flex items-center gap-1.5 rounded-[20px] border px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.4px] border-primary/20 bg-secondary text-primary">
-            <CircleQuestionMark /> <span className="text-primary">FAQ</span>
+          <Badge className="inline-flex items-center gap-1.5 rounded-[20px] border px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.8px] border-primary/30 bg-primary/10 text-primary">
+            <CircleQuestionMark className="h-3.5 w-3.5 text-primary" /> <span className="text-primary">FAQ</span>
           </Badge>
           <h2
             className={cn(
-              "text-[clamp(32px,5vw,52px)] font-semibold leading-[1.15] tracking-[-0.5px] text-foreground ",
+              "text-[clamp(32px,5vw,52px)] font-semibold leading-[1.15] tracking-[-0.5px] text-foreground",
             )}
           >
             Pertanyaan yang
@@ -59,14 +110,21 @@ const FAQSection = () => {
           </h2>
         </div>
 
-        <div className="mx-auto mt-12 max-w-175">
-          <Accordion type="single" collapsible>
+        <div ref={ref} className="mx-auto mt-12 max-w-175">
+          <Accordion type="single" collapsible className="space-y-3">
             {FAQItems.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index + 1}`}>
-                <AccordionTrigger className="text-[16px]">
+              <AccordionItem 
+                key={index} 
+                value={`item-${index + 1}`}
+                style={{ transitionDelay: `${index * 120}ms` }}
+                className={`border border-border bg-card px-5 rounded-xl transition-all hover:bg-muted/40 duration-[750ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                  visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                }`}
+              >
+                <AccordionTrigger className="text-[16px] text-foreground font-serif py-4 hover:no-underline hover:text-primary [&_[data-slot=accordion-trigger-icon]]:text-primary transition-colors duration-200">
                   {item.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-[14px]">
+                <AccordionContent className="text-[14px] text-muted-foreground pb-4 leading-relaxed">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>

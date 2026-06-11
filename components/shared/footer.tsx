@@ -22,6 +22,14 @@ const navigationLinks: FooterLink[] = [
     href: "#home",
   },
   {
+    label: "Tentang Kami",
+    href: "#tentang-kami",
+  },
+  {
+    label: "Pengurus RT",
+    href: "#pengurus-rt",
+  },
+  {
     label: "Fitur",
     href: "#features",
   },

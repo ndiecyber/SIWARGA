@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { LogIn } from "lucide-react";
+import { LogIn, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -13,20 +13,28 @@ const navItems = [
     href: "#home",
   },
   {
-    title: "Fitur",
-    href: "#features",
+    title: "Profil",
+    items: [
+      { title: "Tentang Kami", href: "#tentang-kami" },
+      { title: "Pengurus RT", href: "#pengurus-rt" },
+    ],
   },
   {
-    title: "Cara Kerja",
-    href: "#how-it-works",
+    title: "Layanan",
+    items: [
+      { title: "Fitur Unggulan", href: "#features" },
+      { title: "Cara Kerja", href: "#how-it-works" },
+      { title: "Modul Aplikasi", href: "#modules" },
+    ],
   },
   {
-    title: "Modul",
-    href: "#modules",
-  },
-  {
-    title: "Testimoni",
-    href: "#testimonials",
+    title: "Informasi",
+    items: [
+      { title: "Data & Laporan", href: "#data-laporan" },
+      { title: "Pengumuman RT", href: "#pengumuman" },
+      { title: "Galeri Kegiatan", href: "#galeri" },
+      { title: "Testimoni", href: "#testimonials" },
+    ],
   },
   {
     title: "FAQ",
@@ -110,19 +118,48 @@ function Navbar() {
           </Link>
 
           <nav>
-            <ul className="flex items-center gap-4">
-              {navItems.map((item) => (
-                <li key={item.title}>
-                  <Button variant="ghost" asChild>
-                    <Link
-                      href={item.href}
-                      onClick={(event) => handleSmoothScroll(event, item.href)}
-                    >
-                      {item.title}
-                    </Link>
-                  </Button>
-                </li>
-              ))}
+            <ul className="flex items-center gap-2 lg:gap-3">
+              {navItems.map((item) => {
+                if ("items" in item) {
+                  return (
+                    <li key={item.title} className="group relative py-2">
+                      <Button variant="ghost" className="flex items-center gap-1 cursor-pointer select-none">
+                        <span>{item.title}</span>
+                        <ChevronDown className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180 text-muted-foreground" />
+                      </Button>
+
+                      {/* Dropdown Card */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
+                        <div className="bg-background/95 backdrop-blur-md border border-border shadow-xl rounded-2xl p-2 min-w-[200px] flex flex-col gap-0.5">
+                          {item.items.map((subItem) => (
+                            <Link
+                              key={subItem.title}
+                              href={subItem.href}
+                              onClick={(event) => handleSmoothScroll(event, subItem.href)}
+                              className="w-full text-left px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
+                            >
+                              {subItem.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={item.title}>
+                    <Button variant="ghost" asChild>
+                      <Link
+                        href={item.href}
+                        onClick={(event) => handleSmoothScroll(event, item.href)}
+                      >
+                        {item.title}
+                      </Link>
+                    </Button>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
