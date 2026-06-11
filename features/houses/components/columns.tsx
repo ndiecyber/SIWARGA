@@ -7,6 +7,7 @@ import {
   ChevronsUpDown,
   Eye,
   Pencil,
+  Trash2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HouseStatus } from "@/generated/prisma/browser";
 import { FieldDialog } from "@/components/shared/field-dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 
 import HouseShow from "../pages/show";
@@ -176,41 +179,39 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
       const house = row.original;
 
       return (
-        <div className="flex items-center gap-1">
+        <ButtonActionDropdown>
           {/* View */}
           <HouseShow house={house}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-8 h-8 text-muted-foreground hover:text-foreground"
-              title="Lihat detail"
-            >
-              <Eye className="w-4 h-4" />
-              <span className="sr-only">Lihat detail</span>
-            </Button>
+            <DropdownMenuItem>
+              <Eye size={16} />
+              Detail
+            </DropdownMenuItem>
           </HouseShow>
 
           {/* Edit */}
           <FieldDialog
             title="Edit house"
             trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-8 h-8 text-muted-foreground hover:text-blue-600"
-                title="Edit"
-              >
-                <Pencil className="w-4 h-4" />
-                <span className="sr-only">Edit</span>
-              </Button>
+              <DropdownMenuItem>
+                <Pencil size={16} />
+                Edit
+              </DropdownMenuItem>
             }
           >
             <HouseEditForm house={house} />
           </FieldDialog>
 
           {/* Delete */}
-          <DeleteHouseDialog house={house} />
-        </div>
+          <DeleteHouseDialog
+            house={house}
+            trigger={
+              <DropdownMenuItem variant="destructive">
+                <Trash2 size={16} />
+                Hapus
+              </DropdownMenuItem>
+            }
+          />
+        </ButtonActionDropdown>
       );
     },
   },

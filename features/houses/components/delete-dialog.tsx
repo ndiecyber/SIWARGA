@@ -20,9 +20,10 @@ import { deleteHouseAction } from "../actions";
 
 interface DeleteHouseDialogProps {
   house: House;
+  trigger?: React.ReactNode;
 }
 
-function DeleteHouseDialog({ house }: DeleteHouseDialogProps) {
+function DeleteHouseDialog({ house, trigger }: DeleteHouseDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -47,16 +48,20 @@ function DeleteHouseDialog({ house }: DeleteHouseDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-8 h-8 text-muted-foreground hover:text-destructive"
-          title="Hapus"
-          disabled={isDeleting}
-        >
-          <Trash2 className="w-4 h-4" />
-          <span className="sr-only">Hapus</span>
-        </Button>
+        {trigger ? (
+          trigger
+        ) : (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 text-muted-foreground hover:text-destructive"
+            title="Hapus"
+            disabled={isDeleting}
+          >
+            <Trash2 className="w-4 h-4" />
+            <span className="sr-only">Hapus</span>
+          </Button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
