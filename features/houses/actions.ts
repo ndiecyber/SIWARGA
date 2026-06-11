@@ -72,6 +72,31 @@ export async function updateHouseAction(
   }
 }
 
+export async function deleteHouseAction(
+  id: string,
+): Promise<ActionResponse<string>> {
+  try {
+    await prisma.house.delete({ where: { id } });
+
+    revalidatePath("/admin/houses");
+
+    return {
+      success: true,
+      message: "Data rumah berhasil dihapus",
+      data: "",
+    };
+  } catch (error) {
+    console.error("DELETE_HOUSE_ERROR: ", error);
+
+    return {
+      success: false,
+      message: "Data rumah gagal dihapus",
+      globalError:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 export async function getOwnersLookupAction(
   search: string = "",
 ): Promise<ActionResponse<{ id: string; name: string }[]>> {

@@ -32,6 +32,7 @@ import HouseShow from "../pages/show";
 import { HouseWithOwner } from "../types";
 import { FieldDialog } from "@/components/shared/field-dialog";
 import { HouseEditForm } from "./edit-form";
+import DeleteHouseDialog from "./delete-dialog";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
@@ -220,45 +221,7 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           </FieldDialog>
 
           {/* Delete */}
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-8 h-8 text-muted-foreground hover:text-destructive"
-                title="Hapus"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span className="sr-only">Hapus</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Hapus warga?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Data{" "}
-                  <span className="font-semibold text-foreground">
-                    {/* {user.name} */}
-                  </span>{" "}
-                  {/* ({user.residentCode})  */}
-                  327806xxxxxxxxxx akan dihapus secara permanen dan tidak dapat
-                  dikembalikan.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Batal</AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  onClick={() => {
-                    // TODO: panggil API delete
-                    console.log("Delete:", house.id);
-                  }}
-                >
-                  Hapus
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <DeleteHouseDialog house={house} />
         </div>
       );
     },
