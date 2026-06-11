@@ -8,6 +8,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { User } from "../types";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
+import DetailUserDialog from "./detail-user-dialog";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -101,19 +102,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center gap-1">
           {/* View */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              // TODO: buka dialog/sheet detail
-              console.log("View:", user.id);
-            }}
-            title="Lihat detail"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="sr-only">Lihat detail</span>
-          </Button>
+          <DetailUserDialog user={user} />
 
           {/* Update */}
           <UpdateUserDialog id={row.original.id} />
