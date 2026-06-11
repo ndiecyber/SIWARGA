@@ -114,3 +114,16 @@ model Payment {
   @@index([status])
   @@index([paidAt])
 }
+
+model Announcement {
+  id           Int       @id @default(autoincrement())
+  category     String    @db.VarChar(50)
+  title        String    @db.VarChar(255)
+  description  String    @db.Text
+  eventDate    DateTime? @map("tanggal_acara") @db.Date
+  status       String    @default("upcoming") @db.VarChar(20)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Date
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Date
+
+  @@map("pengumuman")
+}

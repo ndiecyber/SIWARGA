@@ -3,6 +3,7 @@
 import {
   Banknote,
   BookMarked,
+  Home,
   LayoutDashboard,
   LogOut,
   LucideIcon,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
 import { Button } from "../ui/button";
@@ -29,7 +31,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "../ui/sidebar";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 type SidebarData = {
@@ -71,8 +72,14 @@ const sidebarData: SidebarData[] = [
         items: [],
       },
       {
+        title: "Houses",
+        href: "/admin/houses",
+        icon: Home,
+        items: [],
+      },
+      {
         title: "Pengumuman",
-        href: "/admin/pengumuman",
+        href: "/admin/announcment",
         icon: Megaphone,
         items: [],
       },

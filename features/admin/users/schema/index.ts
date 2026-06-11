@@ -17,10 +17,11 @@ const fileSchema = (message: string) =>
       message: "Format file harus JPG, PNG, atau PDF",
     });
 
+// Create User Schema
 export const createUserSchema = z.object({
   name: z
     .string()
-    .min(2, "Nama minimal 2 karakter")
+    .min(3, "Nama minimal 3 karakter")
     .max(255, "Nama maksimal 255 karakter"),
 
   phoneNumber: z
@@ -29,7 +30,7 @@ export const createUserSchema = z.object({
     .max(20, "Nomor telepon maksimal 20 karakter")
     .regex(/^(\+62|62|0)[0-9]{8,15}$/, "Format nomor telepon tidak valid"),
 
-  role: z.enum(["ADMIN", "WARGA"]).default("WARGA"),
+  role: z.enum(["ADMIN", "USER"]).default("USER"),
 
   kkFile: fileSchema("File KK wajib diunggah").optional(),
 
@@ -37,3 +38,8 @@ export const createUserSchema = z.object({
 });
 
 export type CreateUserSchema = z.infer<typeof createUserSchema>
+
+// Update User Schema
+export const updateUserSchema = createUserSchema
+
+export type UpdateUserSchema = z.infer<typeof updateUserSchema>;
