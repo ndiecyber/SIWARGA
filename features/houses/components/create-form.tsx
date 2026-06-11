@@ -83,7 +83,8 @@ export function HouseCreateForm() {
     enabled: true,
   });
 
-  const { mutate } = useMutation({
+  // Mutation configuration
+  const { mutateAsync } = useMutation({
     mutationKey: ["create-house"],
     mutationFn: async (data: InputFormSchema) => {
       const response = await createHouseAction(data);
@@ -94,71 +95,36 @@ export function HouseCreateForm() {
 
       return response;
     },
-    onSuccess: (response) => {
-      toast.success(response.message || "Data rumah berhasil ditambahkan", {
-        id: "create-house",
-      });
-      form.reset();
-      close();
-    },
-    onMutate: () => {
-      toast.loading("Data rumah sedang ditambahkan. Mohon tunggu sebentar", {
-        id: "create-house",
-      });
-    },
-    onError: (error) => {
-      const errorMessage = error instanceof Error ? error.message : undefined;
-      toast.error(errorMessage || "Terjadi kesalahan. Silakan coba lagi.", {
-        id: "create-house",
-      });
-    },
-    onSettled: () => {
-      form.reset();
-    },
   });
 
   const handleSubmit = form.handleSubmit(async (data: InputFormSchema) => {
-    await mutate(data);
+    const mutationPromise = mutateAsync(data);
+
+    toast.promise(mutationPromise, {
+      loading: "Data rumah sedang ditambahkan. Mohon tunggu sebentar...",
+      success: (response) =>
+        response.message || "Data rumah berhasil ditambahkan",
+      error: (error) =>
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan. Silakan coba lagi.",
+    });
+
+    try {
+      await mutationPromise;
+      form.reset();
+      close();
+    } catch (error) {
+      console.error(error);
+    }
   });
 
-  // if (isSubmitSuccessful) {
-  //   return (
-  //     <div className="p-2 sm:p-5 md:p-8 w-full rounded-md gap-2 border">
-  //       <motion.div
-  //         initial={{ opacity: 0, y: -16 }}
-  //         animate={{ opacity: 1, y: 0 }}
-  //         transition={{ duration: 0.4, stiffness: 300, damping: 25 }}
-  //         className="h-full py-6 px-3"
-  //       >
-  //         <motion.div
-  //           initial={{ scale: 0.5 }}
-  //           animate={{ scale: 1 }}
-  //           transition={{
-  //             delay: 0.3,
-  //             type: "spring",
-  //             stiffness: 500,
-  //             damping: 15,
-  //           }}
-  //           className="mb-4 flex justify-center border rounded-full w-fit mx-auto p-2"
-  //         >
-  //           <Check className="size-8" />
-  //         </motion.div>
-  //         <h2 className="text-center text-2xl text-pretty font-bold mb-2">
-  //           Thank you
-  //         </h2>
-  //         <p className="text-center text-lg text-pretty text-muted-foreground">
-  //           Form submitted successfully, we will get back to you soon
-  //         </p>
-  //       </motion.div>
-  //     </div>
-  //   );
-  // }
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full rounded-md gap-2 max-w-3xl mx-auto"
+      className="w-full max-w-3xl gap-2 mx-auto rounded-md"
     >
-      <FieldGroup className="grid md:grid-cols-6 gap-4 mb-6">
+      <FieldGroup className="grid gap-4 mb-6 md:grid-cols-6">
         <div className="grid gap-1 col-span-full">
           <FieldLabel>House Number *</FieldLabel>
 
@@ -265,7 +231,7 @@ export function HouseCreateForm() {
             return (
               <Field
                 data-invalid={fieldState.invalid}
-                className="gap-2 col-span-4"
+                className="col-span-4 gap-2"
               >
                 <FieldLabel htmlFor="ownerId">Pemilik *</FieldLabel>
 
@@ -300,7 +266,7 @@ export function HouseCreateForm() {
                       />
                       <CommandList>
                         {isLoadingOwners && (
-                          <div className="p-4 text-sm text-center text-muted-foreground flex justify-center items-center gap-2">
+                          <div className="flex items-center justify-center gap-2 p-4 text-sm text-center text-muted-foreground">
                             <Loader2 className="animate-spin size-4" /> Loading
                             users...
                           </div>
@@ -316,7 +282,7 @@ export function HouseCreateForm() {
                               onSelect={() => {
                                 form.setValue("ownerId", value);
                               }}
-                              className="cursor-pointer flex justify-between w-full"
+                              className="flex justify-between w-full cursor-pointer"
                             >
                               {label}
                             </CommandItem>
@@ -334,7 +300,7 @@ export function HouseCreateForm() {
           }}
         />
       </FieldGroup>
-      <div className="flex justify-end items-center w-full gap-2">
+      <div className="flex items-center justify-end w-full gap-2">
         <Button
           type="reset"
           variant="outline"
