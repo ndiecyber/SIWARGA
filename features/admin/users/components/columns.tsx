@@ -8,6 +8,9 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { User } from "../types";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
+import DetailUserDialog from "./detail-user-dialog";
+import ButtonActionDropdownProps from "@/components/shared/button-action-dropdown";
+import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -98,29 +101,44 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
+      // return (
+      //   <div className="flex items-center gap-1">
+      //     {/* View */}
+      //     <DetailUserDialog user={user}>
+      //       <Button
+      //         variant={"ghost"}
+      //         className="size-8 text-muted-foreground hover:text-foreground"
+      //         title="Lihat Detail"
+      //         size={"icon"}
+      //       >
+      //         <Eye className="size-4" />
+      //         <span className="sr-only">Lihat Detail</span>
+      //       </Button>
+      //     </DetailUserDialog>
+
+      //     {/* Update */}
+      //     <UpdateUserDialog id={row.original.id} />
+
+      //     {/* Delete */}
+      //     <DeleteUserDialog user={user} />
+      //   </div>
+      // );
       return (
-        <div className="flex items-center gap-1">
-          {/* View */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
-            onClick={() => {
-              // TODO: buka dialog/sheet detail
-              console.log("View:", user.id);
-            }}
-            title="Lihat detail"
-          >
-            <Eye className="h-4 w-4" />
-            <span className="sr-only">Lihat detail</span>
-          </Button>
+        <ButtonActionDropdown>
+          {/* Detail */}
+          <DetailUserDialog user={user}>
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <Eye className="size-4" />
+              <span>Detail</span>
+            </Button>
+          </DetailUserDialog>
 
           {/* Update */}
           <UpdateUserDialog id={row.original.id} />
 
           {/* Delete */}
           <DeleteUserDialog user={user} />
-        </div>
+        </ButtonActionDropdown>
       );
     },
   },
