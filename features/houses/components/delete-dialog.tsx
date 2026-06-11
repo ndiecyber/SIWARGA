@@ -1,3 +1,10 @@
+import { useState } from "react";
+
+import { toast } from "sonner";
+import { Loader2, Trash2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { House } from "@/generated/prisma/browser";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -8,12 +15,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { House } from "@/generated/prisma/browser";
-import { useState } from "react";
-import { toast } from "sonner";
+
 import { deleteHouseAction } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Loader2, Trash2 } from "lucide-react";
 
 interface DeleteHouseDialogProps {
   house: House;

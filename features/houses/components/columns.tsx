@@ -7,7 +7,6 @@ import {
   ChevronsUpDown,
   Eye,
   Pencil,
-  Trash2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -15,22 +14,11 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HouseStatus } from "@/generated/prisma/browser";
+import { FieldDialog } from "@/components/shared/field-dialog";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 import HouseShow from "../pages/show";
 import { HouseWithOwner } from "../types";
-import { FieldDialog } from "@/components/shared/field-dialog";
 import { HouseEditForm } from "./edit-form";
 import DeleteHouseDialog from "./delete-dialog";
 
