@@ -3,6 +3,7 @@
 import {
   ArrowDown,
   ArrowUp,
+  ArrowUpRight,
   ChevronsUpDown,
   Eye,
   Pencil,
@@ -25,6 +26,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { HouseGetPayload } from "@/generated/prisma/models";
+
+type HouseWithOwner = HouseGetPayload<{
+  include: { owner: true };
+}>;
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
@@ -32,7 +38,9 @@ function SortableHeader({
   column,
   label,
 }: {
-  column: Parameters<NonNullable<ColumnDef<House>["header"]>>[0]["column"];
+  column: Parameters<
+    NonNullable<ColumnDef<HouseWithOwner>["header"]>
+  >[0]["column"];
   label: string;
 }) {
   const sorted = column.getIsSorted();
@@ -58,7 +66,7 @@ function SortableHeader({
 
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
-export const columns: ColumnDef<House>[] = [
+export const columns: ColumnDef<HouseWithOwner>[] = [
   // ── Checkbox select ─────────────────────────────────────────────────────────
   {
     id: "select",
@@ -120,7 +128,10 @@ export const columns: ColumnDef<House>[] = [
     cell: ({ row }) => {
       const name: string = row.getValue("owner");
       return name ? (
-        <span>{name}</span>
+        <Button variant="outline" className="w-full justify-between">
+          {name}
+          <ArrowUpRight />
+        </Button>
       ) : (
         <span className="text-muted-foreground italic">—</span>
       );
