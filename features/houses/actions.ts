@@ -39,6 +39,39 @@ export async function createHouseAction(
   }
 }
 
+export async function updateHouseAction(
+  id: string,
+  data: InputFormSchema,
+): Promise<ActionResponse<House | null, InputFormSchema>> {
+  try {
+    const result = await prisma.house.update({
+      where: { id },
+      data: {
+        ownerId: data.ownerId,
+        block: data.block,
+        status: data.status as HouseStatus,
+        houseNumber: data.houseNumber,
+      },
+    });
+
+    // Revalidate the cache to reflect changes on the listing page
+    revalidatePath("/admin/houses");
+
+    return {
+      success: true,
+      message: "Data rumah berhasil diperbarui",
+      data: result,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Data rumah gagal diperbarui",
+      globalError:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
 export async function getOwnersLookupAction(
   search: string = "",
 ): Promise<ActionResponse<{ id: string; name: string }[]>> {

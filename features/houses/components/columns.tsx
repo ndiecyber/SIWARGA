@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HouseStatus } from "@/generated/prisma/browser";
-import { HouseGetPayload } from "@/generated/prisma/models";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 import {
   AlertDialog,
@@ -28,9 +27,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { HouseWithOwner } from "../types";
-import DetailHouseView from "./detail-view";
+
 import HouseShow from "../pages/show";
+import { HouseWithOwner } from "../types";
+import { FieldDialog } from "@/components/shared/field-dialog";
+import { HouseEditForm } from "./edit-form";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
@@ -201,19 +202,22 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           </HouseShow>
 
           {/* Edit */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 text-muted-foreground hover:text-blue-600"
-            onClick={() => {
-              // TODO: buka form edit
-              console.log("Edit:", house.id);
-            }}
-            title="Edit"
+          <FieldDialog
+            title="Edit house"
+            trigger={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 text-muted-foreground hover:text-blue-600"
+                title="Edit"
+              >
+                <Pencil className="w-4 h-4" />
+                <span className="sr-only">Edit</span>
+              </Button>
+            }
           >
-            <Pencil className="w-4 h-4" />
-            <span className="sr-only">Edit</span>
-          </Button>
+            <HouseEditForm house={house} />
+          </FieldDialog>
 
           {/* Delete */}
           <AlertDialog>
