@@ -15,24 +15,24 @@ import { CreateUserDialog } from "../components/create-user-dialog";
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const FILTER_CATEGORIES: FilterCategory[] = [
-  {
-    id: "duesStatus",
-    label: "Status Iuran",
-    options: [
-      {
-        label: "Lunas",
-        value: "LUNAS",
-        icon: (
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-        ),
-      },
-      {
-        label: "Menunggak",
-        value: "MENUNGGAK",
-        icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
-      },
-    ],
-  },
+  // {
+  //   id: "duesStatus",
+  //   label: "Status Iuran",
+  //   options: [
+  //     {
+  //       label: "Lunas",
+  //       value: "LUNAS",
+  //       icon: (
+  //         <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+  //       ),
+  //     },
+  //     {
+  //       label: "Menunggak",
+  //       value: "MENUNGGAK",
+  //       icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
+  //     },
+  //   ],
+  // },
   {
     id: "role",
     label: "Role",

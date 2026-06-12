@@ -65,12 +65,12 @@ const sidebarData: SidebarData[] = [
         icon: User2,
         items: [],
       },
-      {
-        title: "Data Iuran",
-        href: "/admin/iuran",
-        icon: Banknote,
-        items: [],
-      },
+      // {
+      //   title: "Data Iuran",
+      //   href: "/admin/iuran",
+      //   icon: Banknote,
+      //   items: [],
+      // },
       {
         title: "Houses",
         href: "/admin/houses",
@@ -85,25 +85,25 @@ const sidebarData: SidebarData[] = [
       },
     ],
   },
-  {
-    title: "Keuangan",
-    href: "",
-    icon: undefined,
-    items: [
-      {
-        title: "Keuangan",
-        href: "/admin/keuangan",
-        icon: ScrollText,
-        items: [],
-      },
-      {
-        title: "Laporan",
-        href: "/admin/laporan",
-        icon: BookMarked,
-        items: [],
-      },
-    ],
-  },
+  // {
+  //   title: "Keuangan",
+  //   href: "",
+  //   icon: undefined,
+  //   items: [
+  //     {
+  //       title: "Keuangan",
+  //       href: "/admin/keuangan",
+  //       icon: ScrollText,
+  //       items: [],
+  //     },
+  //     {
+  //       title: "Laporan",
+  //       href: "/admin/laporan",
+  //       icon: BookMarked,
+  //       items: [],
+  //     },
+  //   ],
+  // },
 ];
 
 function RenderSidebarItem({ item }: { item: SidebarData }) {
