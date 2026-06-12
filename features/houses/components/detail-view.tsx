@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
+
+import { toast } from "sonner";
 import { ArrowUpRight, Copy, House, Phone, User } from "lucide-react";
-import { HouseWithOwner } from "../types";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
-import { toast } from "sonner";
-import { useState } from "react";
+
+import { HouseWithOwner } from "../types";
 
 interface DetailHouseViewProps {
   house: HouseWithOwner;

@@ -74,7 +74,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     defaultValues: {
       name: "",
       phoneNumber: "",
-      familyCount: undefined,
+      // familyCount: undefined,
       identificationNumber: "",
       role: "USER",
       kkFile: undefined,
@@ -92,7 +92,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
       name: dataUser.name ?? "",
       phoneNumber: dataUser.phoneNumber ?? "",
       role: dataUser.role ?? "USER",
-      familyCount: dataUser.familyCount ? dataUser.familyCount : undefined,
+      // familyCount: dataUser.familyCount ? dataUser.familyCount : undefined,
       identificationNumber: dataUser.identificationNumber
         ? dataUser.identificationNumber
         : "Data NIK Belum Ada",
@@ -164,8 +164,8 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start gap-2">
-          <Pencil className="h-4 w-4" />
+        <Button variant="ghost" className="justify-start w-full gap-2">
+          <Pencil className="w-4 h-4" />
           <span>Ubah</span>
         </Button>
       </DialogTrigger>
@@ -180,7 +180,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
           <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Nama */}
               <Controller
                 name="name"
@@ -272,7 +272,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
               />
 
               {/* Jumlah Anggota Keluarga */}
-              <Controller
+              {/* <Controller
                 name="familyCount"
                 control={form.control}
                 render={({ field, fieldState }) => (
@@ -305,7 +305,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                     )}
                   </Field>
                 )}
-              />
+              /> */}
 
               {/* Role */}
               <Controller
@@ -343,11 +343,11 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
             {/* Dokumen */}
             <FieldSet className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <FieldLegend className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <div className="flex-1 h-px bg-border" />
+                <FieldLegend className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
                   Dokumen
                 </FieldLegend>
-                <div className="h-px flex-1 bg-border" />
+                <div className="flex-1 h-px bg-border" />
               </div>
 
               {/* KK */}
@@ -425,7 +425,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
               </Button>
 
               <Button type="submit" disabled={isSubmitting} className="gap-2">
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
             </DialogFooter>
