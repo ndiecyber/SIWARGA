@@ -14,6 +14,10 @@ type UserWithResident = UserGetPayload<{
   include: { residentProfile: { include: { familyMembers: true } } };
 }>;
 
+type UserWithResident = UserGetPayload<{
+  include: { residentProfile: { include: { familyMembers: true } } };
+}>;
+
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
