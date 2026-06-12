@@ -43,8 +43,17 @@ jobs:
       - name: Build project
         run: pnpm run build
 
+      - name: Prepare standalone assets
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          if [ -d public ]; then
+            cp -r public .next/standalone/public
+          fi
+
       - name: Compress build folder
-        run: tar -czf next-build.tar.gz .next
+        run: |
+          # Compress hanya standalone (lebih ringan & pasti lengkap)
+          tar -czf next-build.tar.gz .next/standalone
 
       - name: Copy build to VPS
         uses: appleboy/scp-action@master
@@ -63,14 +72,13 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             set -e
-
-            git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
 
-            git pull origin main
-
+            # Backup & extract
+            rm -rf standalone_backup
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
+            cp .env .next/standalone/.env
 
             npx -y prisma@7.8.0 migrate deploy
 
