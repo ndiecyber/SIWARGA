@@ -20,7 +20,6 @@ export async function GET(request: NextRequest, { params }: Params) {
         name: true,
         phoneNumber: true,
         identificationNumber: true,
-        familyCount: true,
         role: true,
         ktpUrl: true,
         kkUrl: true,
