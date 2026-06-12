@@ -4,12 +4,13 @@ import React from "react";
 
 import { AlertTriangle, UsersRoundIcon } from "lucide-react";
 
-import { usersDummy } from "@/seed/users-dummy";
 import { FilterCategory } from "@/lib/types/filter";
 import { DataTable } from "@/components/shared/data-table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+import { UserWithResident } from "../types/index";
 import { columns } from "../components/columns";
+import { CreateUserDialog } from "../components/create-user-dialog";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -22,13 +23,13 @@ const FILTER_CATEGORIES: FilterCategory[] = [
         label: "Lunas",
         value: "LUNAS",
         icon: (
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
         ),
       },
       {
         label: "Menunggak",
         value: "MENUNGGAK",
-        icon: <span className="inline-block h-2 w-2 rounded-full bg-red-500" />,
+        icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
       },
     ],
   },
@@ -41,14 +42,9 @@ const FILTER_CATEGORIES: FilterCategory[] = [
     ],
   },
 ];
-import { CreateUserDialog } from "../components/create-user-dialog";
-import { UserModelSchema } from "@/generated/zod/schemas";
-import z from "zod";
-import { Role } from "@/generated/prisma/enums";
-import { User } from "../types";
 
 export type UserPageProps = {
-  users: User[];
+  users: UserWithResident[];
 };
 
 const UserPage = (props: UserPageProps) => {
@@ -77,8 +73,8 @@ const UserPage = (props: UserPageProps) => {
           <CreateUserDialog />
         </div>
 
-        <Alert className="border-yellow-200 bg-yellow-50 text-yellow-800">
-          <AlertTriangle className="h-4 w-4" />
+        <Alert className="text-yellow-800 border-yellow-200 bg-yellow-50">
+          <AlertTriangle className="w-4 h-4" />
           <AlertTitle>Perhatian</AlertTitle>
           <AlertDescription>
             Periksa kembali data sebelum disimpan. Pastikan nama, nomor telepon,

@@ -1,16 +1,14 @@
-import { UserDummy } from "@/seed/users-dummy";
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Eye, Pencil, SquareArrowUpRight, Trash2 } from "lucide-react";
-import { ButtonGroup } from "@/components/ui/button-group";
+import { Eye, SquareArrowUpRight } from "lucide-react";
 
-import { User } from "../types";
+import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { ButtonGroup } from "@/components/ui/button-group";
+import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
+
+import DetailUserDialog from "./detail-user-dialog";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
-import DetailUserDialog from "./detail-user-dialog";
-import ButtonActionDropdownProps from "@/components/shared/button-action-dropdown";
-import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
+import { UserWithResident } from "../types/index";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -26,7 +24,7 @@ const formatDate = (dateStr: string) =>
     year: "numeric",
   });
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<UserWithResident>[] = [
   {
     accessorKey: "name",
     header: "Nama",
@@ -47,15 +45,20 @@ export const columns: ColumnDef<User>[] = [
     ),
   },
   {
-    accessorKey: "familyMembers",
+    // 1. Point to the relation path for tracking updates/sorting accurately
+    id: "familyCount",
     header: "Anggota Keluarga",
-    cell: ({ row }) => (
-      <span>
-        {(row.original.familyCount ?? 0) === 0
-          ? "Tidak ada anggota keluarga"
-          : `${row.original.familyCount} orang`}
-      </span>
-    ),
+    // 2. Use an explicit accessorFn so TanStack can sort/filter by this calculated number
+    accessorFn: (row) => row.residentProfile?.familyMembers?.length ?? 0,
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+
+      return (
+        <span>
+          {count === 0 ? "Tidak ada anggota keluarga" : `${count} orang`}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "phoneNumber",
@@ -66,9 +69,9 @@ export const columns: ColumnDef<User>[] = [
     header: "Lampiran",
     cell: ({ row }) => (
       <ButtonGroup>
-        <Button variant="outline" asChild>
+        <Button variant="outline" disabled={row.original.kkUrl === ""} asChild>
           <a
-            href={row.original.kkUrl}
+            href={row.original.kkUrl ?? ""}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-xs"
@@ -77,9 +80,9 @@ export const columns: ColumnDef<User>[] = [
             Lihat KK
           </a>
         </Button>
-        <Button variant="outline" asChild>
+        <Button variant="outline" disabled={row.original.ktpUrl === ""} asChild>
           <a
-            href={row.original.ktpUrl}
+            href={row.original.ktpUrl ?? ""}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-xs"
@@ -102,7 +105,7 @@ export const columns: ColumnDef<User>[] = [
         <ButtonActionDropdown>
           {/* Detail */}
           <DetailUserDialog user={user}>
-            <Button variant="ghost" className="w-full justify-start gap-2">
+            <Button variant="ghost" className="justify-start w-full gap-2">
               <Eye className="size-4" />
               <span>Detail</span>
             </Button>

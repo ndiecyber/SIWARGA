@@ -49,7 +49,7 @@ export function CreateUserDialog() {
     defaultValues: {
       name: "",
       phoneNumber: "",
-      familyCount: undefined,
+      // familyCount: undefined,
       identificationNumber: "",
       role: "USER",
       kkFile: undefined,
@@ -120,7 +120,7 @@ export function CreateUserDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="gap-2">
-          <UserPlus className="h-4 w-4" />
+          <UserPlus className="w-4 h-4" />
           Tambah Warga
         </Button>
       </DialogTrigger>
@@ -135,7 +135,7 @@ export function CreateUserDialog() {
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
           <FieldGroup>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Nama */}
               <Controller
                 name="name"
@@ -227,7 +227,7 @@ export function CreateUserDialog() {
               />
 
               {/* Jumlah Anggota Keluarga */}
-              <Controller
+              {/* <Controller
                 name="familyCount"
                 control={form.control}
                 render={({ field, fieldState }) => (
@@ -260,7 +260,7 @@ export function CreateUserDialog() {
                     )}
                   </Field>
                 )}
-              />
+              /> */}
 
               {/* Role */}
               <Controller
@@ -299,11 +299,11 @@ export function CreateUserDialog() {
             {/* Dokumen */}
             <FieldSet className="space-y-3">
               <div className="flex items-center gap-3">
-                <div className="h-px flex-1 bg-border" />
-                <FieldLegend className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                <div className="flex-1 h-px bg-border" />
+                <FieldLegend className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
                   Dokumen
                 </FieldLegend>
-                <div className="h-px flex-1 bg-border" />
+                <div className="flex-1 h-px bg-border" />
               </div>
 
               {/* KK */}
@@ -381,7 +381,7 @@ export function CreateUserDialog() {
               </Button>
 
               <Button type="submit" disabled={isSubmitting} className="gap-2">
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {isSubmitting ? "Menyimpan..." : "Simpan"}
               </Button>
             </DialogFooter>
