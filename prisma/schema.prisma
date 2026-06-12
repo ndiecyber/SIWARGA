@@ -1,0 +1,133 @@
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "../generated/zod"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum HouseStatus {
+  OCCUPIED
+  VACANT
+}
+
+enum MonthlyDuesStatus {
+  PAID
+  UNPAID
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id          String @id @default(uuid())
+  name        String @db.VarChar(255)
+  phoneNumber String @unique @db.VarChar(20)
+
+  identificationNumber String? @unique
+  familyCount          Int?
+
+  role      Role
+  kkUrl     String   @db.VarChar(500)
+  ktpUrl    String   @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  housesOwned House[]         @relation("HouseOwner")
+  residences  HouseResident[]
+}
+
+model House {
+  id          String      @id @default(uuid())
+  houseNumber String      @db.VarChar(50)
+  block       String      @db.VarChar(10)
+  status      HouseStatus
+  ownerId     String?
+  createdAt   DateTime    @default(now()) @db.Timestamp(3)
+  updatedAt   DateTime    @updatedAt @db.Timestamp(3)
+
+  owner       User?           @relation("HouseOwner", fields: [ownerId], references: [id])
+  residents   HouseResident[]
+  monthlyDues MonthlyDues[]
+
+  @@index([ownerId])
+}
+
+model HouseResident {
+  id        String   @id @default(uuid())
+  userId    String
+  houseId   String
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  house House @relation(fields: [houseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, houseId])
+  @@index([userId])
+  @@index([houseId])
+}
+
+model MonthlyDues {
+  id        String            @id @default(uuid())
+  houseId   String
+  amount    Decimal           @db.Decimal(15, 2)
+  month     Int
+  year      Int
+  dueDate   DateTime          @db.Date
+  status    MonthlyDuesStatus
+  paymentId String?
+  createdAt DateTime          @default(now()) @db.Timestamp(3)
+  updatedAt DateTime          @updatedAt @db.Timestamp(3)
+
+  house   House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id])
+
+  @@unique([houseId, month, year])
+  @@index([houseId])
+  @@index([paymentId])
+  @@index([status])
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  amountPaid    Decimal       @db.Decimal(15, 2)
+  paidAt        DateTime      @default(now()) @db.Timestamp(3)
+  paymentMethod String        @db.VarChar(50)
+  proofUrl      String?       @db.VarChar(500)
+  status        PaymentStatus
+  verifiedBy    String?       @db.VarChar(255)
+  createdAt     DateTime      @default(now()) @db.Timestamp(3)
+  updatedAt     DateTime      @updatedAt @db.Timestamp(3)
+
+  monthlyDues MonthlyDues[]
+
+  @@index([status])
+  @@index([paidAt])
+}
+
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  category    String    @db.VarChar(50)
+  title       String    @db.VarChar(255)
+  description String    @db.Text
+  eventDate   DateTime? @map("tanggal_acara") @db.Date
+  status      String    @default("upcoming") @db.VarChar(20)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Date
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Date
+
+  @@map("pengumuman")
+}
