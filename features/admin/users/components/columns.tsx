@@ -5,10 +5,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ButtonGroup } from "@/components/ui/button-group";
 import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 
-import { UserWithResident } from "../types";
 import DetailUserDialog from "./detail-user-dialog";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
+import { UserWithResident } from "../types";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
