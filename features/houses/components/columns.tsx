@@ -12,7 +12,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HouseStatus } from "@/generated/prisma/browser";
 import { FieldDialog } from "@/components/shared/field-dialog";
@@ -27,13 +27,13 @@ import DeleteHouseDialog from "./delete-dialog";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
+type SortableColumn = HeaderContext<HouseWithOwner, unknown>["column"];
+
 function SortableHeader({
   column,
   label,
 }: {
-  column: Parameters<
-    NonNullable<ColumnDef<HouseWithOwner>["header"]>
-  >[0]["column"];
+  column: SortableColumn;
   label: string;
 }) {
   const sorted = column.getIsSorted();
