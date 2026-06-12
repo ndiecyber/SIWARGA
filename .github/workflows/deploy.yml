@@ -6,59 +6,12 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma Client
-        run: pnpm dlx prisma generate
-
-      - name: Build project
-        run: pnpm run build
-
-      - name: Compress build folder
-        run: tar -czf next-build.tar.gz .next
-
-      - name: Copy build to VPS
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "next-build.tar.gz"
-          target: "/var/www/SIWARGA"
-
-      - name: Deploy on VPS
-        uses: appleboy/ssh-action@master
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -66,15 +19,4 @@ jobs:
           script: |
             git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
-            
-            git pull origin main
-            
-            tar -xzf next-build.tar.gz
-            rm next-build.tar.gz
-            
-            pnpm install --prod --frozen-lockfile
-            
-            pnpm dlx prisma generate
-            pnpm dlx prisma migrate deploy
-            
-            pm2 restart siwarga-app
+            bash ./deploy.sh
