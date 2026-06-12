@@ -64,10 +64,6 @@ jobs:
           script: |
             set -e
 
-            pnpm_cmd() {
-              npx -y @pnpm/exe@11.5.2 "$@"
-            }
-
             git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
 
@@ -76,10 +72,7 @@ jobs:
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
 
-            pnpm_cmd install --prod --frozen-lockfile
-
-            pnpm_cmd dlx prisma generate
-            pnpm_cmd dlx prisma migrate deploy
+            npx -y prisma@7.8.0 migrate deploy
 
             if pm2 describe siwarga-app >/dev/null 2>&1; then
               pm2 restart siwarga-app
