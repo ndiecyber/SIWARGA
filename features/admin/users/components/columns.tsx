@@ -27,15 +27,6 @@ const formatDate = (dateStr: string) =>
   });
 
 export const columns: ColumnDef<User>[] = [
-  // {
-  //   accessorKey: "residentCode",
-  //   header: "Kode Warga",
-  //   cell: ({ row }) => (
-  //     <span className="font-mono text-sm font-medium text-muted-foreground">
-  //       {row.original.residentCode}
-  //     </span>
-  //   ),
-  // },
   {
     accessorKey: "name",
     header: "Nama",
@@ -43,7 +34,7 @@ export const columns: ColumnDef<User>[] = [
       <div className="flex flex-col">
         <span className="font-medium">{row.original.name}</span>
         <span className="font-mono text-xs text-muted-foreground">
-          {/* {row.original.resident_number} */}
+          {row.original.identificationNumber}
         </span>
       </div>
     ),
@@ -58,7 +49,13 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "familyMembers",
     header: "Anggota Keluarga",
-    cell: ({ row }) => <span>{/* {row.original.familyMembers} */}7 orang</span>,
+    cell: ({ row }) => (
+      <span>
+        {(row.original.familyCount ?? 0) === 0
+          ? "Tidak ada anggota keluarga"
+          : `${row.original.familyCount} orang`}
+      </span>
+    ),
   },
   {
     accessorKey: "phoneNumber",
@@ -101,28 +98,6 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const user = row.original;
 
-      // return (
-      //   <div className="flex items-center gap-1">
-      //     {/* View */}
-      //     <DetailUserDialog user={user}>
-      //       <Button
-      //         variant={"ghost"}
-      //         className="size-8 text-muted-foreground hover:text-foreground"
-      //         title="Lihat Detail"
-      //         size={"icon"}
-      //       >
-      //         <Eye className="size-4" />
-      //         <span className="sr-only">Lihat Detail</span>
-      //       </Button>
-      //     </DetailUserDialog>
-
-      //     {/* Update */}
-      //     <UpdateUserDialog id={row.original.id} />
-
-      //     {/* Delete */}
-      //     <DeleteUserDialog user={user} />
-      //   </div>
-      // );
       return (
         <ButtonActionDropdown>
           {/* Detail */}

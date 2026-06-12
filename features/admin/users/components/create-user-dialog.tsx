@@ -29,6 +29,13 @@ import FileUploadField from "./file-upload-field";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { createUserAction } from "../action";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type CreateUserInput = z.input<typeof createUserSchema>;
 type CreateUserValues = z.output<typeof createUserSchema>;
@@ -42,6 +49,8 @@ export function CreateUserDialog() {
     defaultValues: {
       name: "",
       phoneNumber: "",
+      familyCount: undefined,
+      identificationNumber: "",
       role: "USER",
       kkFile: undefined,
       ktpFile: undefined,
@@ -116,7 +125,7 @@ export function CreateUserDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg md:max-w-5xl">
         <DialogHeader>
           <DialogTitle>Tambah warga baru</DialogTitle>
           <DialogDescription>
@@ -126,79 +135,167 @@ export function CreateUserDialog() {
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
           <FieldGroup>
-            {/* Nama */}
-            <Controller
-              name="name"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-name">
-                    Nama lengkap
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="create-user-name"
-                    placeholder="Budi Santoso"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="name"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Nama */}
+              <Controller
+                name="name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-name">
+                      Nama lengkap
+                    </FieldLabel>
 
-            {/* Nomor Telepon */}
-            <Controller
-              name="phoneNumber"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-phone">
-                    Nomor telepon
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="create-user-phone"
-                    placeholder="Format: 08xxxxxx"
-                    type="tel"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="tel"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-
-            {/* Role */}
-            {/* <Controller
-              name="role"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="create-user-role">Role</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger
-                      id="create-user-role"
+                    <Input
+                      {...field}
+                      id="create-user-name"
+                      placeholder="Budi Santoso"
                       aria-invalid={fieldState.invalid}
-                    >
-                      <SelectValue placeholder="Pilih role..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ADMIN">Admin</SelectItem>
-                      <SelectItem value="WARGA">Warga</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            /> */}
+                      autoComplete="name"
+                    />
 
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* Nomor Telepon */}
+              <Controller
+                name="phoneNumber"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-phone">
+                      Nomor telepon
+                    </FieldLabel>
+
+                    <Input
+                      {...field}
+                      id="create-user-phone"
+                      placeholder="Format: 08xxxxxx"
+                      type="tel"
+                      inputMode="tel"
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="tel"
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* NIK */}
+              <Controller
+                name="identificationNumber"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-nik">
+                      Nomor Induk Penduduk
+                    </FieldLabel>
+
+                    <Input
+                      id="create-user-nik"
+                      value={field.value ?? ""}
+                      placeholder="Masukkan 16 digit NIK"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={16}
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      onChange={(event) => {
+                        const onlyNumber = event.target.value.replace(
+                          /\D/g,
+                          "",
+                        );
+                        field.onChange(onlyNumber.slice(0, 16));
+                      }}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* Jumlah Anggota Keluarga */}
+              <Controller
+                name="familyCount"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-family-count">
+                      Jumlah anggota keluarga
+                    </FieldLabel>
+
+                    <Input
+                      id="create-user-family-count"
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      value={field.value ?? ""}
+                      aria-invalid={fieldState.invalid}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      onChange={(event) => {
+                        const value = event.target.value;
+
+                        field.onChange(
+                          value === "" ? undefined : Number(value),
+                        );
+                      }}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* Role */}
+              <Controller
+                name="role"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-role">Role</FieldLabel>
+
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="create-user-role"
+                        aria-invalid={fieldState.invalid}
+                      >
+                        <SelectValue placeholder="Pilih role..." />
+                      </SelectTrigger>
+
+                      <SelectContent
+                        position="popper"
+                        side="bottom"
+                        align="start"
+                        // sideOffset={4}
+                      >
+                        <SelectItem value="ADMIN">Pengurus</SelectItem>
+                        <SelectItem value="USER">Warga</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
             {/* Dokumen */}
             <FieldSet className="space-y-3">
               <div className="flex items-center gap-3">
@@ -273,7 +370,6 @@ export function CreateUserDialog() {
                 }}
               />
             </FieldSet>
-
             <DialogFooter className="pt-2">
               <Button
                 type="button"
@@ -283,6 +379,7 @@ export function CreateUserDialog() {
               >
                 Batal
               </Button>
+
               <Button type="submit" disabled={isSubmitting} className="gap-2">
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isSubmitting ? "Menyimpan..." : "Simpan"}

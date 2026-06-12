@@ -73,10 +73,7 @@ const UserPage = (props: UserPageProps) => {
             </div>
           </div>
 
-          {/* <Button className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Tambah Warga
-          </Button> */}
+          {/* Create User Button */}
           <CreateUserDialog />
         </div>
 
