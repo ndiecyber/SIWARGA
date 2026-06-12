@@ -182,7 +182,11 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
         <ButtonActionDropdown>
           {/* View */}
           <HouseShow house={house}>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}
+            >
               <Eye size={16} />
               Detail
             </DropdownMenuItem>
@@ -192,7 +196,11 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           <FieldDialog
             title="Edit house"
             trigger={
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <Pencil size={16} />
                 Edit
               </DropdownMenuItem>
@@ -205,7 +213,12 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           <DeleteHouseDialog
             house={house}
             trigger={
-              <DropdownMenuItem variant="destructive">
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <Trash2 size={16} />
                 Hapus
               </DropdownMenuItem>
