@@ -24,7 +24,8 @@ import {
   Copy,
   LucideIcon,
 } from "lucide-react";
-import { User } from "../types";
+// import { User } from "../types";
+import { User } from "@/generated/prisma/browser";
 import { ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -53,10 +54,10 @@ export function Field({
   return (
     <div className="flex items-start gap-3">
       <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-        <Icon className="h-4 w-4" />
+        <Icon className="w-4 h-4" />
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
           {label}
         </p>
         <div className="mt-1 text-sm text-foreground wrap-break-word">
@@ -73,16 +74,16 @@ export default function DetailUserDialog({ user, children }: Props) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-hidden p-0 sm:max-w-lg md:max-w-5xl">
         <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
-          <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
+          <DialogHeader className="px-6 pt-6 pb-4 shrink-0">
             <DialogTitle>Detail Warga</DialogTitle>
             <DialogDescription>
               Informasi lengkap warga. Data hanya dapat dilihat.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pt-2 pb-4">
-            <div className="flex items-center gap-4 rounded-lg border bg-muted/30 p-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
+          <div className="flex-1 min-h-0 px-6 pt-2 pb-4 space-y-4 overflow-y-auto">
+            <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/30">
+              <div className="flex items-center justify-center w-12 h-12 text-lg font-semibold rounded-full shrink-0 bg-primary text-primary-foreground">
                 {user.name
                   .split(" ")
                   .map((n) => n[0])
@@ -91,11 +92,11 @@ export default function DetailUserDialog({ user, children }: Props) {
                   .toUpperCase()}
               </div>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-foreground">
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold truncate text-foreground">
                   {user.name}
                 </p>
-                <p className="truncate text-xs text-muted-foreground">
+                <p className="text-xs truncate text-muted-foreground">
                   NIK: {user.identificationNumber}
                 </p>
               </div>
@@ -137,14 +138,18 @@ export default function DetailUserDialog({ user, children }: Props) {
               <Field icon={FileText} label="Dokumen">
                 <div className="flex flex-wrap gap-2">
                   <Button asChild variant="outline" size="sm">
-                    <a href={user.kkUrl} target="_blank" rel="noreferrer">
+                    <a href={user.kkUrl ?? ""} target="_blank" rel="noreferrer">
                       <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                       Lihat KK
                     </a>
                   </Button>
 
                   <Button asChild variant="outline" size="sm">
-                    <a href={user.ktpUrl} target="_blank" rel="noreferrer">
+                    <a
+                      href={user.ktpUrl ?? ""}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       <ExternalLink className="mr-1.5 h-3.5 w-3.5" />
                       Lihat KTP
                     </a>
@@ -158,7 +163,7 @@ export default function DetailUserDialog({ user, children }: Props) {
             </div>
           </div>
 
-          <DialogFooter className="shrink-0 flex-col items-start gap-3 border-t px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <DialogFooter className="flex-col items-start gap-3 px-6 py-4 border-t shrink-0 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-2 text-xs text-muted-foreground">
               <Info className="mt-0.5 h-4 w-4 shrink-0" />
               <p>
@@ -173,7 +178,9 @@ export default function DetailUserDialog({ user, children }: Props) {
                 variant="secondary"
                 className="flex-1 sm:flex-none"
                 onClick={() => {
-                  navigator.clipboard.writeText(user.identificationNumber);
+                  navigator.clipboard.writeText(
+                    user.identificationNumber ?? "",
+                  );
                   toast.info("Nomor Induk Kependudukan berhasil disalin");
                 }}
               >

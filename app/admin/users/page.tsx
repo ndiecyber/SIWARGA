@@ -6,6 +6,13 @@ async function Page() {
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      residentProfile: {
+        include: {
+          familyMembers: true,
+        },
+      },
+    },
   });
 
   return <UserPage users={users} />;

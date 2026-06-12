@@ -22,7 +22,10 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Loader2 } from "lucide-react";
-import { createAnnouncement, updateAnnouncement } from "@/app/admin/announcment/actions";
+import {
+  createAnnouncement,
+  updateAnnouncement,
+} from "@/app/admin/announcment/actions";
 
 type Announcement = {
   id: number;
@@ -86,47 +89,47 @@ export function AnnouncementFormDialog({
       new Set([
         ...CATEGORIES,
         ...existingCategories.filter(
-          (cat) => cat && cat !== "custom" && cat.trim() !== ""
+          (cat) => cat && cat !== "custom" && cat.trim() !== "",
         ),
-      ])
+      ]),
     );
   }, [existingCategories]);
 
   const [isCustomCategory, setIsCustomCategory] = useState(() =>
-    announcement ? !categoriesList.includes(announcement.category) : false
+    announcement ? !categoriesList.includes(announcement.category) : false,
   );
 
   const [form, setForm] = useState<FormData>(() =>
     announcement
       ? {
-        category: announcement.category,
-        title: announcement.title,
-        description: announcement.description ?? "",
-        eventDate: announcement.eventDate
-          ? new Date(announcement.eventDate).toISOString().split("T")[0]
-          : "",
-        status: announcement.status,
-      }
-      : { ...empty }
+          category: announcement.category,
+          title: announcement.title,
+          description: announcement.description ?? "",
+          eventDate: announcement.eventDate
+            ? new Date(announcement.eventDate).toISOString().split("T")[0]
+            : "",
+          status: announcement.status,
+        }
+      : { ...empty },
   );
 
   useEffect(() => {
     if (open) {
       setIsCustomCategory(
-        announcement ? !categoriesList.includes(announcement.category) : false
+        announcement ? !categoriesList.includes(announcement.category) : false,
       );
       setForm(
         announcement
           ? {
-            category: announcement.category,
-            title: announcement.title,
-            description: announcement.description ?? "",
-            eventDate: announcement.eventDate
-              ? new Date(announcement.eventDate).toISOString().split("T")[0]
-              : "",
-            status: announcement.status,
-          }
-          : { ...empty }
+              category: announcement.category,
+              title: announcement.title,
+              description: announcement.description ?? "",
+              eventDate: announcement.eventDate
+                ? new Date(announcement.eventDate).toISOString().split("T")[0]
+                : "",
+              status: announcement.status,
+            }
+          : { ...empty },
       );
     }
   }, [open, announcement, categoriesList]);
@@ -134,20 +137,20 @@ export function AnnouncementFormDialog({
   function handleOpenChange(v: boolean) {
     if (v) {
       setIsCustomCategory(
-        announcement ? !categoriesList.includes(announcement.category) : false
+        announcement ? !categoriesList.includes(announcement.category) : false,
       );
       setForm(
         announcement
           ? {
-            category: announcement.category,
-            title: announcement.title,
-            description: announcement.description ?? "",
-            eventDate: announcement.eventDate
-              ? new Date(announcement.eventDate).toISOString().split("T")[0]
-              : "",
-            status: announcement.status,
-          }
-          : { ...empty }
+              category: announcement.category,
+              title: announcement.title,
+              description: announcement.description ?? "",
+              eventDate: announcement.eventDate
+                ? new Date(announcement.eventDate).toISOString().split("T")[0]
+                : "",
+              status: announcement.status,
+            }
+          : { ...empty },
       );
     }
     onOpenChange(v);
@@ -185,10 +188,22 @@ export function AnnouncementFormDialog({
         };
 
         if (isEdit && announcement) {
-          await updateAnnouncement(announcement.id, data);
+          await updateAnnouncement(announcement.id, {
+            category: data.category,
+            title: data.title,
+            description: data.description ? data.description : "",
+            eventDate: data.eventDate,
+            status: data.status,
+          });
           toast.success("Pengumuman berhasil diperbarui!");
         } else {
-          await createAnnouncement(data);
+          await createAnnouncement({
+            category: data.category,
+            title: data.title,
+            description: data.description ? data.description : "",
+            eventDate: data.eventDate,
+            status: data.status,
+          });
           toast.success("Pengumuman berhasil ditambahkan!");
         }
         onOpenChange(false);

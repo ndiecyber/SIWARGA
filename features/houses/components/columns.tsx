@@ -12,7 +12,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, HeaderContext } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { HouseStatus } from "@/generated/prisma/browser";
 import { FieldDialog } from "@/components/shared/field-dialog";
@@ -27,13 +27,13 @@ import DeleteHouseDialog from "./delete-dialog";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
+type SortableColumn = HeaderContext<HouseWithOwner, unknown>["column"];
+
 function SortableHeader({
   column,
   label,
 }: {
-  column: Parameters<
-    NonNullable<ColumnDef<HouseWithOwner>["header"]>
-  >[0]["column"];
+  column: SortableColumn;
   label: string;
 }) {
   const sorted = column.getIsSorted();
@@ -182,7 +182,11 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
         <ButtonActionDropdown>
           {/* View */}
           <HouseShow house={house}>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+              }}
+            >
               <Eye size={16} />
               Detail
             </DropdownMenuItem>
@@ -192,7 +196,11 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           <FieldDialog
             title="Edit house"
             trigger={
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <Pencil size={16} />
                 Edit
               </DropdownMenuItem>
@@ -205,7 +213,12 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
           <DeleteHouseDialog
             house={house}
             trigger={
-              <DropdownMenuItem variant="destructive">
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                }}
+              >
                 <Trash2 size={16} />
                 Hapus
               </DropdownMenuItem>

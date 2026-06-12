@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { AuthDialog } from "@/features/landing/components/auth-dialog";
 import { LogIn, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -123,7 +124,10 @@ function Navbar() {
                 if ("items" in item) {
                   return (
                     <li key={item.title} className="group relative py-2">
-                      <Button variant="ghost" className="flex items-center gap-1 cursor-pointer select-none">
+                      <Button
+                        variant="ghost"
+                        className="flex items-center gap-1 cursor-pointer select-none"
+                      >
                         <span>{item.title}</span>
                         <ChevronDown className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180 text-muted-foreground" />
                       </Button>
@@ -131,11 +135,13 @@ function Navbar() {
                       {/* Dropdown Card */}
                       <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
                         <div className="bg-background/95 backdrop-blur-md border border-border shadow-xl rounded-2xl p-2 min-w-[200px] flex flex-col gap-0.5">
-                          {item.items.map((subItem) => (
+                          {item.items?.map((subItem) => (
                             <Link
                               key={subItem.title}
                               href={subItem.href}
-                              onClick={(event) => handleSmoothScroll(event, subItem.href)}
+                              onClick={(event) =>
+                                handleSmoothScroll(event, subItem.href)
+                              }
                               className="w-full text-left px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
                             >
                               {subItem.title}
@@ -152,7 +158,9 @@ function Navbar() {
                     <Button variant="ghost" asChild>
                       <Link
                         href={item.href}
-                        onClick={(event) => handleSmoothScroll(event, item.href)}
+                        onClick={(event) =>
+                          handleSmoothScroll(event, item.href)
+                        }
                       >
                         {item.title}
                       </Link>
@@ -164,12 +172,7 @@ function Navbar() {
           </nav>
 
           <div className="space-x-2">
-            <Button asChild>
-              <Link href="/login">
-                <LogIn />
-                Masuk
-              </Link>
-            </Button>
+            <AuthDialog />
           </div>
         </div>
       </header>

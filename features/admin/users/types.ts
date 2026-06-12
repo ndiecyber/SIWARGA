@@ -5,10 +5,10 @@ export type User = {
   id: string;
   name: string;
   phoneNumber: string;
-  identificationNumber: string
-  familyCount: number
+  identificationNumber: string;
+  familyCount: number;
   kkUrl: string;
   ktpUrl: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
