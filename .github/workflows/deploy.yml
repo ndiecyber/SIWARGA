@@ -19,4 +19,4 @@ jobs:
           script: |
             git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
-            ./deploy.sh
+            bash ./deploy.sh
