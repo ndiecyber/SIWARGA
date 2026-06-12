@@ -62,6 +62,12 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            set -e
+
+            pnpm_cmd() {
+              npx -y @pnpm/exe@11.5.2 "$@"
+            }
+
             git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
 
@@ -70,11 +76,15 @@ jobs:
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
 
-            pnpm install --prod --frozen-lockfile
+            pnpm_cmd install --prod --frozen-lockfile
 
-            pnpm dlx prisma generate
-            pnpm dlx prisma migrate deploy
+            pnpm_cmd dlx prisma generate
+            pnpm_cmd dlx prisma migrate deploy
 
-            pm2 restart siwarga-app
+            if pm2 describe siwarga-app >/dev/null 2>&1; then
+              pm2 restart siwarga-app
+            else
+              pm2 start ecosystem.config.js --only siwarga-app
+            fi
+
             pm2 save
-            pm2 startup

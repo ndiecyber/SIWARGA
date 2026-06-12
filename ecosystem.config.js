@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "siwarga-app",
-      script: "pnpm",
-      args: "start",
+      script: ".next/standalone/server.js",
+      interpreter: "node",
       cwd: "/var/www/SIWARGA",
       instances: 1,
       exec_mode: "fork",
