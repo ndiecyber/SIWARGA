@@ -12,9 +12,19 @@ datasource db {
   provider = "postgresql"
 }
 
+// ==========================================
+// Enums
+// ==========================================
+
 enum Role {
   USER
   ADMIN
+}
+
+enum UserType {
+  STANDARD
+  DEVELOPER
+  BANK
 }
 
 enum HouseStatus {
@@ -32,53 +42,135 @@ enum PaymentStatus {
   FAILED
 }
 
+enum ResidentRole {
+  MAIN_RESIDENT
+  FAMILY_MEMBER
+}
+
+enum RelationshipType {
+  SELF
+  SPOUSE
+  CHILD
+  PARENT
+  SIBLING
+  OTHER
+}
+
+// ==========================================
+// Better-Auth Core Tables
+// ==========================================
+
 model User {
-  id          String @id @default(uuid())
-  name        String @db.VarChar(255)
-  phoneNumber String @unique @db.VarChar(20)
+  id            String   @id @default(uuid())
+  name          String   @db.VarChar(255)
+  email         String?  @unique @db.VarChar(255)
+  emailVerified Boolean  @default(false)
+  image         String?  @db.VarChar(500)
+  phoneNumber   String   @unique @db.VarChar(20)
+  role          Role     @default(USER)
+  userType      UserType @default(STANDARD)
 
   identificationNumber String? @unique
-  familyCount          Int?
+  kkUrl                String? @db.VarChar(500)
+  ktpUrl               String? @db.VarChar(500)
 
-  role      Role
-  kkUrl     String   @db.VarChar(500)
-  ktpUrl    String   @db.VarChar(500)
   createdAt DateTime @default(now()) @db.Timestamp(3)
   updatedAt DateTime @updatedAt @db.Timestamp(3)
 
-  housesOwned House[]         @relation("HouseOwner")
-  residences  HouseResident[]
+  // Relations
+  sessions        Session[]
+  accounts        Account[]
+  housesOwned     House[]   @relation("HouseOwner")
+  residentProfile Resident?
+
+  @@map("users")
 }
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+// ==========================================
+// Domain Application Tables
+// ==========================================
 
 model House {
   id          String      @id @default(uuid())
   houseNumber String      @db.VarChar(50)
   block       String      @db.VarChar(10)
-  status      HouseStatus
-  ownerId     String?
+  status      HouseStatus @default(VACANT)
+  ownerId     String
   createdAt   DateTime    @default(now()) @db.Timestamp(3)
   updatedAt   DateTime    @updatedAt @db.Timestamp(3)
 
-  owner       User?           @relation("HouseOwner", fields: [ownerId], references: [id])
-  residents   HouseResident[]
+  owner       User          @relation("HouseOwner", fields: [ownerId], references: [id])
+  residents   Resident[]
   monthlyDues MonthlyDues[]
 
   @@index([ownerId])
 }
 
-model HouseResident {
-  id        String   @id @default(uuid())
-  userId    String
-  houseId   String
-  createdAt DateTime @default(now()) @db.Timestamp(3)
-  updatedAt DateTime @updatedAt @db.Timestamp(3)
+model Resident {
+  id               String           @id @default(uuid())
+  userId           String?          @unique // Nullable if minor family members don't have separate system logins
+  houseId          String
+  parentResidentId String? // Self-referencing FK for tracking family hierarchy under Main Resident
+  residentRole     ResidentRole     @default(FAMILY_MEMBER)
+  relationship     RelationshipType @default(OTHER)
+  createdAt        DateTime         @default(now()) @db.Timestamp(3)
+  updatedAt        DateTime         @updatedAt @db.Timestamp(3)
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   house House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, houseId])
+  // Self-referencing relations
+  mainResident  Resident?  @relation("FamilyHierarchy", fields: [parentResidentId], references: [id], onDelete: Cascade)
+  familyMembers Resident[] @relation("FamilyHierarchy")
+
   @@index([userId])
   @@index([houseId])
+  @@index([parentResidentId])
 }
 
 model MonthlyDues {
@@ -88,13 +180,13 @@ model MonthlyDues {
   month     Int
   year      Int
   dueDate   DateTime          @db.Date
-  status    MonthlyDuesStatus
+  status    MonthlyDuesStatus @default(UNPAID)
   paymentId String?
   createdAt DateTime          @default(now()) @db.Timestamp(3)
   updatedAt DateTime          @updatedAt @db.Timestamp(3)
 
   house   House    @relation(fields: [houseId], references: [id], onDelete: Cascade)
-  payment Payment? @relation(fields: [paymentId], references: [id])
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
 
   @@unique([houseId, month, year])
   @@index([houseId])
@@ -108,7 +200,7 @@ model Payment {
   paidAt        DateTime      @default(now()) @db.Timestamp(3)
   paymentMethod String        @db.VarChar(50)
   proofUrl      String?       @db.VarChar(500)
-  status        PaymentStatus
+  status        PaymentStatus @default(FAILED)
   verifiedBy    String?       @db.VarChar(255)
   createdAt     DateTime      @default(now()) @db.Timestamp(3)
   updatedAt     DateTime      @updatedAt @db.Timestamp(3)
