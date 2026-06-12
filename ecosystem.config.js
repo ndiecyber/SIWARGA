@@ -2,11 +2,8 @@ module.exports = {
   apps: [
     {
       name: "siwarga-app",
-      script: ".next/standalone/server.js",
-      interpreter: "node",
+      script: ".next/standalone/server.js", // ✅ harus dari standalone
       cwd: "/var/www/SIWARGA",
-      instances: 1,
-      exec_mode: "fork",
       env: {
         NODE_ENV: "production",
         PORT: 3000,

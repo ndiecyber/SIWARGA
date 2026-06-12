@@ -72,20 +72,23 @@ jobs:
           script: |
             set -e
 
-            git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
 
-            git pull origin main
-
+            # Extract build
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
 
+            # ✅ Pastikan static assets ada di standalone
+            mkdir -p .next/standalone/.next
+            cp -r .next/static .next/standalone/.next/static
+
+            # ✅ Copy public folder jika ada
+            if [ -d public ]; then
+              cp -r public .next/standalone/public
+            fi
+
             npx -y prisma@7.8.0 migrate deploy
 
-            if pm2 describe siwarga-app >/dev/null 2>&1; then
-              pm2 restart siwarga-app
-            else
-              pm2 start ecosystem.config.js --only siwarga-app
-            fi
+            pm2 startOrReload ecosystem.config.js --only siwarga-app --update-env
 
             pm2 save
