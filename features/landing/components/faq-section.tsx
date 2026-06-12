@@ -99,7 +99,7 @@ const FAQSection = () => {
           </Badge>
           <h2
             className={cn(
-              "text-[clamp(32px,5vw,52px)] font-semibold leading-[1.15] tracking-[-0.5px] text-foreground",
+              "text-[clamp(32px,5vw,52px)] font-semibold font-fraunces leading-[1.15] tracking-[-0.5px] text-foreground",
             )}
           >
             Pertanyaan yang
@@ -121,7 +121,7 @@ const FAQSection = () => {
                   visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
                 }`}
               >
-                <AccordionTrigger className="text-[16px] text-foreground font-serif py-4 hover:no-underline hover:text-primary [&_[data-slot=accordion-trigger-icon]]:text-primary transition-colors duration-200">
+                <AccordionTrigger className="text-[16px] text-foreground font-fraunces py-4 hover:no-underline hover:text-primary [&_[data-slot=accordion-trigger-icon]]:text-primary transition-colors duration-200">
                   {item.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-[14px] text-muted-foreground pb-4 leading-relaxed">

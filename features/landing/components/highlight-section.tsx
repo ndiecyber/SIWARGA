@@ -113,7 +113,7 @@ export function Highlight() {
             Fitur Unggulan
           </div>
           <h2
-            className="font-serif font-semibold leading-[1.1] tracking-tight text-foreground"
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
             style={{
               fontSize: "clamp(38px, 5.5vw, 62px)",
               letterSpacing: "-1px",
@@ -156,7 +156,7 @@ export function Highlight() {
                   <Icon className="h-[22px] w-[22px]" />
                 </div>
 
-                <h3 className="mb-2 font-serif text-[17px] font-semibold text-foreground">
+                <h3 className="mb-2 font-fraunces text-[17px] font-semibold text-foreground">
                   {f.title}
                 </h3>
 

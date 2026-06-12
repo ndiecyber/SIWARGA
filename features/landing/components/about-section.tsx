@@ -113,7 +113,7 @@ export function AboutSection() {
 
             {/* Title */}
             <h2
-              className="font-serif leading-[1.15] mb-6 text-white"
+              className="font-fraunces leading-[1.15] mb-6 text-white"
               style={{
                 fontSize: "clamp(34px, 4.5vw, 50px)",
                 fontWeight: 700,

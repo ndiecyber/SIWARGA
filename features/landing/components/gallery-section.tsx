@@ -171,7 +171,7 @@ export function GallerySection() {
             Galeri Kegiatan
           </Badge>
           <h2
-            className="font-serif font-bold leading-[1.1] tracking-tight text-white"
+            className="font-fraunces font-bold leading-[1.1] tracking-tight text-white"
             style={{
               fontSize: "clamp(34px, 4.5vw, 50px)",
               letterSpacing: "-1px",
@@ -232,7 +232,7 @@ export function GallerySection() {
                         {slide.stats}
                       </span>
                     </div>
-                    <h3 className="text-xl md:text-3xl font-serif font-bold tracking-tight leading-tight mb-3">
+                    <h3 className="text-xl md:text-3xl font-fraunces font-bold tracking-tight leading-tight mb-3">
                       {slide.title}
                     </h3>
                     <p className="text-sm md:text-base text-white/80 line-clamp-2">
@@ -318,9 +318,6 @@ export function GallerySection() {
                     <div className="p-3 bg-white rounded-full text-primary shadow-lg hover:bg-primary hover:text-white-foreground hover:border hover:border-white/20 transition-all duration-300 transform hover:scale-110">
                       <ZoomIn className="h-5 w-5" />
                     </div>
-                    <div className="p-3 bg-white rounded-full text-primary shadow-lg hover:bg-primary hover:text-white-foreground hover:border hover:border-white/20 transition-all duration-300 transform hover:scale-110">
-                      <Heart className="h-5 w-5" />
-                    </div>
                   </div>
 
                   <img
@@ -344,7 +341,7 @@ export function GallerySection() {
 
                 {/* Caption with original font styles */}
                 <div className="p-4.5 text-center">
-                  <h4 className="text-[13.5px] font-serif font-bold text-white group-hover:text-white/80 transition-colors duration-200 truncate">
+                  <h4 className="text-[13.5px] font-fraunces font-bold text-white group-hover:text-white/80 transition-colors duration-200 truncate">
                     {item.title}
                   </h4>
                 </div>
@@ -373,7 +370,7 @@ export function GallerySection() {
               className="max-h-[80vh] w-auto rounded-2xl shadow-2xl"
             />
             <div className="mt-4 text-center text-white">
-              <h3 className="text-xl font-serif font-bold">{selectedPhoto.title}</h3>
+              <h3 className="text-xl font-fraunces font-bold">{selectedPhoto.title}</h3>
               <p className="text-sm text-white/80 mt-1">{selectedPhoto.category} • {selectedPhoto.stats}</p>
             </div>
           </div>

@@ -72,7 +72,7 @@ export function RTBoardSection() {
             Pengurus RT 04
           </div>
           <h2
-            className="font-serif font-semibold leading-[1.1] tracking-tight text-foreground"
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
             style={{
               fontSize: "clamp(38px, 5.5vw, 62px)",
               letterSpacing: "-1px",
@@ -119,7 +119,7 @@ export function RTBoardSection() {
                 </span>
 
                 {/* Name */}
-                <h3 className="mb-2 font-serif text-[18px] font-bold text-foreground">
+                <h3 className="mb-2 font-fraunces text-[18px] font-bold text-foreground">
                   {m.name}
                 </h3>
 

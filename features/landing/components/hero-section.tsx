@@ -117,7 +117,7 @@ export function Hero() {
               </div>
 
               <h1
-                className="font-serif font-bold leading-[1.1] tracking-tight text-foreground"
+                className="font-fraunces font-bold leading-[1.1] tracking-tight text-foreground"
                 style={{
                   fontSize: "clamp(38px, 5.5vw, 62px)",
                   letterSpacing: "-1px",
@@ -184,7 +184,7 @@ export function Hero() {
               >
                 <div
                   className="text-xl font-bold text-foreground"
-                  style={{ fontFamily: "var(--font-serif)" }}
+                  style={{ fontFamily: "var(--font-fraunces)" }}
                 >
                   Rp2,75 jt
                 </div>
@@ -208,7 +208,7 @@ export function Hero() {
                     </div>
                     <div
                       className="text-[15px] font-bold"
-                      style={{ fontFamily: "var(--font-serif)" }}
+                      style={{ fontFamily: "var(--font-fraunces)" }}
                     >
                       Randi Rizal
                     </div>

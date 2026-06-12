@@ -121,7 +121,7 @@ export function DataReportsSection() {
             Data & Laporan
           </Badge>
           <h2
-            className="font-serif font-bold leading-[1.15] mb-6 text-foreground"
+            className="font-fraunces font-bold leading-[1.15] mb-6 text-foreground"
             style={{
               fontSize: "clamp(34px, 4.5vw, 50px)",
               letterSpacing: "-1px",
@@ -180,7 +180,7 @@ export function DataReportsSection() {
                   </div>
                   <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-3">Total Penduduk</h3>
                   <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-5xl font-bold font-serif text-foreground">{totalWarga}</span>
+                    <span className="text-5xl font-bold font-fraunces text-foreground">{totalWarga}</span>
                     <span className="text-sm font-medium text-muted-foreground">Jiwa Terdaftar</span>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -222,7 +222,7 @@ export function DataReportsSection() {
                   
                   {/* Inner Label */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-foreground font-serif">{totalRumah}</span>
+                    <span className="text-3xl font-bold text-foreground font-fraunces">{totalRumah}</span>
                     <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.5px]">Unit Rumah</span>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export function DataReportsSection() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">Kas RT Saat Ini</h3>
-                      <div className="text-2xl font-bold font-serif text-foreground">Rp 34.250.000</div>
+                      <div className="text-2xl font-bold font-fraunces text-foreground">Rp 34.250.000</div>
                       <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-2">
                         <TrendingUp className="h-3 w-3" />
                         +15.5% dari bulan lalu
@@ -273,7 +273,7 @@ export function DataReportsSection() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">Tingkat Lunas Iuran</h3>
-                      <div className="text-2xl font-bold font-serif text-foreground">{tingkatLunas}%</div>
+                      <div className="text-2xl font-bold font-fraunces text-foreground">{tingkatLunas}%</div>
                       <div className="h-1.5 w-32 bg-muted rounded-full overflow-hidden mt-2">
                         <div className="h-full bg-primary" style={{ width: `${tingkatLunas}%` }} />
                       </div>
@@ -362,7 +362,7 @@ export function DataReportsSection() {
         {/* Download Reports Area */}
         <div className="mt-20 border-t border-border/60 pt-16">
           <div className="max-w-[700px] mb-10">
-            <h3 className="font-serif font-bold text-2xl text-foreground mb-2 flex items-center gap-2">
+            <h3 className="font-fraunces font-bold text-2xl text-foreground mb-2 flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />
               Arsip Dokumen & Unduhan Laporan
             </h3>

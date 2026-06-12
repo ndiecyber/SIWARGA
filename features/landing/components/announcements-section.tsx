@@ -107,7 +107,7 @@ export function AnnouncementsSection() {
             Pengumuman RT
           </Badge>
           <h2
-            className="font-serif font-bold leading-[1.15] mb-6 text-foreground"
+            className="font-fraunces font-bold leading-[1.15] mb-6 text-foreground"
             style={{
               fontSize: "clamp(34px, 4.5vw, 50px)",
               letterSpacing: "-1px",
@@ -144,7 +144,7 @@ export function AnnouncementsSection() {
                   </Badge>
                 </div>
 
-                <h3 className="text-lg font-serif font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
+                <h3 className="text-lg font-fraunces font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
                   {item.title}
                 </h3>
 
