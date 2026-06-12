@@ -43,6 +43,14 @@ jobs:
       - name: Build project
         run: pnpm run build
 
+      - name: Prepare standalone assets
+        run: |
+          mkdir -p .next/standalone/.next
+          cp -r .next/static .next/standalone/.next/
+          if [ -d public ]; then
+            cp -r public .next/standalone/
+          fi
+
       - name: Compress build folder
         run: tar -czf next-build.tar.gz .next
 
