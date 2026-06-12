@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { User } from "../types";
 import { ReactNode } from "react";
+import { toast } from "sonner";
 
 export type Role = "ADMIN" | "WARGA" | "KETUA_RT";
 
@@ -95,7 +96,7 @@ export default function DetailUserDialog({ user, children }: Props) {
                   {user.name}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  NIK: {user.id}
+                  NIK: {user.identificationNumber}
                 </p>
               </div>
 
@@ -112,7 +113,7 @@ export default function DetailUserDialog({ user, children }: Props) {
               </Field>
 
               <Field icon={IdCard} label="Nomor Induk Kependudukan">
-                {user.id}
+                {user.identificationNumber}
               </Field>
 
               <Field icon={Phone} label="Nomor Telepon">
@@ -171,7 +172,10 @@ export default function DetailUserDialog({ user, children }: Props) {
                 type="button"
                 variant="secondary"
                 className="flex-1 sm:flex-none"
-                onClick={() => navigator.clipboard.writeText(user.id)}
+                onClick={() => {
+                  navigator.clipboard.writeText(user.identificationNumber);
+                  toast.info("Nomor Induk Kependudukan berhasil disalin");
+                }}
               >
                 <Copy className="mr-1.5 h-4 w-4" />
                 Salin NIK
