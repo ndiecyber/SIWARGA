@@ -1,14 +1,18 @@
 import { Eye, SquareArrowUpRight } from "lucide-react";
+import type { UserGetPayload } from "@/generated/prisma/models";
 
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ButtonGroup } from "@/components/ui/button-group";
 import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 
-import { UserWithResident } from "../types";
 import DetailUserDialog from "./detail-user-dialog";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
+
+type UserWithResident = UserGetPayload<{
+  include: { residentProfile: { include: { familyMembers: true } } };
+}>;
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {

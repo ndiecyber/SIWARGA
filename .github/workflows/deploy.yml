@@ -6,17 +6,85 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Generate Prisma Client
+        run: pnpm dlx prisma generate
+
+      - name: Build project
+        run: pnpm run build
+
+      - name: Prepare standalone assets
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          if [ -d public ]; then
+            cp -r public .next/standalone/public
+          fi
+
+      - name: Compress build folder
+        run: |
+          # Compress hanya standalone (lebih ringan & pasti lengkap)
+          tar -czf next-build.tar.gz .next/standalone
+
+      - name: Copy build to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "next-build.tar.gz"
+          target: "/var/www/SIWARGA"
+
+      - name: Deploy on VPS
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            git config --global --add safe.directory /var/www/SIWARGA
+            set -e
             cd /var/www/SIWARGA
-            bash ./deploy.sh
+
+            # Backup & extract
+            rm -rf standalone_backup
+            tar -xzf next-build.tar.gz   # akan extract ke .next/standalone/
+            rm next-build.tar.gz
+
+            npx -y prisma@7.8.0 migrate deploy
+
+            if pm2 describe siwarga-app >/dev/null 2>&1; then
+              pm2 restart siwarga-app
+            else
+              pm2 start ecosystem.config.js --only siwarga-app
+            fi
+
+            pm2 save
