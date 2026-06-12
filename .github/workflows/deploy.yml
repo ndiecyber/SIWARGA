@@ -76,3 +76,5 @@ jobs:
             pnpm dlx prisma migrate deploy
 
             pm2 restart siwarga-app
+            pm2 save
+            pm2 startup

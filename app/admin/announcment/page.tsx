@@ -1,4 +1,5 @@
 import AnnouncmentPage from "@/features/admin/pages/announcments-page";
+import { connection } from "next/server";
 import { getAnnouncements } from "./actions";
 
 export const metadata = {
@@ -7,6 +8,8 @@ export const metadata = {
 };
 
 async function Page() {
+  await connection();
+
   const announcements = await getAnnouncements();
   return <AnnouncmentPage announcements={announcements} />;
 }

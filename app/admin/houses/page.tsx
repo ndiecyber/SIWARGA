@@ -1,6 +1,9 @@
 import HousesIndex from "@/features/houses/pages";
+import { connection } from "next/server";
 
-function Page() {
+async function Page() {
+  await connection();
+
   return <HousesIndex />;
 }
 
