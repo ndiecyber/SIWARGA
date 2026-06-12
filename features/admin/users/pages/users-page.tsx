@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { UserWithResident } from "../types";
 import { columns } from "../components/columns";
 import { CreateUserDialog } from "../components/create-user-dialog";
+import { CreateUserDialog } from "../components/create-user-dialog";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
