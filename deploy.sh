@@ -4,12 +4,12 @@ set -e
 
 git pull origin main
 
-npm install
+pnpm install
 
-npx prisma generate
+pnpx prisma generate
 
-npx prisma migrate deploy
+pnpx prisma migrate deploy
 
-npm run build
+pnpm run build
 
 pm2 restart nextjs-app
