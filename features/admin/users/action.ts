@@ -7,6 +7,9 @@ import { CreateUserSchema, UpdateUserSchema } from "./schema";
 import { Prisma } from "@/generated/prisma/client";
 
 export async function createUserAction(values: CreateUserSchema) {
+
+  console.log({ values })
+
   try {
     await prisma.user.create({
       data: {

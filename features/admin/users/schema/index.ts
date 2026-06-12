@@ -23,17 +23,21 @@ export const createUserSchema = z.object({
     .string()
     .min(3, "Nama minimal 3 karakter")
     .max(255, "Nama maksimal 255 karakter"),
-
   phoneNumber: z
     .string()
+    .trim()
     .min(9, "Nomor telepon tidak valid")
     .max(20, "Nomor telepon maksimal 20 karakter")
-    .regex(/^(\+62|62|0)[0-9]{8,15}$/, "Format nomor telepon tidak valid"),
-
+    .regex(/^08[0-9]{7,18}$/, "Nomor telepon harus diawali 08 dan hanya berisi angka"),
+  identificationNumber
+    : z
+      .string()
+      .trim()
+      .min(16, "Nomor Induk Penduduk Tidak Valid")
+      .max(16, "Nomor Induk Penduduk Tidak Valid"),
+  familyCount: z.number().default(0),
   role: z.enum(["ADMIN", "USER"]).default("USER"),
-
   kkFile: fileSchema("File KK wajib diunggah").optional(),
-
   ktpFile: fileSchema("File KTP wajib diunggah").optional(),
 });
 
