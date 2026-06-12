@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Generate Prisma Client
         run: pnpm dlx prisma generate
@@ -66,15 +66,15 @@ jobs:
           script: |
             git config --global --add safe.directory /var/www/SIWARGA
             cd /var/www/SIWARGA
-            
+
             git pull origin main
-            
+
             tar -xzf next-build.tar.gz
             rm next-build.tar.gz
-            
+
             pnpm install --prod --frozen-lockfile
-            
+
             pnpm dlx prisma generate
             pnpm dlx prisma migrate deploy
-            
+
             pm2 restart siwarga-app
