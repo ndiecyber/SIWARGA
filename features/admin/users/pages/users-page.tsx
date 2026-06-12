@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import type { UserGetPayload } from "@/generated/prisma/models";
 
 import { AlertTriangle, UsersRoundIcon } from "lucide-react";
 
@@ -10,7 +11,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { columns } from "../components/columns";
 import { CreateUserDialog } from "../components/create-user-dialog";
-import { UserWithResident } from "../types";
+
+type UserWithResident = UserGetPayload<{
+  include: { residentProfile: { include: { familyMembers: true } } };
+}>;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

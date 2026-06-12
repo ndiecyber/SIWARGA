@@ -1,5 +1,6 @@
 "use client";
 
+import type { Role } from "@/generated/prisma/enums";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,7 +34,6 @@ import FileUploadField from "./file-upload-field";
 import { toast } from "sonner";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { updateUserAction } from "../action";
-import { User } from "../types";
 import {
   Select,
   SelectContent,
@@ -41,6 +41,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+type User = {
+  role: Role;
+  id: string;
+  name: string;
+  phoneNumber: string;
+  identificationNumber: string;
+  familyCount: number;
+  kkUrl: string;
+  ktpUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 type UpdateUserInput = z.input<typeof updateUserSchema>;
 type UpdateUserValues = z.output<typeof updateUserSchema>;

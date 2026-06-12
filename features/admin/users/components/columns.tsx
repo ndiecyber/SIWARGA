@@ -1,4 +1,5 @@
 import { Eye, SquareArrowUpRight } from "lucide-react";
+import type { UserGetPayload } from "@/generated/prisma/models";
 
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
@@ -8,7 +9,10 @@ import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 import DetailUserDialog from "./detail-user-dialog";
 import { UpdateUserDialog } from "./update-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
-import { UserWithResident } from "../types";
+
+type UserWithResident = UserGetPayload<{
+  include: { residentProfile: { include: { familyMembers: true } } };
+}>;
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
