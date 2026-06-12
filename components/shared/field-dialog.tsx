@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { type LucideIcon } from "lucide-react";
 
 type FieldDialogContextValue = {
   close: () => void;
@@ -31,11 +32,10 @@ export function useFieldDialog() {
 }
 
 type FieldDialogProps = {
-  label: React.ReactNode;
+  trigger: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   children: React.ReactNode;
-  buttonProps?: React.ComponentProps<typeof Button>;
 };
 
 function FieldDialogWrapper({
@@ -62,18 +62,17 @@ function FieldDialogWrapper({
 }
 
 export function FieldDialog({
-  label,
+  trigger,
   title,
   description,
   children,
-  buttonProps,
 }: FieldDialogProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button {...buttonProps}>{label}</Button>
+        {trigger ? trigger : <Button>Open</Button>}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-2xl">

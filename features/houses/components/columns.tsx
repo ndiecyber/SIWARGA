@@ -1,118 +1,29 @@
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpRight,
+  ChevronsUpDown,
+  Eye,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { HouseStatus } from "@/generated/prisma/browser";
+import { FieldDialog } from "@/components/shared/field-dialog";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
+import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export enum HouseStatus {
-  OCCUPIED = "OCCUPIED",
-  VACANT = "VACANT",
-}
-
-export type User = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
-  phoneNumber: string;
-};
-
-export type House = {
-  id: string;
-  houseNumber: string;
-  block: string;
-  status: HouseStatus;
-  createdAt: Date;
-  updatedAt: Date;
-  ownerId: string | null;
-  owner: User;
-  /** Derived field: number of residents (supply from your data layer) */
-  residents?: number;
-};
-
-// ─── Dummy Data ───────────────────────────────────────────────────────────────
-
-export const dummyUsers: User[] = [
-  {
-    id: "usr_001",
-    createdAt: new Date("2025-01-10T08:00:00Z"),
-    updatedAt: new Date("2025-01-10T08:00:00Z"),
-    name: "John Doe",
-    phoneNumber: "+6281234567890",
-  },
-  {
-    id: "usr_002",
-    createdAt: new Date("2025-01-12T09:30:00Z"),
-    updatedAt: new Date("2025-03-01T14:20:00Z"),
-    name: "Jane Smith",
-    phoneNumber: "+6289876543210",
-  },
-  {
-    id: "usr_003",
-    createdAt: new Date("2025-02-05T11:15:00Z"),
-    updatedAt: new Date("2025-02-20T16:45:00Z"),
-    name: "Michael Johnson",
-    phoneNumber: "+628111223344",
-  },
-];
-
-export const dummyHouses: House[] = [
-  {
-    id: "house_001",
-    houseNumber: "A1",
-    block: "A",
-    status: HouseStatus.OCCUPIED,
-    createdAt: new Date("2025-01-15T08:00:00Z"),
-    updatedAt: new Date("2025-02-01T10:00:00Z"),
-    ownerId: dummyUsers[0].id,
-    owner: dummyUsers[0],
-    residents: 4,
-  },
-  {
-    id: "house_002",
-    houseNumber: "A2",
-    block: "A",
-    status: HouseStatus.OCCUPIED,
-    createdAt: new Date("2025-01-16T08:00:00Z"),
-    updatedAt: new Date("2025-02-02T10:00:00Z"),
-    ownerId: dummyUsers[1].id,
-    owner: dummyUsers[1],
-    residents: 2,
-  },
-  {
-    id: "house_003",
-    houseNumber: "B1",
-    block: "B",
-    status: HouseStatus.OCCUPIED,
-    createdAt: new Date("2025-01-17T08:00:00Z"),
-    updatedAt: new Date("2025-02-03T10:00:00Z"),
-    ownerId: dummyUsers[2].id,
-    owner: dummyUsers[2],
-    residents: 3,
-  },
-  {
-    id: "house_004",
-    houseNumber: "B2",
-    block: "B",
-    status: HouseStatus.VACANT,
-    createdAt: new Date("2025-01-18T08:00:00Z"),
-    updatedAt: new Date("2025-01-18T08:00:00Z"),
-    ownerId: null,
-    owner: {
-      id: "",
-      name: "",
-      phoneNumber: "",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-    residents: 0,
-  },
-];
+import HouseShow from "../pages/show";
+import { HouseWithOwner } from "../types";
+import { HouseEditForm } from "./edit-form";
+import DeleteHouseDialog from "./delete-dialog";
 
 // ─── Sortable Header Helper ────────────────────────────────────────────────────
 
@@ -120,7 +31,9 @@ function SortableHeader({
   column,
   label,
 }: {
-  column: Parameters<NonNullable<ColumnDef<House>["header"]>>[0]["column"];
+  column: Parameters<
+    NonNullable<ColumnDef<HouseWithOwner>["header"]>
+  >[0]["column"];
   label: string;
 }) {
   const sorted = column.getIsSorted();
@@ -129,7 +42,7 @@ function SortableHeader({
     <Button
       variant="ghost"
       size="sm"
-      className="-ml-3 h-8 gap-1 font-medium"
+      className="h-8 gap-1 -ml-3 font-medium"
       onClick={() => column.toggleSorting(sorted === "asc")}
     >
       {label}
@@ -146,7 +59,7 @@ function SortableHeader({
 
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
-export const columns: ColumnDef<House>[] = [
+export const columns: ColumnDef<HouseWithOwner>[] = [
   // ── Checkbox select ─────────────────────────────────────────────────────────
   {
     id: "select",
@@ -208,9 +121,14 @@ export const columns: ColumnDef<House>[] = [
     cell: ({ row }) => {
       const name: string = row.getValue("owner");
       return name ? (
-        <span>{name}</span>
+        <DetailUserDialog user={row.original.owner!}>
+          <Button variant="outline" className="justify-between w-full">
+            {name}
+            <ArrowUpRight />
+          </Button>
+        </DetailUserDialog>
       ) : (
-        <span className="text-muted-foreground italic">—</span>
+        <span className="italic text-muted-foreground">—</span>
       );
     },
   },
@@ -252,18 +170,48 @@ export const columns: ColumnDef<House>[] = [
     },
   },
 
-  // ── Updated date ──────────────────────────────────────────────────────────────
+  // ── Actions ──────────────────────────────────────────────────────────────
   {
-    id: "updatedAt",
-    accessorFn: (row) => row.updatedAt,
-    header: ({ column }) => <SortableHeader column={column} label="Updated" />,
-    sortingFn: "datetime",
+    id: "aksi",
+    header: "Aksi",
+    enableHiding: false,
     cell: ({ row }) => {
-      const date: Date = row.getValue("updatedAt");
+      const house = row.original;
+
       return (
-        <span className="tabular-nums text-muted-foreground">
-          {date.toLocaleDateString("en-CA")} {/* YYYY-MM-DD */}
-        </span>
+        <ButtonActionDropdown>
+          {/* View */}
+          <HouseShow house={house}>
+            <DropdownMenuItem>
+              <Eye size={16} />
+              Detail
+            </DropdownMenuItem>
+          </HouseShow>
+
+          {/* Edit */}
+          <FieldDialog
+            title="Edit house"
+            trigger={
+              <DropdownMenuItem>
+                <Pencil size={16} />
+                Edit
+              </DropdownMenuItem>
+            }
+          >
+            <HouseEditForm house={house} />
+          </FieldDialog>
+
+          {/* Delete */}
+          <DeleteHouseDialog
+            house={house}
+            trigger={
+              <DropdownMenuItem variant="destructive">
+                <Trash2 size={16} />
+                Hapus
+              </DropdownMenuItem>
+            }
+          />
+        </ButtonActionDropdown>
       );
     },
   },
