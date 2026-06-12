@@ -1,4 +1,4 @@
-import AnnouncmentPage from "@/features/Admin/pages/announcments-page";
+import AnnouncmentPage from "@/features/admin/pages/announcments-page";
 import { getAnnouncements } from "./actions";
 
 export const metadata = {
