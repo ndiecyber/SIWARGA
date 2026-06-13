@@ -1,4 +1,4 @@
-import AnnouncmentPage from "@/features/admin/pages/announcments-page";
+import AnnouncmentPage from "@/features/admin/announcement/pages/announcments-page";
 import { connection } from "next/server";
 import { getAnnouncements } from "./actions";
 

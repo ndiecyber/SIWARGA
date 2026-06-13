@@ -12,7 +12,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Loader2, AlertTriangle } from "lucide-react";
-import { deleteAnnouncement } from "@/app/admin/announcment/actions";
+import { deleteAnnouncement } from "@/app/admin/announcement/actions";
 
 type Props = {
   open: boolean;

@@ -105,8 +105,8 @@ export function Highlight() {
   const { ref, visible } = useReveal();
 
   return (
-    <section id="features" className="py-[88px]">
-      <div className="container mx-auto max-w-[1100px] px-6">
+    <section id="features" className="py-12">
+      <div className="container mx-auto max-w-275 px-6">
         <div className="mb-14 text-center">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
             <Sparkles className="h-3.5 w-3.5" />

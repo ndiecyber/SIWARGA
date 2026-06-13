@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { ArrowRight, ShieldCheck, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface HeroProps {
   onLogin: () => void;
@@ -93,7 +94,7 @@ export function Hero() {
           />
         </div>
 
-        <div className="container relative z-10 mx-auto max-w-[1100px] px-6">
+        <div className="container relative z-10 mx-auto max-w-275 px-6">
           <div
             className="hero-inner"
             style={{
@@ -112,7 +113,7 @@ export function Hero() {
               >
                 <span className="animate-blink h-1.5 w-1.5 rounded-full bg-primary" />
                 <span className="text-xs font-semibold text-primary">
-                  Sistem Informasi Warga RT
+                  Sistem Informasi Warga RT 04 RW 07 Perumahan Arjamukti
                 </span>
               </div>
 
@@ -141,14 +142,22 @@ export function Hero() {
                 className="hero-actions flex flex-wrap"
                 style={{ gap: "12px" }}
               >
-                <button className="inline-flex items-center gap-2 rounded-[14px] bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:-translate-y-0.5">
+                {/* <button className="inline-flex items-center gap-2 rounded-[14px] bg-primary px-8 py-4 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 hover:-translate-y-0.5">
                   <ArrowRight className="h-4 w-4" />
                   Masuk sebagai Warga
                 </button>
                 <button className="inline-flex items-center gap-2 rounded-[14px] border border-primary bg-transparent px-8 py-4 text-base font-semibold text-primary transition-all hover:bg-primary/10">
                   <ShieldCheck className="h-4 w-4" />
                   Panel Admin
-                </button>
+                </button> */}
+                <Button size={"lg"}>
+                  <ArrowRight className="h-4 w-4" />
+                  Masuk sebagai Warga
+                </Button>
+                <Button variant={"outline"} size={"lg"}>
+                  <ShieldCheck className="h-4 w-4" />
+                  Panel Admin
+                </Button>
               </div>
 
               <div

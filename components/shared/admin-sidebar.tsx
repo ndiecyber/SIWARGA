@@ -79,7 +79,7 @@ const sidebarData: SidebarData[] = [
       },
       {
         title: "Pengumuman",
-        href: "/admin/announcment",
+        href: "/admin/announcement",
         icon: Megaphone,
         items: [],
       },

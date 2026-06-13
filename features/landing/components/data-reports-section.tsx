@@ -46,15 +46,49 @@ const totalRumah = 120;
 const tingkatLunas = 92;
 
 const transactionHistory = [
-  { date: "08 Jun 2025", desc: "Iuran Bulanan Warga (Juni)", type: "income", amount: 3250000, category: "Iuran" },
-  { date: "05 Jun 2025", desc: "Pembayaran Insentif Keamanan / Satpam", type: "expense", amount: 1200000, category: "Keamanan" },
-  { date: "03 Jun 2025", desc: "Biaya Kebersihan Lingkungan & Sampah", type: "expense", amount: 550000, category: "Kebersihan" },
-  { date: "01 Jun 2025", desc: "Sewa Lapangan Badminton RT", type: "income", amount: 250000, category: "Fasilitas" },
+  {
+    date: "08 Jun 2025",
+    desc: "Iuran Bulanan Warga (Juni)",
+    type: "income",
+    amount: 3250000,
+    category: "Iuran",
+  },
+  {
+    date: "05 Jun 2025",
+    desc: "Pembayaran Insentif Keamanan / Satpam",
+    type: "expense",
+    amount: 1200000,
+    category: "Keamanan",
+  },
+  {
+    date: "03 Jun 2025",
+    desc: "Biaya Kebersihan Lingkungan & Sampah",
+    type: "expense",
+    amount: 550000,
+    category: "Kebersihan",
+  },
+  {
+    date: "01 Jun 2025",
+    desc: "Sewa Lapangan Badminton RT",
+    type: "income",
+    amount: 250000,
+    category: "Fasilitas",
+  },
 ];
 
 const documents = [
-  { name: "Laporan Keuangan Bulanan - Mei 2025", size: "1.4 MB", type: "PDF", date: "01 Jun 2025" },
-  { name: "Laporan Keuangan Bulanan - April 2025", size: "1.2 MB", type: "PDF", date: "01 Mei 2025" },
+  {
+    name: "Laporan Keuangan Bulanan - Mei 2025",
+    size: "1.4 MB",
+    type: "PDF",
+    date: "01 Jun 2025",
+  },
+  {
+    name: "Laporan Keuangan Bulanan - April 2025",
+    size: "1.2 MB",
+    type: "PDF",
+    date: "01 Mei 2025",
+  },
 ];
 
 export function DataReportsSection() {
@@ -65,7 +99,7 @@ export function DataReportsSection() {
   const handleDownload = (docName: string) => {
     setDownloadingDoc(docName);
     const promise = new Promise((resolve) => setTimeout(resolve, 1500));
-    
+
     toast.promise(promise, {
       loading: `Menyiapkan unduhan ${docName}...`,
       success: () => {
@@ -77,7 +111,10 @@ export function DataReportsSection() {
   };
 
   return (
-    <section id="data-laporan" className="relative py-[96px] overflow-hidden bg-white text-foreground">
+    <section
+      id="data-laporan"
+      className="relative py-12 overflow-hidden bg-primary-foreground text-foreground"
+    >
       {/* Subtle Background Pattern & Lights */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
         <div
@@ -88,7 +125,8 @@ export function DataReportsSection() {
             width: "450px",
             height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
           }}
         />
         <div
@@ -99,7 +137,8 @@ export function DataReportsSection() {
             width: "450px",
             height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
           }}
         />
         {/* Subtle grid pattern overlay */}
@@ -113,9 +152,9 @@ export function DataReportsSection() {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-[1100px] px-6">
+      <div className="container relative z-10 mx-auto max-w-275 px-6">
         {/* Header */}
-        <div className="mb-14 text-center">
+        <div className="mb-12 text-center">
           <Badge className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
             <PieChart className="h-3.5 w-3.5" />
             Data & Laporan
@@ -131,14 +170,15 @@ export function DataReportsSection() {
             <br />
             <span className="text-primary">Realisasi Kinerja RT</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-[1.7] text-muted-foreground">
-            Akses data kependudukan secara umum serta realisasi keuangan warga sebagai wujud keterbukaan kepengurusan RT.
+          <p className="mx-auto mt-2 max-w-145 text-[15px] leading-[1.7] text-muted-foreground">
+            Akses data kependudukan secara umum serta realisasi keuangan warga
+            sebagai wujud keterbukaan kepengurusan RT.
           </p>
         </div>
 
         {/* Tab Switcher */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex rounded-xl bg-muted p-1.5 border border-border/50 backdrop-blur-md">
+          <div className="inline-flex rounded-xl bg-muted p-1.5 border border-border/50 backdrop-blur-md gap-2">
             {[
               { id: "warga", label: "Data Warga", icon: Users },
               { id: "keuangan", label: "Data Keuangan", icon: DollarSign },
@@ -148,7 +188,7 @@ export function DataReportsSection() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-semibold transition-all duration-300 ${
+                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-300 ${
                     activeTab === tab.id
                       ? "bg-card text-foreground shadow-sm border border-border"
                       : "text-muted-foreground hover:text-foreground hover:bg-card/50"
@@ -178,23 +218,35 @@ export function DataReportsSection() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-[13px] bg-primary/10 text-primary mb-6">
                     <Users className="h-6 w-6" />
                   </div>
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-3">Total Penduduk</h3>
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-3">
+                    Total Penduduk
+                  </h3>
                   <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-5xl font-bold font-fraunces text-foreground">{totalWarga}</span>
-                    <span className="text-sm font-medium text-muted-foreground">Jiwa Terdaftar</span>
+                    <span className="text-5xl font-bold font-fraunces text-foreground">
+                      {totalWarga}
+                    </span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      Jiwa Terdaftar
+                    </span>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Jumlah penduduk terdata resmi di lingkungan RT 04 yang terbagi dalam 114 Kepala Keluarga (KK).
+                    Jumlah penduduk terdata resmi di lingkungan RT 04 yang
+                    terbagi dalam 114 Kepala Keluarga (KK).
                   </p>
                 </div>
               </Card>
 
               {/* Hunian Wilayah Card */}
               <Card className="p-8 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex flex-col items-center justify-center text-center text-foreground rounded-2xl">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-6 self-start">Okupansi Hunian</h3>
-                
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-6 self-start">
+                  Okupansi Hunian
+                </h3>
+
                 <div className="relative flex items-center justify-center mb-6">
-                  <svg className="w-44 h-44 drop-shadow-md rotate-[-90deg]" viewBox="0 0 36 36">
+                  <svg
+                    className="w-44 h-44 drop-shadow-md rotate-[-90deg]"
+                    viewBox="0 0 36 36"
+                  >
                     {/* Empty Units - Background */}
                     <circle
                       className="text-muted/20"
@@ -219,11 +271,15 @@ export function DataReportsSection() {
                       r="15.915"
                     />
                   </svg>
-                  
+
                   {/* Inner Label */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-foreground font-fraunces">{totalRumah}</span>
-                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.5px]">Unit Rumah</span>
+                    <span className="text-3xl font-bold text-foreground font-fraunces">
+                      {totalRumah}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.5px]">
+                      Unit Rumah
+                    </span>
                   </div>
                 </div>
 
@@ -231,16 +287,24 @@ export function DataReportsSection() {
                   <div className="flex items-center justify-between text-xs border-b border-border pb-2">
                     <div className="flex items-center gap-2">
                       <span className="h-3 w-3 rounded-full bg-primary" />
-                      <span className="font-semibold text-foreground/90">Rumah Terisi (Dihuni)</span>
+                      <span className="font-semibold text-foreground/90">
+                        Rumah Terisi (Dihuni)
+                      </span>
                     </div>
-                    <span className="font-bold text-foreground">120 Unit (92.3%)</span>
+                    <span className="font-bold text-foreground">
+                      120 Unit (92.3%)
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <span className="h-3 w-3 rounded-full bg-muted" />
-                      <span className="font-semibold text-muted-foreground">Rumah Kosong / Renovasi</span>
+                      <span className="font-semibold text-muted-foreground">
+                        Rumah Kosong / Renovasi
+                      </span>
                     </div>
-                    <span className="font-bold text-muted-foreground">10 Unit (7.7%)</span>
+                    <span className="font-bold text-muted-foreground">
+                      10 Unit (7.7%)
+                    </span>
                   </div>
                 </div>
               </Card>
@@ -255,8 +319,12 @@ export function DataReportsSection() {
                 <Card className="p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 text-foreground rounded-2xl">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">Kas RT Saat Ini</h3>
-                      <div className="text-2xl font-bold font-fraunces text-foreground">Rp 34.250.000</div>
+                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">
+                        Kas RT Saat Ini
+                      </h3>
+                      <div className="text-2xl font-bold font-fraunces text-foreground">
+                        Rp 34.250.000
+                      </div>
                       <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-0.5 mt-2">
                         <TrendingUp className="h-3 w-3" />
                         +15.5% dari bulan lalu
@@ -272,10 +340,17 @@ export function DataReportsSection() {
                 <Card className="p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 text-foreground rounded-2xl">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">Tingkat Lunas Iuran</h3>
-                      <div className="text-2xl font-bold font-fraunces text-foreground">{tingkatLunas}%</div>
+                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">
+                        Tingkat Lunas Iuran
+                      </h3>
+                      <div className="text-2xl font-bold font-fraunces text-foreground">
+                        {tingkatLunas}%
+                      </div>
                       <div className="h-1.5 w-32 bg-muted rounded-full overflow-hidden mt-2">
-                        <div className="h-full bg-primary" style={{ width: `${tingkatLunas}%` }} />
+                        <div
+                          className="h-full bg-primary"
+                          style={{ width: `${tingkatLunas}%` }}
+                        />
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-2">
                         Persentase pembayaran iuran warga bulan ini
@@ -290,12 +365,20 @@ export function DataReportsSection() {
                 <Card className="p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 text-foreground rounded-2xl">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">Pemasukan vs Pengeluaran</h3>
+                      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.8px] mb-2">
+                        Pemasukan vs Pengeluaran
+                      </h3>
                       <div className="text-sm font-semibold text-foreground mt-1">
-                        <span className="text-emerald-600">+Rp 4.500.000</span> <span className="text-muted-foreground text-xs font-normal">Pemasukan</span>
+                        <span className="text-emerald-600">+Rp 4.500.000</span>{" "}
+                        <span className="text-muted-foreground text-xs font-normal">
+                          Pemasukan
+                        </span>
                       </div>
                       <div className="text-sm font-semibold text-foreground">
-                        <span className="text-rose-600">-Rp 1.750.000</span> <span className="text-muted-foreground text-xs font-normal">Pengeluaran</span>
+                        <span className="text-rose-600">-Rp 1.750.000</span>{" "}
+                        <span className="text-muted-foreground text-xs font-normal">
+                          Pengeluaran
+                        </span>
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-2">
                         Periode berjalan: Juni 2025
@@ -313,10 +396,17 @@ export function DataReportsSection() {
                 <Card className="flex-1 p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between text-foreground rounded-2xl">
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px]">Buku Kas Terbaru</h3>
-                      <Badge variant="outline" className="text-[10px] text-muted-foreground bg-muted border-border">Juni 2025</Badge>
+                      <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px]">
+                        Buku Kas Terbaru
+                      </h3>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] text-muted-foreground bg-muted border-border"
+                      >
+                        Juni 2025
+                      </Badge>
                     </div>
-                    
+
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse text-xs">
                         <thead>
@@ -329,18 +419,32 @@ export function DataReportsSection() {
                         </thead>
                         <tbody className="divide-y divide-border/60">
                           {transactionHistory.map((t, idx) => (
-                            <tr key={idx} className="hover:bg-muted/40 transition-colors duration-150">
-                              <td className="py-3 text-muted-foreground">{t.date}</td>
-                              <td className="py-3 font-semibold text-foreground">{t.desc}</td>
+                            <tr
+                              key={idx}
+                              className="hover:bg-muted/40 transition-colors duration-150"
+                            >
+                              <td className="py-3 text-muted-foreground">
+                                {t.date}
+                              </td>
+                              <td className="py-3 font-semibold text-foreground">
+                                {t.desc}
+                              </td>
                               <td className="py-3">
-                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold bg-muted text-muted-foreground border border-border`}>
+                                <span
+                                  className={`px-2 py-0.5 rounded-md text-[9px] font-bold bg-muted text-muted-foreground border border-border`}
+                                >
                                   {t.category}
                                 </span>
                               </td>
-                              <td className={`py-3 text-right font-bold ${
-                                t.type === "income" ? "text-emerald-600" : "text-rose-600"
-                              }`}>
-                                {t.type === "income" ? "+" : "-"}Rp {t.amount.toLocaleString("id-ID")}
+                              <td
+                                className={`py-3 text-right font-bold ${
+                                  t.type === "income"
+                                    ? "text-emerald-600"
+                                    : "text-rose-600"
+                                }`}
+                              >
+                                {t.type === "income" ? "+" : "-"}Rp{" "}
+                                {t.amount.toLocaleString("id-ID")}
                               </td>
                             </tr>
                           ))}
@@ -351,7 +455,10 @@ export function DataReportsSection() {
 
                   <div className="mt-6 pt-4 border-t border-border/60 text-[11px] text-muted-foreground flex items-center gap-1.5">
                     <Info className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                    <span>Laporan keuangan lengkap diperbarui otomatis setiap terjadi transaksi oleh bendahara RT di panel admin.</span>
+                    <span>
+                      Laporan keuangan lengkap diperbarui otomatis setiap
+                      terjadi transaksi oleh bendahara RT di panel admin.
+                    </span>
                   </div>
                 </Card>
               </div>
@@ -367,7 +474,9 @@ export function DataReportsSection() {
               Arsip Dokumen & Unduhan Laporan
             </h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Dokumen administrasi penting dan laporan keuangan tertulis dapat diunduh oleh warga secara bebas dalam format PDF untuk transparansi menyeluruh.
+              Dokumen administrasi penting dan laporan keuangan tertulis dapat
+              diunduh oleh warga secara bebas dalam format PDF untuk
+              transparansi menyeluruh.
             </p>
           </div>
 
@@ -402,8 +511,12 @@ export function DataReportsSection() {
                   onClick={() => handleDownload(doc.name)}
                   className="rounded-lg h-9 text-xs font-semibold hover:bg-primary hover:text-primary-foreground border-primary/25 text-primary bg-transparent flex items-center gap-1.5 transition-all duration-300"
                 >
-                  <Download className={`h-3.5 w-3.5 ${downloadingDoc === doc.name ? "animate-bounce" : ""}`} />
-                  <span>{downloadingDoc === doc.name ? "Mengunduh" : "Unduh"}</span>
+                  <Download
+                    className={`h-3.5 w-3.5 ${downloadingDoc === doc.name ? "animate-bounce" : ""}`}
+                  />
+                  <span>
+                    {downloadingDoc === doc.name ? "Mengunduh" : "Unduh"}
+                  </span>
                 </Button>
               </div>
             ))}

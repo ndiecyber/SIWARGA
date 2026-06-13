@@ -58,7 +58,7 @@ export function AboutSection() {
   return (
     <section
       id="tentang-kami"
-      className="relative py-[96px] overflow-hidden bg-primary text-white"
+      className="relative py-12 overflow-hidden bg-primary text-white"
     >
       {/* Background Subtle Pattern & Lights */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
@@ -97,10 +97,10 @@ export function AboutSection() {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-[1100px] px-6">
+      <div className="container relative z-10 mx-auto max-w-275 px-6">
         <div
           ref={ref}
-          className={`grid grid-cols-1 items-center gap-[64px] md:grid-cols-2 transition-all duration-700 ${
+          className={`grid grid-cols-1 items-center gap-16 md:grid-cols-2 transition-all duration-700 ${
             visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
           }`}
         >
@@ -113,7 +113,7 @@ export function AboutSection() {
 
             {/* Title */}
             <h2
-              className="font-fraunces leading-[1.15] mb-6 text-white"
+              className="font-jakarta leading-[1.15] mb-6 text-white"
               style={{
                 fontSize: "clamp(34px, 4.5vw, 50px)",
                 fontWeight: 700,
@@ -126,17 +126,18 @@ export function AboutSection() {
             </h2>
 
             {/* Paragraphs */}
-            <div className="space-y-4 text-[14.5px] leading-[1.7] text-white/85">
+            <div className="space-y-2 text-[14.5px] leading-[1.7] text-white/85">
               <p>
-                RT 04 yang berlokasi di Perum Arjamukti Kencana Raya, Tasikmalaya,
-                adalah lingkungan hunian yang damai, bersih, dan rukun. Kami mengusung
-                nilai kekeluargaan dan gotong royong sebagai fondasi utama dalam
-                membangun keharmonisan bertetangga.
+                RT 04 yang berlokasi di Perum Arjamukti Kencana Raya,
+                Tasikmalaya, adalah lingkungan hunian yang damai, bersih, dan
+                rukun. Kami mengusung nilai kekeluargaan dan gotong royong
+                sebagai fondasi utama dalam membangun keharmonisan bertetangga.
               </p>
               <p>
-                Dengan berbagai program kerja bakti bulanan, siskamling aktif, serta
-                kegiatan sosial kemasyarakatan, kami berupaya menciptakan lingkungan
-                tempat tinggal yang aman, nyaman, dan transparan bagi seluruh warga.
+                Dengan berbagai program kerja bakti bulanan, siskamling aktif,
+                serta kegiatan sosial kemasyarakatan, kami berupaya menciptakan
+                lingkungan tempat tinggal yang aman, nyaman, dan transparan bagi
+                seluruh warga.
               </p>
             </div>
 
@@ -180,7 +181,7 @@ export function AboutSection() {
             <div className="absolute -inset-2 rounded-[32px] border border-white/10 pointer-events-none" />
 
             {/* Image Container */}
-            <div className="relative h-[360px] w-full max-w-[460px] overflow-hidden rounded-[24px] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] md:h-[420px]">
+            <div className="relative h-90 w-full max-w-115 overflow-hidden rounded-[24px] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] md:h-105">
               <Image
                 src="/images/arjamukti.png"
                 alt="RT 04 Arjamukti Neighborhood"
