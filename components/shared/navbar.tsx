@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import SignIn from "@/features/auth/pages/sign-in";
 import { AuthDialog } from "@/features/landing/components/auth-dialog";
 import { LogIn, ChevronDown } from "lucide-react";
 import Image from "next/image";
@@ -172,7 +173,8 @@ function Navbar() {
           </nav>
 
           <div className="space-x-2">
-            <AuthDialog />
+            {/* <AuthDialog /> */}
+            <SignIn />
           </div>
         </div>
       </header>
