@@ -59,11 +59,16 @@ export function AnnouncementsSection() {
   const { ref, visible } = useReveal();
 
   const handleDetailClick = (title: string) => {
-    toast.info(`Detail pengumuman "${title}" hanya dapat diakses setelah masuk ke sistem portal warga.`);
+    toast.info(
+      `Detail pengumuman "${title}" hanya dapat diakses setelah masuk ke sistem portal warga.`,
+    );
   };
 
   return (
-    <section id="pengumuman" className="relative py-[96px] overflow-hidden bg-white text-foreground">
+    <section
+      id="pengumuman"
+      className="relative py-[96px] overflow-hidden bg-white text-foreground"
+    >
       {/* Subtle Background Lights */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
         <div
@@ -74,7 +79,8 @@ export function AnnouncementsSection() {
             width: "450px",
             height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
           }}
         />
         <div
@@ -85,7 +91,8 @@ export function AnnouncementsSection() {
             width: "450px",
             height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
           }}
         />
         {/* Subtle grid pattern overlay */}
@@ -118,15 +125,17 @@ export function AnnouncementsSection() {
             <span className="text-primary">Terkini Lingkungan RT</span>
           </h2>
           <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-[1.7] text-muted-foreground">
-            Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan imbauan penting terbaru dari pengurus RT 04 Arjamukti.
+            Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan
+            imbauan penting terbaru dari pengurus RT 04 Arjamukti.
           </p>
         </div>
 
         {/* Announcement Grid */}
         <div
           ref={ref}
-          className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-            }`}
+          className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${
+            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          }`}
         >
           {announcements.map((item) => (
             <Card
@@ -139,7 +148,10 @@ export function AnnouncementsSection() {
                     <Calendar className="h-3.5 w-3.5 text-muted-foreground/85" />
                     {item.date}
                   </span>
-                  <Badge variant="outline" className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${item.tagBg}`}>
+                  <Badge
+                    variant="outline"
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${item.tagBg}`}
+                  >
                     {item.tag}
                   </Badge>
                 </div>
@@ -167,9 +179,12 @@ export function AnnouncementsSection() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-12 max-w-[800px] mx-auto p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3 justify-center text-center text-xs text-muted-foreground">
-          <Info className="h-4 w-4 text-primary flex-shrink-0" />
-          <span>Pengurus RT secara berkala menerbitkan lembaran surat edaran resmi yang dapat diunduh melalui panel portal warga.</span>
+        <div className="mt-12 max-w-full mx-auto p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3 justify-center text-center text-xs text-muted-foreground">
+          <Info className="h-4 w-4 text-primary shrink-0" />
+          <span>
+            Pengurus RT secara berkala menerbitkan lembaran surat edaran resmi
+            yang dapat diunduh melalui panel portal warga.
+          </span>
         </div>
       </div>
     </section>

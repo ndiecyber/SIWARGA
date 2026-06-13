@@ -24,9 +24,7 @@ const data = {
   navMain: [
     {
       title: "Utama",
-      items: [
-        { title: "Beranda", href: "#home" },
-      ],
+      items: [{ title: "Beranda", href: "#home" }],
     },
     {
       title: "Profil RT",
@@ -49,13 +47,13 @@ const data = {
         { title: "Data & Laporan", href: "#data-laporan" },
         { title: "Pengumuman RT", href: "#pengumuman" },
         { title: "Galeri Kegiatan", href: "#galeri" },
-        { title: "Testimoni Warga", href: "#testimonials" },
+        // { title: "Testimoni Warga", href: "#testimonials" },
       ],
     },
     {
       title: "Lainnya",
       items: [
-        { title: "FAQ", href: "#faq" },
+        // { title: "FAQ", href: "#faq" },
         { title: "Kontak", href: "#contact" },
       ],
     },
@@ -76,21 +74,27 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="cursor-default">
-              <p className="text-sm font-bold text-primary">SIWARGA Navigation</p>
+              <p className="text-sm font-bold text-primary">SIWARGA</p>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         {data.navMain.map((group) => (
-          <SidebarGroup key={group.title} className="px-4 py-2 border-b border-border/40 last:border-0">
+          <SidebarGroup
+            key={group.title}
+            className="px-4 py-2 border-b border-border/40 last:border-0"
+          >
             <p className="px-2 py-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
               {group.title}
             </p>
             <SidebarMenu>
               {group.items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="hover:text-primary transition-colors text-xs font-semibold py-1">
+                  <SidebarMenuButton
+                    asChild
+                    className="hover:text-primary transition-colors text-xs font-semibold py-1"
+                  >
                     <a href={item.href}>{item.title}</a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -64,8 +64,8 @@ export function RTBoardSection() {
   const { ref, visible } = useReveal();
 
   return (
-    <section id="pengurus-rt" className="py-[88px] bg-[#F8FAFC]">
-      <div className="container mx-auto max-w-[1100px] px-6">
+    <section id="pengurus-rt" className="py-12 bg-[#F8FAFC]">
+      <div className="container mx-auto max-w-275 px-6">
         <div className="mb-14 text-center">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
             <Users className="h-3.5 w-3.5" />
@@ -83,8 +83,9 @@ export function RTBoardSection() {
             <br />
             <em className="italic text-primary">Pengurus RT 04</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-[540px] text-[17px] leading-[1.7] text-muted-foreground">
-            Dedikasi para pengurus untuk mewujudkan lingkungan yang rukun, bersih, aman, dan transparan.
+          <p className="mx-auto mt-4 max-w-135 text-[17px] leading-[1.7] text-muted-foreground">
+            Dedikasi para pengurus untuk mewujudkan lingkungan yang rukun,
+            bersih, aman, dan transparan.
           </p>
         </div>
 
@@ -96,13 +97,15 @@ export function RTBoardSection() {
             <div
               key={m.name}
               className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.05)] ${
-                visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+                visible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-6 opacity-0"
               }`}
               style={{ transitionDelay: `${i * 80}ms` }}
             >
               <div>
                 {/* Profile Picture */}
-                <div className="relative mx-auto mb-5 h-[190px] w-full overflow-hidden rounded-xl bg-muted">
+                <div className="relative mx-auto mb-5 h-47.5 w-full overflow-hidden rounded-xl bg-muted">
                   <Image
                     src={m.avatar}
                     alt={m.name}
@@ -110,7 +113,7 @@ export function RTBoardSection() {
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                     sizes="(max-w-768px) 100vw, 250px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </div>
 
                 {/* Role Badge */}

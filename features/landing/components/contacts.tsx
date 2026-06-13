@@ -29,44 +29,51 @@ function ContactLanding() {
   return (
     <section
       id="contact"
-      className="flex flex-col items-center justify-center w-full gap-8 px-6 py-20 bg-primary text-primary-foreground md:px-0"
+      className="flex w-full flex-col items-center justify-center gap-8 bg-background px-6 py-20 text-foreground md:px-0"
     >
-      <Badge className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-tight bg-white/10 text-white border border-white/20">
-        <Home className="h-3 w-3" /> <span>Hubungi Kami</span>
+      <Badge className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-tight text-primary">
+        <Home className="h-3 w-3" />
+        <span>Hubungi Kami</span>
       </Badge>
 
       <div
         className={cn(
           fraunces.className,
-          "text-4xl md:text-5xl font-bold leading-tight text-center max-w-[700px] px-4",
+          "max-w-[700px] px-4 text-center text-4xl font-bold leading-tight text-foreground md:text-5xl",
         )}
       >
         <h1>Butuh Layanan Warga?</h1>
-        <h1 className="opacity-85 mt-2">Hubungi Pengurus RT</h1>
+        <h1 className="mt-2 text-muted-foreground">Hubungi Pengurus RT</h1>
       </div>
-      <span className="text-center text-wrap opacity-85 text-sm md:text-base max-w-[500px]">
-        Silakan hubungi pengurus RT 04 Arjamukti melalui kontak resmi di bawah ini untuk layanan administrasi, aduan, atau kebutuhan darurat.
+
+      <span className="max-w-[500px] text-wrap text-center text-sm text-muted-foreground md:text-base">
+        Silakan hubungi pengurus RT 04 Arjamukti melalui kontak resmi di bawah
+        ini untuk layanan administrasi, aduan, atau kebutuhan darurat.
       </span>
 
       {/* Contact Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-[960px] px-4 mt-4">
+      <div className="mt-4 grid w-full max-w-[960px] grid-cols-1 gap-5 px-4 md:grid-cols-3">
         {contactDetails.map((contact, index) => {
           const Icon = contact.icon;
+
           return (
             <div
               key={index}
-              className="flex flex-col p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all duration-300 group"
+              className="group flex flex-col rounded-2xl border border-border bg-card p-5 shadow-sm transition-all duration-300 hover:border-primary/30 hover:shadow-md"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white mb-4">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="text-base font-bold text-white mb-1">
+
+              <h3 className="mb-1 text-base font-bold text-card-foreground">
                 {contact.name}
               </h3>
-              <p className="text-xs text-white/70 mb-3">
+
+              <p className="mb-3 text-xs text-muted-foreground">
                 {contact.role}
               </p>
-              <span className="text-sm font-semibold text-secondary break-all">
+
+              <span className="break-all text-sm font-semibold text-primary">
                 {contact.phone}
               </span>
             </div>
@@ -76,18 +83,23 @@ function ContactLanding() {
 
       <div
         role="group"
-        className="flex flex-col sm:flex-row items-center gap-3 mt-6 justify-center"
+        className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row"
       >
-        <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer">
-          <Button variant="secondary" size="lg" className="rounded-xl h-12 px-6">
+        <a
+          href="https://wa.me/6281234567890"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button size="lg" className="h-12 rounded-xl px-6">
             <MessageSquare className="mr-2 h-5 w-5" />
             <span>Hubungi via WhatsApp</span>
           </Button>
         </a>
+
         <Button
           variant="outline"
           size="lg"
-          className="bg-transparent border-white/20 hover:bg-white/10 hover:text-white rounded-xl h-12 px-6"
+          className="h-12 rounded-xl border-border bg-background px-6 hover:bg-muted"
         >
           <ShieldCheck className="mr-2 h-5 w-5" />
           <span>Masuk Admin</span>

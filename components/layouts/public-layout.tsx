@@ -35,7 +35,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
     <>
       {loading && (
         <div
-          className={`fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-b from-background to-slate-50 dark:to-card transition-opacity duration-600 ease-out ${
+          className={`fixed inset-0 z-9999 flex items-center justify-center bg-linear-to-b from-background to-slate-50 dark:to-card transition-opacity duration-600 ease-out ${
             fadeAway ? "opacity-0 pointer-events-none" : "opacity-100"
           }`}
         >
@@ -48,7 +48,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
                 linear-gradient(90deg, rgba(128,128,128,0.035) 1px, transparent 1px)
               `,
               backgroundSize: "60px 60px",
-              animation: "fadeIn 1.2s ease 0.3s both, gridPan 20s linear infinite",
+              animation:
+                "fadeIn 1.2s ease 0.3s both, gridPan 20s linear infinite",
             }}
           />
 
@@ -76,7 +77,8 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
               className="text-[10px] tracking-[0.2em] uppercase text-foreground/75 dark:text-white/60 font-medium mb-5"
               style={{
                 fontFamily: "var(--font-outfit)",
-                animation: "eyebrowReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both",
+                animation:
+                  "eyebrowReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both",
               }}
             >
               Sistem Informasi Warga
@@ -93,9 +95,10 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
                 width={240}
                 height={65}
                 priority
-                className="h-auto w-[240px] object-contain dark:brightness-0 dark:invert"
+                className="h-auto w-60 object-contain dark:brightness-0 dark:invert"
                 style={{
-                  animation: "logoReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both",
+                  animation:
+                    "logoReveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.9s both",
                 }}
               />
             </div>
@@ -112,11 +115,12 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 
             {/* Tagline */}
             <p
-              className="text-[11px] tracking-[0.1em] uppercase text-foreground/75 dark:text-white/60 font-normal"
+              className="text-[11px] tracking-widest uppercase text-foreground/75 dark:text-white/60 font-normal"
               style={{
                 fontFamily: "var(--font-outfit)",
                 fontWeight: 200,
-                animation: "taglineReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s both",
+                animation:
+                  "taglineReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.6s both",
               }}
             >
               Pelayanan · Komunitas · Transparansi
@@ -126,7 +130,9 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
           {/* Bottom bar */}
           <div
             className="absolute bottom-7 left-0 right-0 flex justify-between items-center px-8"
-            style={{ animation: "riseIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.8s both" }}
+            style={{
+              animation: "riseIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.8s both",
+            }}
           >
             <span className="text-[9px] tracking-[0.2em] uppercase text-foreground/45 dark:text-white/30 font-medium">
               Memuat sistem

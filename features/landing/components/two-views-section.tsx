@@ -37,8 +37,8 @@ export function TwoViews() {
   const { ref, visible } = useReveal();
 
   return (
-    <section id="modules" className="py-[88px] bg-background">
-      <div className="container mx-auto max-w-[1100px] px-6">
+    <section id="modules" className="py-12 bg-background">
+      <div className="container mx-auto max-w-275 px-6">
         {/* Header */}
         <div className="mb-14 text-center">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
@@ -58,7 +58,8 @@ export function TwoViews() {
             <em className="italic text-primary">Satu Sistem Terpadu</em>
           </h2>
           <p className="mx-auto mt-4 max-w-[540px] text-[15px] leading-[1.7] text-muted-foreground">
-            SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam mengelola administrasi dan warga dalam memantau informasi.
+            SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam
+            mengelola administrasi dan warga dalam memantau informasi.
           </p>
         </div>
 
@@ -90,12 +91,18 @@ export function TwoViews() {
               {/* Minimal Mockup Stats */}
               <div className="p-4 rounded-xl bg-muted/50 border border-border/60 mb-6 space-y-3">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="text-muted-foreground">Total Warga Terdata</span>
-                  <span className="font-bold text-foreground">456 Jiwa (114 KK)</span>
+                  <span className="text-muted-foreground">
+                    Total Warga Terdata
+                  </span>
+                  <span className="font-bold text-foreground">
+                    456 Jiwa (114 KK)
+                  </span>
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-muted-foreground">Okupansi Rumah</span>
-                  <span className="font-bold text-foreground">120 Unit Rumah</span>
+                  <span className="font-bold text-foreground">
+                    120 Unit Rumah
+                  </span>
                 </div>
                 <div className="h-1.5 w-full bg-border rounded-full overflow-hidden">
                   <div className="h-full bg-primary" style={{ width: "92%" }} />
@@ -105,11 +112,24 @@ export function TwoViews() {
               {/* Bullet Features */}
               <ul className="space-y-3.5">
                 {[
-                  { icon: ListTodo, label: "Manajemen Data Kependudukan & KK secara rapi" },
-                  { icon: FileText, label: "Pencatatan kas masuk & pengeluaran iuran bulanan" },
-                  { icon: Bell, label: "Penerbitan surat edaran & pengumuman digital ke warga" },
+                  {
+                    icon: ListTodo,
+                    label: "Manajemen Data Kependudukan & KK secara rapi",
+                  },
+                  {
+                    icon: FileText,
+                    label: "Pencatatan kas masuk & pengeluaran iuran bulanan",
+                  },
+                  {
+                    icon: Bell,
+                    label:
+                      "Penerbitan surat edaran & pengumuman digital ke warga",
+                  },
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-3 text-sm text-muted-foreground"
+                  >
                     <item.icon className="h-4.5 w-4.5 text-primary mt-0.5 flex-shrink-0" />
                     <span>{item.label}</span>
                   </li>
@@ -139,8 +159,12 @@ export function TwoViews() {
               {/* Minimal Mockup Status */}
               <div className="p-4 rounded-xl bg-muted/50 border border-border/60 mb-6 flex justify-between items-center">
                 <div>
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Tagihan Juni 2025</span>
-                  <div className="text-base font-bold text-foreground mt-0.5">Rp 25.000</div>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                    Tagihan Juni 2025
+                  </span>
+                  <div className="text-base font-bold text-foreground mt-0.5">
+                    Rp 25.000
+                  </div>
                 </div>
                 <span className="inline-flex items-center gap-1 rounded-full bg-green-50 text-green-700 border border-green-150 px-3 py-1 text-xs font-bold">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -151,11 +175,23 @@ export function TwoViews() {
               {/* Bullet Features */}
               <ul className="space-y-3.5">
                 {[
-                  { icon: CreditCard, label: "Cek tagihan & riwayat iuran secara berkala" },
-                  { icon: Bell, label: "Membaca pengumuman penting & surat edaran RT" },
-                  { icon: FileText, label: "Mengirim aduan / aspirasi langsung ke pengurus" },
+                  {
+                    icon: CreditCard,
+                    label: "Cek tagihan & riwayat iuran secara berkala",
+                  },
+                  {
+                    icon: Bell,
+                    label: "Membaca pengumuman penting & surat edaran RT",
+                  },
+                  {
+                    icon: FileText,
+                    label: "Mengirim aduan / aspirasi langsung ke pengurus",
+                  },
                 ].map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-muted-foreground">
+                  <li
+                    key={idx}
+                    className="flex items-start gap-3 text-sm text-muted-foreground"
+                  >
                     <item.icon className="h-4.5 w-4.5 text-indigo-600 mt-0.5 flex-shrink-0" />
                     <span>{item.label}</span>
                   </li>

@@ -34,13 +34,13 @@ const navItems = [
       { title: "Data & Laporan", href: "#data-laporan" },
       { title: "Pengumuman RT", href: "#pengumuman" },
       { title: "Galeri Kegiatan", href: "#galeri" },
-      { title: "Testimoni", href: "#testimonials" },
+      // { title: "Testimoni", href: "#testimonials" },
     ],
   },
-  {
-    title: "FAQ",
-    href: "#faq",
-  },
+  // {
+  //   title: "FAQ",
+  //   href: "#faq",
+  // },
   {
     title: "Kontak",
     href: "#contact",

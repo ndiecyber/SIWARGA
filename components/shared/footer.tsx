@@ -111,7 +111,7 @@ function FooterSection({ title, links }: FooterSectionProps) {
         {title}
       </h2>
 
-      <ul className="space-y-3">
+      <ul className="space-y-1.5">
         {links.map((link) => (
           <li key={link.label}>
             <Link
@@ -132,7 +132,7 @@ function Footer() {
   return (
     <footer className="w-full border-t bg-secondary/60">
       <div className="mx-auto grid w-full max-w-275 gap-10 px-4 py-12 md:grid-cols-[1.3fr_1fr] md:px-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="max-w-md">
+        <div className="max-w-md space-y-2">
           <Link
             href="#home"
             onClick={(event) => handleSmoothScroll(event, "#home")}
@@ -154,7 +154,7 @@ function Footer() {
             informasi lingkungan secara lebih rapi dan transparan.
           </p>
 
-          <ul className="mt-6 space-y-3 text-sm">
+          <ul className="space-y-2 text-sm">
             <li className="flex items-start gap-3 text-muted-foreground">
               <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
               <span>Perum Arjamukti Kencana Raya, Tasikmalaya</span>
@@ -162,7 +162,7 @@ function Footer() {
 
             <li className="flex items-start gap-3 text-muted-foreground">
               <Phone className="mt-0.5 size-4 shrink-0 text-primary" />
-              <span>0812-0000-1234 Ketua RT</span>
+              <span>0853-2013-2014 Ketua RT</span>
             </li>
 
             <li className="flex items-start gap-3 text-muted-foreground">

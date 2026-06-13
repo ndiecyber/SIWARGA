@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Outfit } from "next/font/google";
+import { Fraunces, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -8,6 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 import ReactQueryProvider from "@/providers/react-query-provider";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+
+const jakartaPlus = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -31,6 +36,7 @@ export default function RootLayout({
       className={cn(
         outfit.variable,
         fraunces.variable,
+        jakartaPlus.variable,
         "h-full antialiased font-sans",
       )}
       suppressHydrationWarning

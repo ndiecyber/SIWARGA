@@ -25,7 +25,7 @@ import { Loader2 } from "lucide-react";
 import {
   createAnnouncement,
   updateAnnouncement,
-} from "@/app/admin/announcment/actions";
+} from "@/app/admin/announcement/actions";
 
 type Announcement = {
   id: number;
