@@ -67,8 +67,12 @@ model User {
   emailVerified Boolean  @default(false)
   image         String?  @db.VarChar(500)
   phoneNumber   String   @unique @db.VarChar(20)
-  role          Role     @default(USER)
   userType      UserType @default(STANDARD)
+
+  role       String?
+  banned     Boolean?
+  banReason  String?
+  banExpires DateTime? @db.Timestamptz(3)
 
   identificationNumber String? @unique
   kkUrl                String? @db.VarChar(500)
@@ -87,15 +91,16 @@ model User {
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime
+  updatedAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@map("session")
