@@ -61,13 +61,15 @@ enum RelationshipType {
 // ==========================================
 
 model User {
-  id            String   @id @default(uuid())
-  name          String   @db.VarChar(255)
-  email         String?  @unique @db.VarChar(255)
-  emailVerified Boolean  @default(false)
-  image         String?  @db.VarChar(500)
-  phoneNumber   String   @unique @db.VarChar(20)
-  userType      UserType @default(STANDARD)
+  id              String   @id @default(uuid())
+  name            String   @db.VarChar(255)
+  username        String?  @unique
+  displayUsername String?
+  email           String?  @unique @db.VarChar(255)
+  emailVerified   Boolean  @default(false)
+  image           String?  @db.VarChar(500)
+  phoneNumber     String   @unique @db.VarChar(20)
+  userType        UserType @default(STANDARD)
 
   role       String?
   banned     Boolean?
