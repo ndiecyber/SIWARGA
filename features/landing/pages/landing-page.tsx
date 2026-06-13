@@ -22,10 +22,10 @@ const LandingPage = () => {
       <HowItWorksSection />
       <TwoViews />
       <DataReportsSection />
-      <TestimonialSection />
+      {/* <TestimonialSection /> */}
       <AnnouncementsSection />
       <GallerySection />
-      <FAQSection />
+      {/* <FAQSection /> */}
       <ContactLanding />
     </div>
   );
