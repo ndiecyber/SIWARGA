@@ -46,7 +46,7 @@ const FILTER_CATEGORIES: FilterCategory[] = [
   },
 ];
 
-export default async function HousesIndex() {
+export default async function HousesPage() {
   const data = await prisma.house.findMany({ include: { owner: true } });
 
   return (

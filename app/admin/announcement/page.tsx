@@ -1,6 +1,6 @@
-import AnnouncmentPage from "@/features/admin/announcement/pages/announcments-page";
 import { connection } from "next/server";
 import { getAnnouncements } from "./actions";
+import AnnouncmentPage from "@/features/admin/announcement/pages/announcments-page";
 
 export const metadata = {
   title: "Pengumuman | SIWARGA Admin",

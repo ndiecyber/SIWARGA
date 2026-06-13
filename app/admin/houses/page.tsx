@@ -1,10 +1,10 @@
-import HousesIndex from "@/features/admin/houses/pages";
+import HousesPage from "@/features/admin/houses/pages/houses-page";
 import { connection } from "next/server";
 
 async function Page() {
   await connection();
 
-  return <HousesIndex />;
+  return <HousesPage />;
 }
 
 export default Page;
