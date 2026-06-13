@@ -76,8 +76,9 @@ jobs:
 
             # Backup & extract
             rm -rf standalone_backup
-            tar -xzf next-build.tar.gz   # akan extract ke .next/standalone/
+            tar -xzf next-build.tar.gz
             rm next-build.tar.gz
+            cp .env .next/standalone/.env
 
             npx -y prisma@7.8.0 migrate deploy
 
