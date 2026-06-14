@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import {
   Banknote,
   BookMarked,
@@ -14,8 +15,22 @@ import {
 } from "lucide-react";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 import { Button } from "../ui/button";
 import {
@@ -31,7 +46,6 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "../ui/sidebar";
-import Image from "next/image";
 
 type SidebarData = {
   title: string;
@@ -156,6 +170,16 @@ function RenderSidebarItem({ item }: { item: SidebarData }) {
 }
 
 function AdministrationSidebar() {
+  const router = useRouter();
+  const { isPending } = authClient.useSession();
+
+  function handleSignOut() {
+    authClient.signOut();
+    router.push("/");
+
+    toast.success("Logout berhasil");
+  }
+
   return (
     <Sidebar>
       <SidebarHeader className="bg-primary py-2">
@@ -176,12 +200,33 @@ function AdministrationSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="bg-primary border-t border-t-border/25 pt-8">
-        <Button
-          variant="outline"
-          className="bg-transparent text-primary-foreground"
-        >
-          <LogOut className="mr-2" /> Logout
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="bg-transparent text-primary-foreground"
+              disabled={isPending}
+            >
+              <LogOut className="mr-2" /> Logout
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Are you sure you want to sign out?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                You will be signed out from this device.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction variant="destructive" onClick={handleSignOut}>
+                Sign out
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
