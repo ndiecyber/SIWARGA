@@ -1,12 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { AuthDialog } from "@/features/landing/components/auth-dialog";
-import { LogIn, ChevronDown } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+
+import { ChevronDown, LogIn, LogOut } from "lucide-react";
+
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import SignIn from "@/features/auth/pages/sign-in";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   {
@@ -48,6 +52,16 @@ const navItems = [
 ];
 
 function Navbar() {
+  const { data: session, error } = authClient.useSession();
+
+  function isSignedIn() {
+    return !!session;
+  }
+
+  function handleSignOut() {
+    authClient.signOut();
+  }
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
 
@@ -171,8 +185,14 @@ function Navbar() {
             </ul>
           </nav>
 
-          <div className="space-x-2">
-            <AuthDialog />
+          <div className="grid">
+            {session ? (
+              <Button variant="destructive" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            ) : (
+              <SignIn />
+            )}
           </div>
         </div>
       </header>
