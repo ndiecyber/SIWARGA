@@ -20,7 +20,11 @@ import {
 
 import { userSignInSchema, UserSignInValues } from "../schemas";
 
-function UserSignInForm() {
+interface Props {
+  onSuccess?: () => void;
+}
+
+function UserSignInForm({ onSuccess }: Props) {
   const form = useForm({
     resolver: standardSchemaResolver(userSignInSchema),
     mode: "onChange",
@@ -54,7 +58,13 @@ function UserSignInForm() {
 
     toast.promise(mutationPromise, {
       loading: "Sedang masuk sebagai warga...",
-      success: () => "Login warga berhasil",
+      success: () => {
+        if (onSuccess) {
+          onSuccess();
+        }
+
+        return "Login warga berhasil";
+      },
       error: (error) =>
         error instanceof Error ? error.message : "Unknown error",
     });

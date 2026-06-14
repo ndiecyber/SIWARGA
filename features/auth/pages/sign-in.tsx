@@ -21,10 +21,11 @@ interface Props {
 }
 
 function SignIn({ children }: Props) {
+  const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"user" | "admin">("user");
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children ?? (
           <Button className="gap-2">
@@ -59,11 +60,11 @@ function SignIn({ children }: Props) {
           </TabsList>
 
           <TabsContent value="user">
-            <UserSignInForm />
+            <UserSignInForm onSuccess={() => setOpen(false)} />
           </TabsContent>
 
           <TabsContent value="admin">
-            <AdminSignInForm />
+            <AdminSignInForm onSuccess={() => setOpen(false)} />
           </TabsContent>
         </Tabs>
       </DialogContent>

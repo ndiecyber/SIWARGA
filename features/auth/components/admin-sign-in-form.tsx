@@ -23,7 +23,11 @@ import {
 
 import { adminSignInSchema, AdminSignInValues } from "../schemas";
 
-function AdminSignInForm() {
+interface Props {
+  onSuccess?: () => void;
+}
+
+function AdminSignInForm({ onSuccess }: Props) {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
@@ -62,7 +66,13 @@ function AdminSignInForm() {
 
     toast.promise(mutationPromise, {
       loading: "Sedang masuk sebagai pengurus...",
-      success: () => "Login pengurus berhasil",
+      success: () => {
+        if (onSuccess) {
+          onSuccess();
+        }
+
+        return "Login pengurus berhasil";
+      },
       error: (error) =>
         error instanceof Error ? error.message : "Unknown error",
     });
