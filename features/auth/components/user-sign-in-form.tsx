@@ -1,5 +1,6 @@
 "use client";
 
+import z from "zod";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
+import { DialogFooter } from "@/components/ui/dialog";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import {
   Field,
@@ -16,12 +18,11 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 
-import { userLoginSchema, UserLoginValues } from "../schemas";
-import { DialogFooter } from "@/components/ui/dialog";
+import { userSignInSchema, UserSignInValues } from "../schemas";
 
 function UserSignInForm() {
   const form = useForm({
-    resolver: standardSchemaResolver(userLoginSchema),
+    resolver: standardSchemaResolver(userSignInSchema),
     mode: "onChange",
     defaultValues: {
       phoneNumber: "",
@@ -29,17 +30,13 @@ function UserSignInForm() {
   });
 
   const { mutateAsync, isPending: isSubmitting } = useMutation({
-    mutationKey: ["login-user"],
-    mutationFn: async (values: UserLoginValues) => {
-      const formInput = userLoginSchema.safeParse(values);
-
-      if (!formInput.success) {
-        throw new Error(formInput.error.message);
-      }
+    mutationKey: ["sign-in-user"],
+    mutationFn: async (values: z.input<typeof userSignInSchema>) => {
+      const parsed = userSignInSchema.parse(values);
 
       const { data, error } = await authClient.signIn.username({
-        username: formInput.data.username,
-        password: formInput.data.password,
+        username: parsed.username,
+        password: parsed.password,
       });
 
       if (error) {
@@ -50,8 +47,10 @@ function UserSignInForm() {
     },
   });
 
-  async function onSubmit(data: UserLoginValues) {
-    const mutationPromise = mutateAsync(data);
+  async function onSubmit(data: UserSignInValues) {
+    console.log(data);
+
+    const mutationPromise = mutateAsync(form.getValues());
 
     toast.promise(mutationPromise, {
       loading: "Sedang masuk sebagai warga...",
@@ -75,11 +74,13 @@ function UserSignInForm() {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="login-user-phone">Nomor telepon</FieldLabel>
+              <FieldLabel htmlFor="sign-in-user-phone">
+                Nomor telepon
+              </FieldLabel>
 
               <Input
                 {...field}
-                id="login-user-phone"
+                id="sign-in-user-phone"
                 placeholder="08xxxxxxxxxx"
                 type="tel"
                 inputMode="tel"

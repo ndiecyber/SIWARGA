@@ -21,13 +21,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 
-import { adminLoginSchema, AdminLoginValues } from "../schemas";
+import { adminSignInSchema, AdminSignInValues } from "../schemas";
 
 function AdminSignInForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
-    resolver: standardSchemaResolver(adminLoginSchema),
+    resolver: standardSchemaResolver(adminSignInSchema),
     mode: "onChange",
     defaultValues: {
       email: "",
@@ -36,9 +36,9 @@ function AdminSignInForm() {
   });
 
   const { mutateAsync, isPending: isSubmitting } = useMutation({
-    mutationKey: ["login-user"],
-    mutationFn: async (values: AdminLoginValues) => {
-      const formInput = adminLoginSchema.safeParse(values);
+    mutationKey: ["sign-in-admin"],
+    mutationFn: async (values: AdminSignInValues) => {
+      const formInput = adminSignInSchema.safeParse(values);
 
       if (!formInput.success) {
         throw new Error(formInput.error.message);
@@ -57,7 +57,7 @@ function AdminSignInForm() {
     },
   });
 
-  async function onSubmit(data: AdminLoginValues) {
+  async function onSubmit(data: AdminSignInValues) {
     const mutationPromise = mutateAsync(data);
 
     toast.promise(mutationPromise, {

@@ -2,7 +2,7 @@ import z from "zod";
 
 const passwordPlaceholder = "password1234";
 
-export const userLoginSchema = z
+export const userSignInSchema = z
   .object({
     phoneNumber: z
       .string()
@@ -15,10 +15,10 @@ export const userLoginSchema = z
     password: passwordPlaceholder,
   }));
 
-export const adminLoginSchema = z.object({
+export const adminSignInSchema = z.object({
   email: z.email().min(1, "Username wajib diisi"),
   password: z.string().min(1, "Password wajib diisi"),
 });
 
-export type UserLoginValues = z.infer<typeof userLoginSchema>;
-export type AdminLoginValues = z.infer<typeof adminLoginSchema>;
+export type UserSignInValues = z.infer<typeof userSignInSchema>;
+export type AdminSignInValues = z.infer<typeof adminSignInSchema>;
