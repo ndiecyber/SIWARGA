@@ -11,7 +11,8 @@
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
-    "seed:admin": "tsx seed/admin-account.ts"
+    "seed:admin": "tsx seed/admin-account.ts",
+    "seed:users": "tsx seed/user-accounts.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
