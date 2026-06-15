@@ -5,11 +5,11 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
 import { useSortState } from "@/hooks/use-sort-state";
 import { useFilterState } from "@/hooks/use-filter-state";
-import { FilterBar } from "@/components/shared/filter-bar";
 import {
   Table,
   TableBody,
@@ -36,8 +36,9 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 
+import FilterChips from "./filter-chips";
 import SortDropdown from "./sort-dropdown";
-import { SortOption } from "@/lib/types/sort";
+import FilterDropdown from "./filter-dropdown";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -101,12 +102,10 @@ export function DataTable<TData, TValue>({
 
         {/* Filter and sort bar */}
         <div className="flex flex-row items-center justify-between gap-1">
-          <FilterBar
+          <FilterDropdown
             filterCategories={filterCategories}
             activeFilters={activeFilters}
             onAddFilter={addFilter}
-            onRemoveFilter={removeFilter}
-            onClearAll={clearAll}
           />
 
           <SortDropdown
@@ -115,6 +114,15 @@ export function DataTable<TData, TValue>({
             onSortChange={onSortChange}
           />
         </div>
+      </div>
+
+      <div className="w-full">
+        <FilterChips
+          filterCategories={filterCategories}
+          activeFilters={activeFilters}
+          onRemoveFilter={removeFilter}
+          onClearAll={clearAll}
+        />
       </div>
 
       {/* Table */}
@@ -176,7 +184,7 @@ export function DataTable<TData, TValue>({
             value={String(table.getState().pagination.pageSize)}
             onValueChange={(val: string) => table.setPageSize(Number(val))}
           >
-            <SelectTrigger className="h-8 w-[70px]">
+            <SelectTrigger className="h-8 w-17.5">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

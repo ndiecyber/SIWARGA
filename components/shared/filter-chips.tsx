@@ -16,8 +16,8 @@ function FilterChip<TData>({
   const option = category?.options.find((o) => o.value === filter.value);
 
   return (
-    <div className="flex h-7 items-center overflow-hidden rounded-md border bg-background text-xs shadow-sm">
-      <span className="border-r bg-muted px-2 py-1 font-medium text-muted-foreground">
+    <div className="flex items-center overflow-hidden text-xs border rounded-md shadow-sm h-7 bg-background">
+      <span className="px-2 py-1 font-medium border-r bg-muted text-muted-foreground">
         {filter.categoryLabel}
       </span>
 
@@ -31,10 +31,45 @@ function FilterChip<TData>({
         className="flex h-full items-center border-l px-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
         aria-label={`Hapus filter ${filter.categoryLabel}`}
       >
-        <X className="h-3 w-3" />
+        <X className="w-3 h-3" />
       </button>
     </div>
   );
 }
 
-export default FilterChip;
+interface FilterChipsProps<TData> {
+  filterCategories: FilterCategory<TData>[];
+  activeFilters: ActiveFilter<TData>[];
+  onRemoveFilter: (categoryId: keyof TData) => void;
+  onClearAll: () => void;
+}
+
+export function FilterChips<TData>({
+  filterCategories,
+  activeFilters,
+  onRemoveFilter,
+  onClearAll,
+}: FilterChipsProps<TData>) {
+  if (activeFilters.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {activeFilters.map((filter) => (
+        <FilterChip
+          key={filter.categoryId as string}
+          filter={filter}
+          filterCategories={filterCategories}
+          onRemove={() => onRemoveFilter(filter.categoryId)}
+        />
+      ))}
+      <button
+        onClick={onClearAll}
+        className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+      >
+        Hapus semua
+      </button>
+    </div>
+  );
+}
+
+export default FilterChips;
