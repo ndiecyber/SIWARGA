@@ -1,7 +1,12 @@
 import AdministrationLayout from "@/components/layouts/administration-layout";
+import layoutWithAuthAdmin, {
+  LayoutWithAuthAdminProps,
+} from "@/components/layouts/auth/layout-with-auth-admin";
 
-function Layout({ children }: { children: React.ReactNode }) {
+function Layout({
+  children,
+}: LayoutWithAuthAdminProps & { children: React.ReactNode }) {
   return <AdministrationLayout>{children}</AdministrationLayout>;
 }
 
-export default Layout;
+export default layoutWithAuthAdmin(Layout);
