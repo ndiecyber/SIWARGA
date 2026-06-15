@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import { Search } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
@@ -39,6 +38,12 @@ import {
 import FilterChips from "./filter-chips";
 import SortDropdown from "./sort-dropdown";
 import FilterDropdown from "./filter-dropdown";
+import { MobileFilterSort } from "./mobile-filter-sort";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -57,6 +62,8 @@ export function DataTable<TData, TValue>({
   filterCategories = [],
   sortOptions = [],
 }: DataTableProps<TData, TValue>) {
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -88,42 +95,71 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full space-y-4">
       {/* Toolbar */}
-      <div className="flex flex-row items-center justify-between gap-3">
-        {/* Search input */}
-        <div className="relative flex-1 max-w-md md:w-full">
-          <Search className="absolute w-4 h-4 -translate-y-1/2 left-3 top-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Cari nama, "
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9"
-          />
+      <header className="flex flex-col w-full gap-2">
+        {/* Desktop view */}
+        <div className="flex-row items-center justify-between hidden gap-3 md:flex">
+          {/* Search input */}
+          <InputGroup>
+            <InputGroupAddon align="inline-start">
+              <Search className="opacity-50 size-4 shrink-0" />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Cari nama, "
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
+          </InputGroup>
+
+          {/* Filter and sort actions */}
+          <div className="flex flex-row items-center justify-between gap-1">
+            <FilterDropdown
+              filterCategories={filterCategories}
+              activeFilters={activeFilters}
+              onAddFilter={addFilter}
+            />
+
+            <SortDropdown
+              sortOptions={sortOptions}
+              activeSort={activeSort}
+              onSortChange={onSortChange}
+            />
+          </div>
         </div>
 
-        {/* Filter and sort bar */}
-        <div className="flex flex-row items-center justify-between gap-1">
-          <FilterDropdown
+        {/* Mobile view */}
+        <div className="flex flex-row items-center justify-between gap-3 md:hidden">
+          <InputGroup>
+            <InputGroupAddon align="inline-start">
+              <Search className="opacity-50 size-4 shrink-0" />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Cari nama, "
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
+          </InputGroup>
+
+          <MobileFilterSort
             filterCategories={filterCategories}
             activeFilters={activeFilters}
             onAddFilter={addFilter}
-          />
-
-          <SortDropdown
+            onRemoveFilter={removeFilter}
+            onClearAllFilters={clearAll}
             sortOptions={sortOptions}
             activeSort={activeSort}
             onSortChange={onSortChange}
           />
         </div>
-      </div>
 
-      <div className="w-full">
-        <FilterChips
-          filterCategories={filterCategories}
-          activeFilters={activeFilters}
-          onRemoveFilter={removeFilter}
-          onClearAll={clearAll}
-        />
-      </div>
+        <div className="hidden w-full md:block">
+          <FilterChips
+            filterCategories={filterCategories}
+            activeFilters={activeFilters}
+            onRemoveFilter={removeFilter}
+            onClearAll={clearAll}
+          />
+        </div>
+      </header>
 
       {/* Table */}
       <div className="border rounded-md">
