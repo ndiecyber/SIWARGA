@@ -315,7 +315,7 @@ export function DataTable<TData, TValue>({
                 className={cn(
                   "h-9 w-9",
                   page === pageIndex &&
-                    "bg-primary text-primary-foreground hover:bg-primary",
+                    "bg-primary text-primary-foreground hover:bg-primary/20 hover:text-primary",
                 )}
               >
                 {page + 1}
