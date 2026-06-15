@@ -3,13 +3,14 @@ import { Plus } from "lucide-react";
 import prisma from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { fraunces } from "@/lib/fonts";
+import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
 import { DataTable } from "@/components/shared/data-table";
 import { FieldDialog } from "@/components/shared/field-dialog";
 
 import { columns } from "../components/columns";
 import { HouseCreateForm } from "../components/create-form";
-import { Button } from "@/components/ui/button";
+import { SortOption } from "@/lib/types/sort";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -46,6 +47,25 @@ const FILTER_CATEGORIES: FilterCategory[] = [
   },
 ];
 
+const sortOptions: SortOption[] = [
+  {
+    id: "houseNumber",
+    label: "House",
+  },
+  {
+    id: "block",
+    label: "Block",
+  },
+  {
+    id: "owner",
+    label: "Owner",
+  },
+  {
+    id: "status",
+    label: "Status",
+  },
+];
+
 export default async function HousesPage() {
   const data = await prisma.house.findMany({ include: { owner: true } });
 
@@ -70,6 +90,7 @@ export default async function HousesPage() {
         columns={columns}
         data={data}
         filterCategories={FILTER_CATEGORIES}
+        sortOptions={sortOptions}
       />
     </main>
   );
