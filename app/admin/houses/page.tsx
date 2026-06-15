@@ -1,3 +1,4 @@
+import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
 import HousesPage from "@/features/admin/houses/pages/houses-page";
 import { connection } from "next/server";
 
@@ -7,4 +8,4 @@ async function Page() {
   return <HousesPage />;
 }
 
-export default Page;
+export default layoutWithAuthAdmin(Page);
