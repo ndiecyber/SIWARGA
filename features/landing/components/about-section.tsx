@@ -100,20 +100,19 @@ export function AboutSection() {
       <div className="container relative z-10 mx-auto max-w-275 px-6">
         <div
           ref={ref}
-          className={`grid grid-cols-1 items-center gap-16 md:grid-cols-2 transition-all duration-700 ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-          }`}
+          className={`grid grid-cols-1 items-center gap-16 md:grid-cols-2 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+            }`}
         >
           {/* Left Column: Text Content and Stats */}
           <div className="flex flex-col justify-center">
-            {/* Badge */}
+            {/* Badge
             <div className="mb-5 self-start rounded-full border border-white/35 bg-white/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.8px] text-white">
               Tentang Kami
-            </div>
+            </div> */}
 
             {/* Title */}
             <h2
-              className="font-jakarta leading-[1.15] mb-6 text-white"
+              className="font-fraunces leading-[1.15] mb-6 text-white"
               style={{
                 fontSize: "clamp(34px, 4.5vw, 50px)",
                 fontWeight: 700,
@@ -142,7 +141,7 @@ export function AboutSection() {
             </div>
 
             {/* Integrated Stats Row */}
-            <div className="mt-9 grid grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
               {stats.map((s) =>
                 s.link ? (
                   <button
@@ -150,7 +149,7 @@ export function AboutSection() {
                     onClick={() => handleSmoothScroll(s.link)}
                     className="group flex flex-col items-start rounded-[14px] border border-white/15 bg-white/5 p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10"
                   >
-                    <span className="text-[24px] font-bold leading-none text-white">
+                    <span className="text-[20px] font-bold leading-none text-white">
                       {s.value}
                     </span>
                     <span className="mt-2 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.5px] text-white/75 group-hover:text-white">
@@ -163,7 +162,7 @@ export function AboutSection() {
                     key={s.label}
                     className="flex flex-col items-start rounded-[14px] border border-white/15 bg-white/5 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10"
                   >
-                    <span className="text-[24px] font-bold leading-none text-white">
+                    <span className="text-[20px] font-bold leading-none text-white">
                       {s.value}
                     </span>
                     <span className="mt-2 text-[10px] font-semibold uppercase tracking-[0.5px] text-white/75">

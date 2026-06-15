@@ -29,27 +29,29 @@ function ContactLanding() {
   return (
     <section
       id="contact"
-      className="flex w-full flex-col items-center justify-center gap-8 bg-background px-6 py-20 text-foreground md:px-0"
+      className="flex w-full flex-col items-center justify-center bg-background px-6 py-20 text-foreground md:px-0"
     >
-      <Badge className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-tight text-primary">
-        <Home className="h-3 w-3" />
-        <span>Hubungi Kami</span>
-      </Badge>
-
-      <div
-        className={cn(
-          fraunces.className,
-          "max-w-[700px] px-4 text-center text-4xl font-bold leading-tight text-foreground md:text-5xl",
-        )}
-      >
-        <h1>Butuh Layanan Warga?</h1>
-        <h1 className="mt-2 text-muted-foreground">Hubungi Pengurus RT</h1>
+      <div className="container mx-auto max-w-275 px-6 mb-8">
+        <div className="text-center max-w-3xl mx-auto flex flex-col items-center">
+          <Badge className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-tight text-primary">
+            <Home className="h-3 w-3" />
+            <span>Hubungi Kami</span>
+          </Badge>
+          <h2
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
+          >
+            Butuh Layanan Warga? <em className="italic text-primary">Hubungi Pengurus RT</em>
+          </h2>
+          <p
+            className="text-[16px] leading-[1.6] text-muted-foreground truncate w-full"
+            style={{ maxWidth: "540px" }}
+            title="Silakan hubungi pengurus RT 04 Arjamukti melalui kontak resmi di bawah ini untuk layanan administrasi, aduan, atau kebutuhan darurat."
+          >
+            Silakan hubungi pengurus RT 04 Arjamukti melalui kontak resmi di bawah ini untuk layanan administrasi, aduan, atau kebutuhan darurat.
+          </p>
+        </div>
       </div>
-
-      <span className="max-w-[500px] text-wrap text-center text-sm text-muted-foreground md:text-base">
-        Silakan hubungi pengurus RT 04 Arjamukti melalui kontak resmi di bawah
-        ini untuk layanan administrasi, aduan, atau kebutuhan darurat.
-      </span>
 
       {/* Contact Cards Grid */}
       <div className="mt-4 grid w-full max-w-[960px] grid-cols-1 gap-5 px-4 md:grid-cols-3">

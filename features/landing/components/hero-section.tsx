@@ -120,14 +120,14 @@ export function Hero() {
               <h1
                 className="font-fraunces font-bold leading-[1.1] tracking-tight text-foreground"
                 style={{
-                  fontSize: "clamp(38px, 5.5vw, 62px)",
+                  fontSize: "clamp(36px, 5vw, 46px)",
                   letterSpacing: "-1px",
                   marginBottom: "20px",
                 }}
               >
                 Satu Platform untuk
                 <br />
-                <em className="italic text-primary">Warga, dan Pengurus RT</em>
+                <em className="italic text-primary">Warga & Pengurus RT</em>
               </h1>
 
               <p
@@ -154,10 +154,10 @@ export function Hero() {
                   <ArrowRight className="h-4 w-4" />
                   Masuk sebagai Warga
                 </Button>
-                <Button variant={"outline"} size={"lg"}>
+                {/* <Button variant={"outline"} size={"lg"}>
                   <ShieldCheck className="h-4 w-4" />
                   Panel Admin
-                </Button>
+                </Button> */}
               </div>
 
               <div

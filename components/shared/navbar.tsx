@@ -25,12 +25,8 @@ const navItems = [
     ],
   },
   {
-    title: "Layanan",
-    items: [
-      { title: "Fitur Unggulan", href: "#features" },
-      { title: "Cara Kerja", href: "#how-it-works" },
-      { title: "Modul Aplikasi", href: "#modules" },
-    ],
+    title: "Fitur",
+    href: "#features",
   },
   {
     title: "Informasi",
@@ -38,16 +34,7 @@ const navItems = [
       { title: "Data & Laporan", href: "#data-laporan" },
       { title: "Pengumuman RT", href: "#pengumuman" },
       { title: "Galeri Kegiatan", href: "#galeri" },
-      // { title: "Testimoni", href: "#testimonials" },
     ],
-  },
-  // {
-  //   title: "FAQ",
-  //   href: "#faq",
-  // },
-  {
-    title: "Kontak",
-    href: "#contact",
   },
 ];
 
