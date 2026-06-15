@@ -11,6 +11,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { columns } from "../components/columns";
 import { CreateUserDialog } from "../components/create-user-dialog";
+import { SortOption } from "@/lib/types/sort";
 
 type UserWithResident = UserGetPayload<{
   include: { residentProfile: { include: { familyMembers: true } } };
@@ -44,6 +45,17 @@ const FILTER_CATEGORIES: FilterCategory[] = [
       { label: "Admin", value: "ADMIN" },
       { label: "Warga", value: "WARGA" },
     ],
+  },
+];
+
+const sortOptions: SortOption[] = [
+  {
+    id: "name",
+    label: "Nama",
+  },
+  {
+    id: "block",
+    label: "Block",
   },
 ];
 
@@ -93,6 +105,7 @@ const UserPage = (props: UserPageProps) => {
           data={props.users}
           columns={columns}
           filterCategories={FILTER_CATEGORIES}
+          sortOptions={sortOptions}
         />
       </div>
     </section>
