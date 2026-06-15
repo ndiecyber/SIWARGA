@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 
-import { Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  MoreHorizontal,
+  Search,
+} from "lucide-react";
 
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
@@ -44,6 +49,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "../ui/input-group";
+import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -62,8 +68,6 @@ export function DataTable<TData, TValue>({
   filterCategories = [],
   sortOptions = [],
 }: DataTableProps<TData, TValue>) {
-  const [sheetOpen, setSheetOpen] = useState(false);
-
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
@@ -91,6 +95,45 @@ export function DataTable<TData, TValue>({
       pagination: { pageSize: 10 },
     },
   });
+
+  // Pagination
+  const pageIndex = table.getState().pagination.pageIndex;
+  const pageCount = table.getPageCount();
+  const pageSize = table.getState().pagination.pageSize;
+
+  const totalRows = table.getRowCount();
+
+  const start = totalRows === 0 ? 0 : pageIndex * pageSize + 1;
+  const end = Math.min((pageIndex + 1) * pageSize, totalRows);
+
+  const getPages = () => {
+    const pages: (number | "...")[] = [];
+
+    if (pageCount <= 7) {
+      return Array.from({ length: pageCount }, (_, i) => i);
+    }
+
+    pages.push(0);
+
+    if (pageIndex > 2) {
+      pages.push("...");
+    }
+
+    const start = Math.max(1, pageIndex - 1);
+    const end = Math.min(pageCount - 2, pageIndex + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (pageIndex < pageCount - 3) {
+      pages.push("...");
+    }
+
+    pages.push(pageCount - 1);
+
+    return pages;
+  };
 
   return (
     <div className="w-full space-y-4">
@@ -213,68 +256,82 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Baris per halaman</span>
-          <Select
-            value={String(table.getState().pagination.pageSize)}
-            onValueChange={(val: string) => table.setPageSize(Number(val))}
-          >
-            <SelectTrigger className="h-8 w-17.5">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 50].map((size) => (
-                <SelectItem key={size} value={String(size)}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* Left */}
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Select
+              value={String(pageSize)}
+              onValueChange={(val) => table.setPageSize(Number(val))}
+            >
+              <SelectTrigger className="w-24 h-9">
+                <SelectValue />
+              </SelectTrigger>
+
+              <SelectContent align="start" side="bottom" position="popper">
+                {[5, 10, 20, 50].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size} items
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <span className="text-sm text-muted-foreground">
+            Showing {start}-{end} of {totalRows} entries
+          </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">
-            Halaman{" "}
-            <strong>
-              {table.getState().pagination.pageIndex + 1} dari{" "}
-              {table.getPageCount()}
-            </strong>
-          </span>
-          <div className="flex gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.firstPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              «
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              ‹
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              ›
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.lastPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              »
-            </Button>
-          </div>
+        {/* Right */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+
+          {getPages().map((page, index) =>
+            page === "..." ? (
+              <Button
+                key={`ellipsis-${index}`}
+                variant="ghost"
+                size="icon"
+                disabled
+                className="h-9 w-9"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            ) : (
+              <Button
+                key={page}
+                variant="ghost"
+                size="icon"
+                onClick={() => table.setPageIndex(page)}
+                className={cn(
+                  "h-9 w-9",
+                  page === pageIndex &&
+                    "bg-primary text-primary-foreground hover:bg-primary",
+                )}
+              >
+                {page + 1}
+              </Button>
+            ),
+          )}
+
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>
