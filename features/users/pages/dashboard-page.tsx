@@ -5,11 +5,15 @@ import {
   Users,
   Wallet,
   CalendarDays,
+  CalendarClockIcon,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import HeaderProfile from "../components/header-profile";
 import WelcomeCard from "../components/welcome-card";
+import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import DuesProgressCard from "../components/dues-progress-card";
 
 const announcements = [
   {
@@ -49,61 +53,44 @@ export default function DashboardPage() {
         <WelcomeCard />
 
         {/* Highlight banner */}
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-primary p-5 text-primary-foreground shadow-sm">
-          <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary-foreground/10" />
-          <div className="absolute -bottom-10 -right-2 h-32 w-32 rounded-full bg-primary-foreground/5" />
-
-          <div className="relative">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/15 px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
-              <Sparkles size={12} />
-              Status Bulan Ini
-            </div>
-
-            <p className="mt-3 text-2xl font-extrabold">Rp 50.000</p>
-
-            <p className="mt-0.5 text-xs text-primary-foreground/85">
-              Iuran kebersihan · Jatuh tempo 20 Jun
-            </p>
-
-            <Link
-              href="/iuran"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-background px-4 py-2 text-xs font-semibold text-foreground"
-            >
-              Bayar Sekarang <ChevronRight size={14} />
-            </Link>
-          </div>
-        </div>
+        <HighlightBanner />
 
         {/* Summary grid */}
-        <section className="grid grid-cols-2 gap-3">
-          <SummaryCard
-            icon={<Wallet size={18} />}
-            label="Iuran Juni"
-            value="Lunas"
-            badgeTone="success"
-          />
-
-          <SummaryCard
-            icon={<Megaphone size={18} />}
-            label="Pengumuman"
-            value="2 baru"
-            badgeTone="primary"
-          />
-
-          <SummaryCard
-            icon={<CalendarDays size={18} />}
-            label="Piket Kamu"
-            value="Senin, 16 Jun"
-            badgeTone="warning"
-          />
-
-          <SummaryCard
-            icon={<Users size={18} />}
-            label="Warga Aktif"
-            value="48 warga"
-            badgeTone="muted"
-          />
+        <section className="overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex snap-x gap-3">
+            <SummaryCard
+              icon={<Wallet size={18} />}
+              label="Iuran Juni"
+              value="Lunas"
+              badgeTone="success"
+            />
+            <SummaryCard
+              icon={<Megaphone size={18} />}
+              label="Pengumuman"
+              value="2 baru"
+              badgeTone="primary"
+            />
+            <SummaryCard
+              icon={<CalendarDays size={18} />}
+              label="Piket Kamu"
+              value="Senin, 16 Jun"
+              badgeTone="warning"
+            />
+            <SummaryCard
+              icon={<Users size={18} />}
+              label="Warga Aktif"
+              value="48 warga"
+              badgeTone="muted"
+            />
+          </div>
         </section>
+
+        {/* Summary Statistic */}
+        <DuesProgressCard
+          paidMonths={8}
+          totalMonths={12}
+          monthlyAmount={25000}
+        />
 
         {/* Announcements */}
         <section>
@@ -201,18 +188,45 @@ function SummaryCard({
   }[badgeTone];
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
-      <div
-        className={`grid h-9 w-9 place-items-center rounded-xl ${toneClass}`}
-      >
+    <div className="min-w-38 snap-start rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+      <div className={`grid size-8 place-items-center rounded-lg ${toneClass}`}>
         {icon}
       </div>
+      <div className="mt-0.5">
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
 
-      <p className="mt-3 text-[11px] font-medium text-muted-foreground">
-        {label}
-      </p>
+        <p className="text-sm font-bold text-foreground">{value}</p>
+      </div>
+    </div>
+  );
+}
 
-      <p className="mt-0.5 text-sm font-bold text-foreground">{value}</p>
+function HighlightBanner() {
+  return (
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-primary p-5 text-primary-foreground shadow-sm">
+      <div className="absolute -right-6 -top-6 h-28 w-28 rounded-full bg-primary-foreground/10" />
+      <div className="absolute -bottom-10 -right-2 h-32 w-32 rounded-full bg-primary-foreground/5" />
+
+      <div className="relative space-y-0.5">
+        <div className="inline-flex items-center gap-1.5 rounded-sm bg-primary-foreground/15 px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
+          <Sparkles size={12} />
+          Status Bulan Ini
+        </div>
+
+        <p className="mt-3 text-2xl font-extrabold tabular-nums">Rp 25.000</p>
+
+        <div className="flex items-center gap-1.5">
+          <CalendarClockIcon size={14} />
+          <p className="mt-0.5 text-xs text-primary-foreground/85">
+            Jatuh tempo 20 Juni
+          </p>
+        </div>
+        <Button asChild variant="outline" size="sm" className="mt-0.5">
+          <Link href="/iuran" className="text-muted-foreground text-xs">
+            Bayar Sekarang <ChevronRight size={14} />
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
