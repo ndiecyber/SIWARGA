@@ -156,7 +156,7 @@ export function GallerySection() {
   };
 
   return (
-    <section id="galeri" className="relative py-[96px] bg-primary text-white overflow-hidden">
+    <section id="galeri" className="relative py-12 bg-primary text-white overflow-hidden">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/5 rounded-full blur-3xl"></div>
@@ -165,27 +165,17 @@ export function GallerySection() {
 
       <div className="container relative z-10 mx-auto max-w-[1200px] px-6">
         {/* Header - Enhanced with original font styles */}
-        <div className="mb-16 text-center">
-          <Badge className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1.5 text-[13px] font-semibold uppercase tracking-[0.5px] bg-white/10 text-white shadow-sm">
+        <div className="mb-12 text-center max-w-4xl mx-auto">
+          <Badge className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-1.5 text-[13px] font-semibold uppercase tracking-[0.5px] bg-white/10 text-white shadow-sm">
             <Camera className="h-3.5 w-3.5" />
             Galeri Kegiatan
           </Badge>
           <h2
-            className="font-fraunces font-bold leading-[1.1] tracking-tight text-white"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 50px)",
-              letterSpacing: "-1px",
-              marginBottom: "20px",
-            }}
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-white md:whitespace-nowrap"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
           >
-            Dokumentasi Aktivitas
-            <br />
-            <em className="italic text-white/90">Kebersamaan Warga RT</em>
+            Dokumentasi <em className="italic text-white/95">Kebersamaan Warga</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-[1.7] text-white/80">
-            Setiap momen berharga dalam kebersamaan kami abadikan. Jelajahi galeri kegiatan
-            gotong royong dan kebersamaan warga RT 04 Arjamukti.
-          </p>
         </div>
 
         {/* 1. Featured Carousel Slider - Enhanced Design */}

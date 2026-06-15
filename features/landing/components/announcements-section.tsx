@@ -67,7 +67,7 @@ export function AnnouncementsSection() {
   return (
     <section
       id="pengumuman"
-      className="relative py-[96px] overflow-hidden bg-white text-foreground"
+      className="relative py-12 overflow-hidden bg-white text-foreground"
     >
       {/* Subtle Background Lights */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
@@ -108,34 +108,30 @@ export function AnnouncementsSection() {
 
       <div className="container relative z-10 mx-auto max-w-[1100px] px-6">
         {/* Header */}
-        <div className="mb-14 text-center">
-          <Badge className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
+        <div className="mb-12 text-center max-w-4xl mx-auto">
+          {/* <Badge className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
             <Megaphone className="h-3.5 w-3.5" />
             Pengumuman RT
-          </Badge>
+          </Badge> */}
           <h2
-            className="font-fraunces font-bold leading-[1.15] mb-6 text-foreground"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 50px)",
-              letterSpacing: "-1px",
-            }}
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
           >
-            Informasi & Agenda
-            <br />
-            <span className="text-primary">Terkini Lingkungan RT</span>
+            Pengumuman & Kegiatan <em className="italic text-primary">RT 04</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-[580px] text-[15px] leading-[1.7] text-muted-foreground">
-            Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan
-            imbauan penting terbaru dari pengurus RT 04 Arjamukti.
-          </p>
+          {/* <p
+            className="text-[16px] leading-[1.6] text-muted-foreground"
+            title="Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan imbauan penting terbaru dari pengurus RT 04 Arjamukti."
+          >
+            Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan imbauan penting terbaru dari pengurus RT 04 Arjamukti.
+          </p> */}
         </div>
 
         {/* Announcement Grid */}
         <div
           ref={ref}
-          className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-          }`}
+          className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+            }`}
         >
           {announcements.map((item) => (
             <Card
@@ -179,13 +175,13 @@ export function AnnouncementsSection() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-12 max-w-full mx-auto p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3 justify-center text-center text-xs text-muted-foreground">
+        {/* <div className="mt-12 max-w-full mx-auto p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3 justify-center text-center text-xs text-muted-foreground">
           <Info className="h-4 w-4 text-primary shrink-0" />
           <span>
             Pengurus RT secara berkala menerbitkan lembaran surat edaran resmi
             yang dapat diunduh melalui panel portal warga.
           </span>
-        </div>
+        </div> */}
       </div>
     </section>
   );

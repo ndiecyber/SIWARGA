@@ -42,7 +42,8 @@ function useReveal() {
 
 // Mock Data matching About Section
 const totalWarga = 456;
-const totalRumah = 120;
+const occupiedRumah = 120;
+const totalRumah = 130;
 const tingkatLunas = 92;
 
 const transactionHistory = [
@@ -154,31 +155,28 @@ export function DataReportsSection() {
 
       <div className="container relative z-10 mx-auto max-w-275 px-6">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <Badge className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
+        <div className="mb-5 text-center max-w-3xl mx-auto">
+          {/* <Badge className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
             <PieChart className="h-3.5 w-3.5" />
             Data & Laporan
-          </Badge>
+          </Badge> */}
           <h2
-            className="font-fraunces font-bold leading-[1.15] mb-6 text-foreground"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 50px)",
-              letterSpacing: "-1px",
-            }}
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
           >
-            Transparansi Informasi &
-            <br />
-            <span className="text-primary">Realisasi Kinerja RT</span>
+            Data & <em className="italic text-primary">Laporan</em>
           </h2>
-          <p className="mx-auto mt-2 max-w-145 text-[15px] leading-[1.7] text-muted-foreground">
-            Akses data kependudukan secara umum serta realisasi keuangan warga
-            sebagai wujud keterbukaan kepengurusan RT.
+          <p
+            className="text-[16px] leading-[1.6] text-muted-foreground truncate"
+            title="Akses data kependudukan secara umum serta realisasi keuangan warga sebagai wujud keterbukaan kepengurusan RT."
+          >
+            Akses data kependudukan secara umum serta realisasi keuangan warga sebagai wujud keterbukaan kepengurusan RT.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex justify-center mb-10">
-          <div className="inline-flex rounded-xl bg-muted p-1.5 border border-border/50 backdrop-blur-md gap-2">
+        <div className="flex justify-center">
+          <div className="mb-5 inline-flex rounded-xl bg-muted p-1.5 border border-border/50 backdrop-blur-md gap-2">
             {[
               { id: "warga", label: "Data Warga", icon: Users },
               { id: "keuangan", label: "Data Keuangan", icon: DollarSign },
@@ -188,11 +186,10 @@ export function DataReportsSection() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-300 ${
-                    activeTab === tab.id
-                      ? "bg-card text-foreground shadow-sm border border-border"
-                      : "text-muted-foreground hover:text-foreground hover:bg-card/50"
-                  }`}
+                  className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
+                    ? "bg-card text-foreground shadow-sm border border-border"
+                    : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                   {tab.label}
@@ -205,9 +202,8 @@ export function DataReportsSection() {
         {/* Section Contents */}
         <div
           ref={ref}
-          className={`transition-all duration-700 ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-          }`}
+          className={`transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+            }`}
         >
           {/* TAB 1: DATA WARGA (Simplified 2-card layout) */}
           {activeTab === "warga" && (
@@ -215,12 +211,14 @@ export function DataReportsSection() {
               {/* Total Penduduk Card */}
               <Card className="p-8 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between text-foreground rounded-2xl">
                 <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-[13px] bg-primary/10 text-primary mb-6">
-                    <Users className="h-6 w-6" />
+                  <div className="flex items-center gap-3.5 mb-6">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[13px] bg-primary/10 text-primary">
+                      <Users className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px]">
+                      Total Penduduk
+                    </h3>
                   </div>
-                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-3">
-                    Total Penduduk
-                  </h3>
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-5xl font-bold font-fraunces text-foreground">
                       {totalWarga}
@@ -237,75 +235,33 @@ export function DataReportsSection() {
               </Card>
 
               {/* Hunian Wilayah Card */}
-              <Card className="p-8 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex flex-col items-center justify-center text-center text-foreground rounded-2xl">
-                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px] mb-6 self-start">
-                  Okupansi Hunian
-                </h3>
-
-                <div className="relative flex items-center justify-center mb-6">
-                  <svg
-                    className="w-44 h-44 drop-shadow-md rotate-[-90deg]"
-                    viewBox="0 0 36 36"
-                  >
-                    {/* Empty Units - Background */}
-                    <circle
-                      className="text-muted/20"
-                      stroke="currentColor"
-                      strokeWidth="3.5"
-                      fill="none"
-                      cx="18"
-                      cy="18"
-                      r="15.915"
-                    />
-                    {/* Occupied Units - Foreground (92.3% of 130 total) */}
-                    <circle
-                      className="text-primary transition-all duration-700 ease-out"
-                      stroke="currentColor"
-                      strokeWidth="3.5"
-                      strokeDasharray="92.3 7.7"
-                      strokeDashoffset="0"
-                      strokeLinecap="round"
-                      fill="none"
-                      cx="18"
-                      cy="18"
-                      r="15.915"
-                    />
-                  </svg>
-
-                  {/* Inner Label */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl font-bold text-foreground font-fraunces">
+              <Card className="p-8 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 flex flex-col justify-between text-foreground rounded-2xl">
+                <div>
+                  <div className="flex items-center gap-3.5 mb-6">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[13px] bg-primary/10 text-primary">
+                      <Home className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.8px]">
+                      Okupansi Hunian
+                    </h3>
+                  </div>
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-5xl font-bold font-fraunces text-foreground">
+                      {occupiedRumah}
+                    </span>
+                    <span className="text-3xl font-medium text-muted-foreground/50 font-fraunces">
+                      /
+                    </span>
+                    <span className="text-3xl font-bold text-muted-foreground/85 font-fraunces">
                       {totalRumah}
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-semibold uppercase tracking-[0.5px]">
-                      Unit Rumah
+                    <span className="text-sm font-medium text-muted-foreground ml-1">
+                      Unit Terhuni
                     </span>
                   </div>
-                </div>
-
-                <div className="w-full space-y-2.5 mt-2">
-                  <div className="flex items-center justify-between text-xs border-b border-border pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-primary" />
-                      <span className="font-semibold text-foreground/90">
-                        Rumah Terisi (Dihuni)
-                      </span>
-                    </div>
-                    <span className="font-bold text-foreground">
-                      120 Unit (92.3%)
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-muted" />
-                      <span className="font-semibold text-muted-foreground">
-                        Rumah Kosong / Renovasi
-                      </span>
-                    </div>
-                    <span className="font-bold text-muted-foreground">
-                      10 Unit (7.7%)
-                    </span>
-                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Okupansi rumah di lingkungan RT 04 terdiri dari 120 unit yang dihuni (92.3%) dan 10 unit kosong atau sedang direnovasi (7.7%).
+                  </p>
                 </div>
               </Card>
             </div>
@@ -437,11 +393,10 @@ export function DataReportsSection() {
                                 </span>
                               </td>
                               <td
-                                className={`py-3 text-right font-bold ${
-                                  t.type === "income"
-                                    ? "text-emerald-600"
-                                    : "text-rose-600"
-                                }`}
+                                className={`py-3 text-right font-bold ${t.type === "income"
+                                  ? "text-emerald-600"
+                                  : "text-rose-600"
+                                  }`}
                               >
                                 {t.type === "income" ? "+" : "-"}Rp{" "}
                                 {t.amount.toLocaleString("id-ID")}
@@ -467,7 +422,7 @@ export function DataReportsSection() {
         </div>
 
         {/* Download Reports Area */}
-        <div className="mt-20 border-t border-border/60 pt-16">
+        <div className="mt-10 border-t border-border/60 pt-10">
           <div className="max-w-[700px] mb-10">
             <h3 className="font-fraunces font-bold text-2xl text-foreground mb-2 flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />

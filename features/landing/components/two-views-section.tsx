@@ -40,26 +40,22 @@ export function TwoViews() {
     <section id="modules" className="py-12 bg-background">
       <div className="container mx-auto max-w-275 px-6">
         {/* Header */}
-        <div className="mb-14 text-center">
+        <div className="mb-12 text-center max-w-3xl mx-auto">
           <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
             <Sparkles className="h-3.5 w-3.5" />
             Fitur Portal
           </div>
           <h2
-            className="font-serif font-bold leading-[1.1] tracking-tight text-foreground"
-            style={{
-              fontSize: "clamp(34px, 4.5vw, 50px)",
-              letterSpacing: "-1px",
-              marginBottom: "20px",
-            }}
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
           >
-            Dua Tampilan,
-            <br />
-            <em className="italic text-primary">Satu Sistem Terpadu</em>
+            Dua Tampilan, <em className="italic text-primary">Satu Sistem Terpadu</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-[540px] text-[15px] leading-[1.7] text-muted-foreground">
-            SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam
-            mengelola administrasi dan warga dalam memantau informasi.
+          <p
+            className="text-[16px] leading-[1.6] text-muted-foreground truncate"
+            title="SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam mengelola administrasi dan warga dalam memantau informasi."
+          >
+            SIWARGA memisahkan hak akses halaman untuk memudahkan pengurus dalam mengelola administrasi dan warga dalam memantau informasi.
           </p>
         </div>
 

@@ -1,6 +1,8 @@
-import AdministrationLayout from "@/components/layouts/administration-layout";
+import layoutWithAuthAdmin, {
+  LayoutWithAuthAdminProps,
+} from "@/components/layouts/auth/layout-with-auth-admin";
 
-function Page() {
+function Page({ user }: LayoutWithAuthAdminProps) {
   return (
     <>
       <h1>Admin Page</h1>
@@ -8,4 +10,4 @@ function Page() {
   );
 }
 
-export default Page;
+export default layoutWithAuthAdmin(Page);

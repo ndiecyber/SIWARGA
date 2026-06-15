@@ -37,8 +37,6 @@ const data = {
       title: "Layanan & Fitur",
       items: [
         { title: "Fitur Unggulan", href: "#features" },
-        { title: "Cara Kerja", href: "#how-it-works" },
-        { title: "Modul Aplikasi", href: "#modules" },
       ],
     },
     {
@@ -47,14 +45,6 @@ const data = {
         { title: "Data & Laporan", href: "#data-laporan" },
         { title: "Pengumuman RT", href: "#pengumuman" },
         { title: "Galeri Kegiatan", href: "#galeri" },
-        // { title: "Testimoni Warga", href: "#testimonials" },
-      ],
-    },
-    {
-      title: "Lainnya",
-      items: [
-        // { title: "FAQ", href: "#faq" },
-        { title: "Kontak", href: "#contact" },
       ],
     },
   ],
