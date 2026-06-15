@@ -42,8 +42,8 @@ function FilterDropdown<TData>({
             activeFilters.length > 0 && "border-primary/50 text-primary",
           )}
         >
-          <Filter className="h-3.5 w-3.5" />
-          Filter
+          <Filter size={16} />
+          <span className="hidden md:block">Filter</span>
           {activeFilters.length > 0 && (
             <Badge
               variant="secondary"
@@ -55,7 +55,7 @@ function FilterDropdown<TData>({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="start" className="w-44">
+      <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuLabel className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           Tambah Filter
         </DropdownMenuLabel>

@@ -1,28 +1,15 @@
 "use client";
 
-import * as React from "react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
+import { useState } from "react";
+
 import { Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { FilterCategory } from "@/lib/types/filter";
+import { useSortState } from "@/hooks/use-sort-state";
+import { useFilterState } from "@/hooks/use-filter-state";
+import { FilterBar } from "@/components/shared/filter-bar";
 import {
   Table,
   TableBody,
@@ -31,9 +18,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FilterCategory } from "@/lib/types/filter";
-import { useFilterState } from "@/hooks/use-filter-state";
-import { FilterBar } from "@/components/shared/filter-bar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+
+import SortDropdown from "./sort-dropdown";
+import { SortOption } from "@/lib/types/sort";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -41,6 +45,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterCategories?: FilterCategory<TData>[];
+  sortOptions?: SortOption<TData>[];
 }
 
 // ─── DataTable ────────────────────────────────────────────────────────────────
@@ -49,13 +54,15 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   filterCategories = [],
+  sortOptions = [],
 }: DataTableProps<TData, TValue>) {
-  const [globalFilter, setGlobalFilter] = React.useState("");
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  // Filter and sort hooks
   const { activeFilters, columnFilters, addFilter, removeFilter, clearAll } =
     useFilterState<TData>();
+  const { activeSort, sorting, onSortChange } = useSortState<TData>();
 
   const table = useReactTable({
     data,
@@ -66,7 +73,6 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
     },
-    onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -81,10 +87,10 @@ export function DataTable<TData, TValue>({
   return (
     <div className="w-full space-y-4">
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-row items-center justify-between gap-3">
         {/* Search input */}
-        <div className="relative max-w-md w-full">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="relative flex-1 max-w-md md:w-full">
+          <Search className="absolute w-4 h-4 -translate-y-1/2 left-3 top-1/2 text-muted-foreground" />
           <Input
             placeholder="Cari nama, "
             value={globalFilter}
@@ -92,21 +98,27 @@ export function DataTable<TData, TValue>({
             className="pl-9"
           />
         </div>
-      </div>
 
-      {/* Filter bar */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <FilterBar
-          filterCategories={filterCategories}
-          activeFilters={activeFilters}
-          onAddFilter={addFilter}
-          onRemoveFilter={removeFilter}
-          onClearAll={clearAll}
-        />
+        {/* Filter and sort bar */}
+        <div className="flex flex-row items-center justify-between gap-1">
+          <FilterBar
+            filterCategories={filterCategories}
+            activeFilters={activeFilters}
+            onAddFilter={addFilter}
+            onRemoveFilter={removeFilter}
+            onClearAll={clearAll}
+          />
+
+          <SortDropdown
+            sortOptions={sortOptions}
+            activeSort={activeSort}
+            onSortChange={onSortChange}
+          />
+        </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-md border">
+      <div className="border rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
