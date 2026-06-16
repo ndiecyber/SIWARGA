@@ -1,8 +1,11 @@
+import { useState } from "react";
+
 import { Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -16,13 +19,27 @@ import DetailHouseView from "../components/detail-view";
 
 interface HouseShowProps {
   house: HouseWithOwner;
-  children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children?: React.ReactNode;
 }
 
-function HouseShow({ house, children }: HouseShowProps) {
+function HouseShow({ house, open, onOpenChange, children }: HouseShowProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const handleOpenChange = (nextOpenState: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(nextOpenState);
+    }
+    onOpenChange?.(nextOpenState);
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Detail Rumah</DialogTitle>
@@ -37,7 +54,9 @@ function HouseShow({ house, children }: HouseShowProps) {
               <Info className="mr-2" size={16} />
               Data hanya dapat dilihat, tidak dapat diubah
             </span>
-            <Button variant="secondary">Tutup</Button>
+            <DialogClose asChild>
+              <Button variant="secondary">Tutup</Button>
+            </DialogClose>
           </div>
         </DialogFooter>
       </DialogContent>

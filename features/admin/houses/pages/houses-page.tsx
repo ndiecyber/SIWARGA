@@ -3,18 +3,18 @@ import { Plus } from "lucide-react";
 import prisma from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { fraunces } from "@/lib/fonts";
+import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
-import { DataTable } from "@/components/shared/data-table";
 import { FieldDialog } from "@/components/shared/field-dialog";
 
+import HousesTable from "./houses-table";
 import { columns } from "../components/columns";
 import { HouseCreateForm } from "../components/create-form";
-import { SortOption } from "@/lib/types/sort";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const FILTER_CATEGORIES: FilterCategory[] = [
+const filterCategories: FilterCategory[] = [
   {
     id: "block",
     label: "Block",
@@ -86,10 +86,10 @@ export default async function HousesPage() {
         </FieldDialog>
       </header>
 
-      <DataTable
-        columns={columns}
+      <HousesTable
         data={data}
-        filterCategories={FILTER_CATEGORIES}
+        columns={columns}
+        filterCategories={filterCategories}
         sortOptions={sortOptions}
       />
     </main>

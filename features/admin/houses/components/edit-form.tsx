@@ -47,13 +47,12 @@ import { getOwnersLookupAction, updateHouseAction } from "../actions";
 
 interface HouseEditFormProps {
   house: HouseWithOwner;
+  onSuccess: () => void;
 }
 
-export function HouseEditForm({ house }: HouseEditFormProps) {
+export function HouseEditForm({ house, onSuccess }: HouseEditFormProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-
-  const { close } = useFieldDialog();
 
   const form = useForm({
     resolver: standardSchemaResolver(formSchema),
@@ -113,8 +112,9 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
 
     toast.promise(mutationPromise, {
       loading: "Data rumah sedang diperbarui. Mohon tunggu sebentar...",
-      success: (response) =>
-        response.message || "Data rumah berhasil diperbarui",
+      success: (response) => {
+        return response.message || "Data rumah berhasil diperbarui";
+      },
       error: (error) =>
         error instanceof Error
           ? error.message
@@ -123,7 +123,7 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
 
     try {
       await mutationPromise;
-      close();
+      onSuccess();
     } catch (error) {
       console.error(error);
     }
