@@ -2,17 +2,29 @@
 
 import { useMemo, useState } from "react";
 
-import { Megaphone, Plus } from "lucide-react";
+import {
+  DownloadIcon,
+  EyeIcon,
+  Megaphone,
+  PencilIcon,
+  Plus,
+  Trash2Icon,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/shared/data-table";
 import { FilterCategory } from "@/lib/types/filter";
 import { SortOption } from "@/lib/types/sort";
 
-import { Announcement, createColumns } from "./columns";
+import { Announcement, column } from "./columns";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { AnnouncementFormDialog } from "./announcement-form-dialog";
 import { AnnouncementDetailDialog } from "./announcement-detail-dialog";
+import {
+  ActionOption,
+  withActionColumn,
+  withSelectColumn,
+} from "@/components/shared/column-helpers";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -32,6 +44,20 @@ const STATUS_FILTER: FilterCategory<Announcement> = {
     { label: "Selesai", value: "done" },
   ],
 };
+
+const batchActions: ActionOption<Announcement>[] = [
+  {
+    label: "Export",
+    icon: <DownloadIcon size={16} />,
+    onClick: () => {},
+  },
+  {
+    label: "Delete",
+    icon: <Trash2Icon size={16} />,
+    onClick: () => {},
+    destructive: true,
+  },
+];
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
@@ -93,12 +119,9 @@ export function AnnouncementDashboard({ announcements }: Props) {
     [announcements],
   );
 
-  // Dialog states
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Announcement | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [detailTarget, setDetailTarget] = useState<Announcement | null>(null);
 
   const filterCategories: FilterCategory<Announcement>[] = useMemo(
@@ -113,24 +136,24 @@ export function AnnouncementDashboard({ announcements }: Props) {
     [dbCategories],
   );
 
-  const columns = useMemo(
-    () =>
-      createColumns({
-        onDetail: (a) => {
-          setDetailTarget(a);
-          setDetailOpen(true);
-        },
-        onEdit: (a) => {
-          setEditTarget(a);
-          setFormOpen(true);
-        },
-        onDelete: (a) => {
-          setDeleteTarget(a);
-          setDeleteOpen(true);
-        },
-      }),
-    [],
-  );
+  const announcementsColumns = withActionColumn(withSelectColumn(column), [
+    {
+      label: "Detail",
+      icon: <EyeIcon size={16} />,
+      onClick: (row) => setDetailTarget(row as Announcement),
+    },
+    {
+      label: "Edit",
+      icon: <PencilIcon size={16} />,
+      onClick: (row) => setEditTarget(row as Announcement),
+    },
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (row) => setDeleteTarget(row as Announcement),
+      destructive: true,
+    },
+  ]);
 
   return (
     <>
@@ -152,7 +175,6 @@ export function AnnouncementDashboard({ announcements }: Props) {
           </div>
           <Button
             onClick={() => {
-              setEditTarget(null);
               setFormOpen(true);
             }}
             className="gap-2 shrink-0"
@@ -167,36 +189,57 @@ export function AnnouncementDashboard({ announcements }: Props) {
 
         <div className="mt-6">
           <DataTable
-            columns={columns}
+            columns={announcementsColumns}
             data={announcements}
             filterCategories={filterCategories}
             sortOptions={SORT_OPTIONS}
+            batchActions={batchActions}
           />
         </div>
       </main>
 
       {/* Dialogs */}
-      <AnnouncementFormDialog
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        announcement={editTarget}
-        existingCategories={dbCategories}
-      />
-
-      {deleteTarget && (
-        <DeleteConfirmDialog
-          open={deleteOpen}
-          onOpenChange={setDeleteOpen}
-          announcementId={deleteTarget.id}
-          announcementTitle={deleteTarget.title}
+      {formOpen && (
+        <AnnouncementFormDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setFormOpen(false);
+          }}
+          existingCategories={dbCategories}
         />
       )}
 
-      <AnnouncementDetailDialog
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-        announcement={detailTarget}
-      />
+      {detailTarget && (
+        <AnnouncementDetailDialog
+          announcement={detailTarget}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setDetailTarget(null);
+          }}
+        />
+      )}
+
+      {editTarget && (
+        <AnnouncementFormDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setEditTarget(null);
+          }}
+          announcement={editTarget}
+          existingCategories={dbCategories}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteConfirmDialog
+          announcementId={deleteTarget.id}
+          announcementTitle={deleteTarget.title}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setDeleteTarget(null);
+          }}
+        />
+      )}
     </>
   );
 }

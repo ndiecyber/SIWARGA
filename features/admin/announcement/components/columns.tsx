@@ -1,9 +1,8 @@
 "use client";
 
-import { CalendarDays, Eye, Pencil, Tag, Trash2 } from "lucide-react";
+import { CalendarDaysIcon, TagIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -48,134 +47,84 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 // ─── Column Factory ───────────────────────────────────────────────────────────
 
-export function createColumns(callbacks: {
-  onDetail: (a: Announcement) => void;
-  onEdit: (a: Announcement) => void;
-  onDelete: (a: Announcement) => void;
-}): ColumnDef<Announcement>[] {
-  return [
-    // ── Title + description ──────────────────────────────────────────────────
-    {
-      accessorKey: "title",
-      enableGlobalFilter: true,
-      header: () => "Judul",
-      cell: ({ row }) => (
-        <div className="max-w-xs">
-          <p className="font-medium text-foreground line-clamp-1">
-            {row.getValue("title")}
-          </p>
-          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-            {row.original.description}
-          </p>
-        </div>
-      ),
-    },
+export const column: ColumnDef<Announcement>[] = [
+  // ── Title + description ──────────────────────────────────────────────────
+  {
+    accessorKey: "title",
+    enableGlobalFilter: true,
+    header: () => "Judul",
+    cell: ({ row }) => (
+      <div className="max-w-xs">
+        <p className="font-medium text-foreground line-clamp-1">
+          {row.getValue("title")}
+        </p>
+        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+          {row.original.description}
+        </p>
+      </div>
+    ),
+  },
 
-    // ── Category ─────────────────────────────────────────────────────────────
-    {
-      accessorKey: "category",
-      enableGlobalFilter: true,
-      header: () => "Kategori",
-      filterFn: (row, columnId, filterValues: string[]) => {
-        if (!filterValues.length) return true;
-        return filterValues.includes(row.getValue(columnId));
-      },
-      cell: ({ row }) => {
-        const category: string = row.getValue("category");
-        const colorClass = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.Lainnya;
-        return (
-          <span
-            className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${colorClass}`}
-          >
-            <Tag className="size-3" />
-            {category}
-          </span>
-        );
-      },
+  // ── Category ─────────────────────────────────────────────────────────────
+  {
+    accessorKey: "category",
+    enableGlobalFilter: true,
+    header: () => "Kategori",
+    filterFn: (row, columnId, filterValues: string[]) => {
+      if (!filterValues.length) return true;
+      return filterValues.includes(row.getValue(columnId));
     },
+    cell: ({ row }) => {
+      const category: string = row.getValue("category");
+      const colorClass = CATEGORY_COLORS[category] ?? CATEGORY_COLORS.Lainnya;
+      return (
+        <span
+          className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${colorClass}`}
+        >
+          <TagIcon className="size-3" />
+          {category}
+        </span>
+      );
+    },
+  },
 
-    // ── Event date ───────────────────────────────────────────────────────────
-    {
-      accessorKey: "eventDate",
-      header: () => "Tgl. Acara",
-      cell: ({ row }) => {
-        const date: Date | null = row.getValue("eventDate");
-        return date ? (
-          <span className="flex items-center gap-1.5 text-muted-foreground">
-            <CalendarDays className="size-3.5" />
-            {new Date(date).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "short",
-              year: "numeric",
-            })}
-          </span>
-        ) : (
-          <span className="text-muted-foreground/50">—</span>
-        );
-      },
+  // ── Event date ───────────────────────────────────────────────────────────
+  {
+    accessorKey: "eventDate",
+    header: () => "Tgl. Acara",
+    cell: ({ row }) => {
+      const date: Date | null = row.getValue("eventDate");
+      return date ? (
+        <span className="flex items-center gap-1.5 text-muted-foreground">
+          <CalendarDaysIcon className="size-3.5" />
+          {new Date(date).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </span>
+      ) : (
+        <span className="text-muted-foreground/50">—</span>
+      );
     },
+  },
 
-    // ── Status ───────────────────────────────────────────────────────────────
-    {
-      accessorKey: "status",
-      header: () => "Status",
-      filterFn: (row, columnId, filterValues: string[]) => {
-        if (!filterValues.length) return true;
-        return filterValues.includes(row.getValue(columnId));
-      },
-      cell: ({ row }) => {
-        const status: string = row.getValue("status");
-        const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.done;
-        return (
-          <Badge variant="outline" className={config.className}>
-            {config.label}
-          </Badge>
-        );
-      },
+  // ── Status ───────────────────────────────────────────────────────────────
+  {
+    accessorKey: "status",
+    header: () => "Status",
+    filterFn: (row, columnId, filterValues: string[]) => {
+      if (!filterValues.length) return true;
+      return filterValues.includes(row.getValue(columnId));
     },
-
-    // ── Actions ──────────────────────────────────────────────────────────────
-    {
-      id: "aksi",
-      header: "Aksi",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const a = row.original;
-        return (
-          <div className="flex items-center justify-end gap-1">
-            <Button
-              id={`btn-detail-${a.id}`}
-              size="icon"
-              variant="ghost"
-              className="size-8 text-muted-foreground hover:text-foreground"
-              title="Lihat Detail"
-              onClick={() => callbacks.onDetail(a)}
-            >
-              <Eye className="size-4" />
-            </Button>
-            <Button
-              id={`btn-edit-${a.id}`}
-              size="icon"
-              variant="ghost"
-              className="size-8 text-muted-foreground hover:text-primary"
-              title="Edit"
-              onClick={() => callbacks.onEdit(a)}
-            >
-              <Pencil className="size-4" />
-            </Button>
-            <Button
-              id={`btn-delete-${a.id}`}
-              size="icon"
-              variant="ghost"
-              className="size-8 text-muted-foreground hover:text-destructive"
-              title="Hapus"
-              onClick={() => callbacks.onDelete(a)}
-            >
-              <Trash2 className="size-4" />
-            </Button>
-          </div>
-        );
-      },
+    cell: ({ row }) => {
+      const status: string = row.getValue("status");
+      const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.done;
+      return (
+        <Badge variant="outline" className={config.className}>
+          {config.label}
+        </Badge>
+      );
     },
-  ];
-}
+  },
+];
