@@ -1,7 +1,32 @@
 "use client";
 
-import type { Role } from "@/generated/prisma/enums";
+import { useEffect, useState } from "react";
+
+import { toast } from "sonner";
+import { Controller, useForm } from "react-hook-form";
+import { Loader2, Pencil, UserPlus } from "lucide-react";
+
+import { z } from "zod/v4";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import type { Role } from "@/generated/prisma/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
@@ -11,36 +36,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, UserPlus } from "lucide-react";
-import * as React from "react";
-import { Controller, useForm } from "react-hook-form";
-import { z } from "zod/v4";
+
+import { updateUserAction } from "../action";
+import FileUploadField from "./file-upload-field";
 import {
   createUserSchema,
-  UpdateUserSchema,
   updateUserSchema,
+  UpdateUserSchema,
 } from "../schema";
-import FileUploadField from "./file-upload-field";
-import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { updateUserAction } from "../action";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type User = {
   role: Role;
@@ -60,11 +63,24 @@ type UpdateUserValues = z.output<typeof updateUserSchema>;
 
 type UpdateUserDialogProps = {
   id: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function UpdateUserDialog(props: UpdateUserDialogProps) {
-  const [open, setOpen] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isControlled = props.open !== undefined;
+  const isOpen = isControlled ? props.open : internalOpen;
+
+  const handleOpenChange = (nextOpenState: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(nextOpenState);
+    }
+    props.onOpenChange?.(nextOpenState);
+  };
 
   const { data: dataUser } = useQuery<User>({
     queryKey: ["update-user", props.id],
@@ -98,7 +114,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
 
   console.log({ dataUser });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!dataUser) return;
 
     form.reset({
@@ -175,7 +191,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="justify-start w-full gap-2">
           <Pencil className="w-4 h-4" />

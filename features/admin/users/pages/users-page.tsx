@@ -1,9 +1,14 @@
 "use client";
 
-import React from "react";
 import type { UserGetPayload } from "@/generated/prisma/models";
 
-import { AlertTriangle, UsersRoundIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  EyeIcon,
+  PencilIcon,
+  Trash2Icon,
+  UsersRoundIcon,
+} from "lucide-react";
 
 import { FilterCategory } from "@/lib/types/filter";
 import { DataTable } from "@/components/shared/data-table";
@@ -12,6 +17,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { columns } from "../components/columns";
 import { CreateUserDialog } from "../components/create-user-dialog";
 import { SortOption } from "@/lib/types/sort";
+import { useState } from "react";
+import {
+  withActionColumn,
+  withSelectColumn,
+} from "@/components/shared/column-helpers";
+import DetailUserDialog from "../components/detail-user-dialog";
+import { UpdateUserDialog } from "../components/update-user-dialog";
+import { DeleteUserDialog } from "../components/delete-user-dialog";
 
 type UserWithResident = UserGetPayload<{
   include: { residentProfile: { include: { familyMembers: true } } };
@@ -19,7 +32,7 @@ type UserWithResident = UserGetPayload<{
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const FILTER_CATEGORIES: FilterCategory[] = [
+const filterCategories: FilterCategory[] = [
   // {
   //   id: "duesStatus",
   //   label: "Status Iuran",
@@ -64,6 +77,33 @@ export type UserPageProps = {
 };
 
 const UserPage = (props: UserPageProps) => {
+  const [detailTarget, setDetailTarget] = useState<UserWithResident | null>(
+    null,
+  );
+  const [editTarget, setEditTarget] = useState<UserWithResident | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserWithResident | null>(
+    null,
+  );
+
+  const usersColumns = withActionColumn(withSelectColumn(columns), [
+    {
+      label: "Detail",
+      icon: <EyeIcon size={16} />,
+      onClick: (row) => setDetailTarget(row as UserWithResident),
+    },
+    {
+      label: "Edit",
+      icon: <PencilIcon size={16} />,
+      onClick: (row) => setEditTarget(row as UserWithResident),
+    },
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (row) => setDeleteTarget(row as UserWithResident),
+      destructive: true,
+    },
+  ]);
+
   return (
     <section className="space-y-8">
       <div className="space-y-4">
@@ -103,11 +143,41 @@ const UserPage = (props: UserPageProps) => {
       <div className="bg-white">
         <DataTable
           data={props.users}
-          columns={columns}
-          filterCategories={FILTER_CATEGORIES}
+          columns={usersColumns}
+          filterCategories={filterCategories}
           sortOptions={sortOptions}
         />
       </div>
+
+      {detailTarget && (
+        <DetailUserDialog
+          user={detailTarget}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setDetailTarget(null);
+          }}
+        />
+      )}
+
+      {editTarget && (
+        <UpdateUserDialog
+          id={editTarget.id}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setEditTarget(null);
+          }}
+        />
+      )}
+
+      {deleteTarget && (
+        <DeleteUserDialog
+          user={deleteTarget}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setDeleteTarget(null);
+          }}
+        />
+      )}
     </section>
   );
 };
