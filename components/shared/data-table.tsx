@@ -9,6 +9,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
@@ -36,6 +37,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  RowSelectionState,
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
@@ -43,13 +45,14 @@ import {
 import FilterChips from "./filter-chips";
 import SortDropdown from "./sort-dropdown";
 import FilterDropdown from "./filter-dropdown";
+import { ActionOption } from "./column-helpers";
+import { BatchActionBar } from "./batch-action-bar";
 import { MobileFilterSort } from "./mobile-filter-sort";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "../ui/input-group";
-import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -58,6 +61,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   filterCategories?: FilterCategory<TData>[];
   sortOptions?: SortOption<TData>[];
+  /** Batch actions shown in the toolbar when one or more rows are selected */
+  batchActions?: ActionOption<TData>[];
 }
 
 // ─── DataTable ────────────────────────────────────────────────────────────────
@@ -67,9 +72,11 @@ export function DataTable<TData, TValue>({
   data,
   filterCategories = [],
   sortOptions = [],
+  batchActions = [],
 }: DataTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   // Filter and sort hooks
   const { activeFilters, columnFilters, addFilter, removeFilter, clearAll } =
@@ -84,7 +91,10 @@ export function DataTable<TData, TValue>({
       globalFilter,
       sorting,
       columnVisibility,
+      rowSelection,
     },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -134,6 +144,11 @@ export function DataTable<TData, TValue>({
 
     return pages;
   };
+
+  // Selected rows data (original TData objects)
+  const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original);
+
+  const hasBatchActions = batchActions.length > 0 && selectedRows.length > 0;
 
   return (
     <div className="w-full space-y-4">
@@ -202,6 +217,15 @@ export function DataTable<TData, TValue>({
             onClearAll={clearAll}
           />
         </div>
+
+        {/* Batch action bar — visible when rows are selected */}
+        {hasBatchActions && (
+          <BatchActionBar
+            selectedRows={selectedRows}
+            batchActions={batchActions}
+            onClearSelection={() => table.resetRowSelection()}
+          />
+        )}
       </header>
 
       {/* Table */}
@@ -315,7 +339,7 @@ export function DataTable<TData, TValue>({
                 className={cn(
                   "h-9 w-9",
                   page === pageIndex &&
-                    "bg-primary text-primary-foreground hover:bg-primary/20 hover:text-primary",
+                    "bg-primary text-primary-foreground hover:bg-primary",
                 )}
               >
                 {page + 1}
