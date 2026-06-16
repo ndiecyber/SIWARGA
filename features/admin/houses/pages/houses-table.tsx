@@ -2,13 +2,20 @@
 
 import { useState } from "react";
 
-import { EyeIcon, PencilIcon, Trash2Icon } from "lucide-react";
+import {
+  Download,
+  DownloadIcon,
+  EyeIcon,
+  PencilIcon,
+  Trash2Icon,
+} from "lucide-react";
 
 import { SortOption } from "@/lib/types/sort";
 import { ColumnDef } from "@tanstack/react-table";
 import { FilterCategory } from "@/lib/types/filter";
 import { DataTable } from "@/components/shared/data-table";
 import {
+  ActionOption,
   withActionColumn,
   withSelectColumn,
 } from "@/components/shared/column-helpers";
@@ -25,14 +32,80 @@ import { HouseWithOwner } from "../types";
 import { HouseEditForm } from "../components/edit-form";
 import DeleteHouseDialog from "../components/delete-dialog";
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const filterCategories: FilterCategory[] = [
+  {
+    id: "block",
+    label: "Block",
+    options: [
+      {
+        label: "A",
+        value: "A",
+        icon: (
+          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+        ),
+      },
+      {
+        label: "B",
+        value: "B",
+        icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
+      },
+      {
+        label: "C",
+        value: "C",
+        icon: (
+          <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
+        ),
+      },
+      {
+        label: "D",
+        value: "D",
+        icon: <span className="inline-block w-2 h-2 rounded-full bg-sky-500" />,
+      },
+    ],
+  },
+];
+
+const sortOptions: SortOption[] = [
+  {
+    id: "houseNumber",
+    label: "House",
+  },
+  {
+    id: "block",
+    label: "Block",
+  },
+  {
+    id: "owner",
+    label: "Owner",
+  },
+  {
+    id: "status",
+    label: "Status",
+  },
+];
+
+const batchActions: ActionOption<HouseWithOwner>[] = [
+  {
+    label: "Export",
+    icon: <DownloadIcon size={16} />,
+    onClick: (rows) => console.log("edit", rows),
+  },
+  {
+    label: "Delete",
+    icon: <Trash2Icon size={16} />,
+    onClick: (rows) => console.log("delete", rows),
+    destructive: true,
+  },
+];
+
 interface Props {
   columns: ColumnDef<HouseWithOwner>[];
   data: HouseWithOwner[];
-  filterCategories: FilterCategory<HouseWithOwner>[];
-  sortOptions: SortOption<HouseWithOwner>[];
 }
 
-function HousesTable({ columns, data, filterCategories, sortOptions }: Props) {
+function HousesTable({ columns, data }: Props) {
   const [detailTarget, setDetailTarget] = useState<HouseWithOwner | null>(null);
   const [editTarget, setEditTarget] = useState<HouseWithOwner | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
@@ -63,6 +136,7 @@ function HousesTable({ columns, data, filterCategories, sortOptions }: Props) {
         data={data}
         filterCategories={filterCategories}
         sortOptions={sortOptions}
+        batchActions={batchActions}
       />
 
       {detailTarget && (

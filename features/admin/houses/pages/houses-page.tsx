@@ -12,60 +12,6 @@ import HousesTable from "./houses-table";
 import { columns } from "../components/columns";
 import { HouseCreateForm } from "../components/create-form";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const filterCategories: FilterCategory[] = [
-  {
-    id: "block",
-    label: "Block",
-    options: [
-      {
-        label: "A",
-        value: "A",
-        icon: (
-          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-        ),
-      },
-      {
-        label: "B",
-        value: "B",
-        icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
-      },
-      {
-        label: "C",
-        value: "C",
-        icon: (
-          <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
-        ),
-      },
-      {
-        label: "D",
-        value: "D",
-        icon: <span className="inline-block w-2 h-2 rounded-full bg-sky-500" />,
-      },
-    ],
-  },
-];
-
-const sortOptions: SortOption[] = [
-  {
-    id: "houseNumber",
-    label: "House",
-  },
-  {
-    id: "block",
-    label: "Block",
-  },
-  {
-    id: "owner",
-    label: "Owner",
-  },
-  {
-    id: "status",
-    label: "Status",
-  },
-];
-
 export default async function HousesPage() {
   const data = await prisma.house.findMany({ include: { owner: true } });
 
@@ -86,12 +32,7 @@ export default async function HousesPage() {
         </FieldDialog>
       </header>
 
-      <HousesTable
-        data={data}
-        columns={columns}
-        filterCategories={filterCategories}
-        sortOptions={sortOptions}
-      />
+      <HousesTable data={data} columns={columns} />
     </main>
   );
 }

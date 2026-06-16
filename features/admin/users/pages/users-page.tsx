@@ -4,6 +4,7 @@ import type { UserGetPayload } from "@/generated/prisma/models";
 
 import {
   AlertTriangle,
+  Download,
   EyeIcon,
   PencilIcon,
   Trash2Icon,
@@ -19,6 +20,7 @@ import { CreateUserDialog } from "../components/create-user-dialog";
 import { SortOption } from "@/lib/types/sort";
 import { useState } from "react";
 import {
+  ActionOption,
   withActionColumn,
   withSelectColumn,
 } from "@/components/shared/column-helpers";
@@ -69,6 +71,20 @@ const sortOptions: SortOption[] = [
   {
     id: "block",
     label: "Block",
+  },
+];
+
+const batchActions: ActionOption<UserWithResident>[] = [
+  {
+    label: "Export",
+    icon: <Download size={16} />,
+    onClick: () => {},
+  },
+  {
+    label: "Delete",
+    icon: <Trash2Icon size={16} />,
+    onClick: () => {},
+    destructive: true,
   },
 ];
 
@@ -146,6 +162,7 @@ const UserPage = (props: UserPageProps) => {
           columns={usersColumns}
           filterCategories={filterCategories}
           sortOptions={sortOptions}
+          batchActions={batchActions}
         />
       </div>
 
