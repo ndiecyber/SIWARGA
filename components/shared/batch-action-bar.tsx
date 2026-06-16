@@ -28,15 +28,16 @@ export function BatchActionBar<TData>({
     <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-muted/50 px-3 py-2">
       {/* Left: selection count + clear */}
       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-        <button
+        <Button
           type="button"
+          size="icon"
+          variant="ghost"
           onClick={onClearSelection}
-          className="flex items-center justify-center rounded size-5 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           aria-label="Clear selection"
         >
           <X className="size-3.5" />
-        </button>
-        <span>
+        </Button>
+        <span className="text-muted-foreground leading-tight">
           {count} {count === 1 ? "item" : "item"} dipilih
         </span>
       </div>
@@ -48,7 +49,7 @@ export function BatchActionBar<TData>({
             key={i}
             size="sm"
             variant={action.destructive ? "destructive" : "outline"}
-            className="h-8 gap-1.5"
+            className="flex items-center h-8 gap-2"
             onClick={() => action.onClick(selectedRows)}
           >
             {action.icon && (
