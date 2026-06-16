@@ -30,63 +30,41 @@ export function AboutSection() {
 
   const handleSmoothScroll = (id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const stats = [
-    {
-      value: "4 Orang",
-      label: "Pengurus RT",
-      link: "pengurus-rt",
-    },
-    {
-      value: "120",
-      label: "Unit Rumah",
-    },
-    {
-      value: "456",
-      label: "Jiwa Terdaftar",
-    },
-    {
-      value: "92%",
-      label: "Tingkat Lunas",
-    },
+    { value: "4 Orang", label: "Pengurus RT", link: "pengurus-rt" },
+    { value: "120", label: "Unit Rumah" },
+    { value: "456", label: "Jiwa Terdaftar" },
+    { value: "92%", label: "Tingkat Lunas" },
   ];
 
   return (
     <section
       id="tentang-kami"
-      className="relative py-12 overflow-hidden bg-primary text-white"
+      className="relative overflow-hidden bg-primary py-10 text-white md:py-16"
     >
-      {/* Background Subtle Pattern & Lights */}
+      {/* Background decoration */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
         <div
           className="absolute"
           style={{
-            top: "10%",
-            right: "5%",
-            width: "450px",
-            height: "450px",
+            top: "10%", right: "5%",
+            width: "450px", height: "450px",
             borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute"
           style={{
-            bottom: "10%",
-            left: "5%",
-            width: "450px",
-            height: "450px",
+            bottom: "10%", left: "5%",
+            width: "450px", height: "450px",
             borderRadius: "50%",
-            background:
-              "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)",
           }}
         />
-        {/* Subtle grid pattern overlay */}
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{
@@ -97,26 +75,20 @@ export function AboutSection() {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-275 px-6">
+      <div className="container relative z-10 mx-auto max-w-275 px-4 sm:px-6">
         <div
           ref={ref}
-          className={`grid grid-cols-1 items-center gap-16 md:grid-cols-2 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+          className={`grid grid-cols-1 items-center gap-8 md:gap-16 md:grid-cols-2 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
             }`}
         >
-          {/* Left Column: Text Content and Stats */}
+          {/* ── LEFT: Text + Stats ── */}
           <div className="flex flex-col justify-center">
-            {/* Badge
-            <div className="mb-5 self-start rounded-full border border-white/35 bg-white/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.8px] text-white">
-              Tentang Kami
-            </div> */}
-
-            {/* Title */}
             <h2
-              className="font-fraunces leading-[1.15] mb-6 text-white"
+              className="font-fraunces mb-4 leading-[1.15] text-white md:mb-6"
               style={{
-                fontSize: "clamp(34px, 4.5vw, 50px)",
+                fontSize: "clamp(22px, 5vw, 42px)",
                 fontWeight: 700,
-                letterSpacing: "-1px",
+                letterSpacing: "-0.5px",
               }}
             >
               Selamat Datang di
@@ -124,8 +96,7 @@ export function AboutSection() {
               <span className="text-white">RT 04 Arjamukti</span>
             </h2>
 
-            {/* Paragraphs */}
-            <div className="space-y-2 text-[14.5px] leading-[1.7] text-white/85">
+            <div className="space-y-2 text-[13.5px] leading-[1.7] text-white/85 md:text-[14.5px]">
               <p>
                 RT 04 yang berlokasi di Perum Arjamukti Kencana Raya,
                 Tasikmalaya, adalah lingkungan hunian yang damai, bersih, dan
@@ -140,32 +111,32 @@ export function AboutSection() {
               </p>
             </div>
 
-            {/* Integrated Stats Row */}
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-2 lg:grid-cols-4">
+            {/* Stats — 4 kolom di semua ukuran layar */}
+            <div className="mt-4 grid grid-cols-4 gap-2">
               {stats.map((s) =>
                 s.link ? (
                   <button
                     key={s.label}
-                    onClick={() => handleSmoothScroll(s.link)}
-                    className="group flex flex-col items-start rounded-[14px] border border-white/15 bg-white/5 p-4 text-left transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10"
+                    onClick={() => handleSmoothScroll(s.link!)}
+                    className="group flex flex-col items-start rounded-[12px] border border-white/15 bg-white/5 p-2.5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10 sm:rounded-[14px] sm:p-4"
                   >
-                    <span className="text-[20px] font-bold leading-none text-white">
+                    <span className="text-[15px] font-bold leading-none text-white sm:text-[20px]">
                       {s.value}
                     </span>
-                    <span className="mt-2 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.5px] text-white/75 group-hover:text-white">
+                    <span className="mt-1.5 flex items-center gap-0.5 text-[9px] font-semibold uppercase tracking-[0.4px] text-white/75 group-hover:text-white sm:mt-2 sm:gap-1 sm:text-[10px]">
                       {s.label}
-                      <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1 sm:h-3 sm:w-3" />
                     </span>
                   </button>
                 ) : (
                   <div
                     key={s.label}
-                    className="flex flex-col items-start rounded-[14px] border border-white/15 bg-white/5 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10"
+                    className="flex flex-col items-start rounded-[12px] border border-white/15 bg-white/5 p-2.5 transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/10 sm:rounded-[14px] sm:p-4"
                   >
-                    <span className="text-[20px] font-bold leading-none text-white">
+                    <span className="text-[15px] font-bold leading-none text-white sm:text-[20px]">
                       {s.value}
                     </span>
-                    <span className="mt-2 text-[10px] font-semibold uppercase tracking-[0.5px] text-white/75">
+                    <span className="mt-1.5 text-[9px] font-semibold uppercase tracking-[0.4px] text-white/75 sm:mt-2 sm:text-[10px]">
                       {s.label}
                     </span>
                   </div>
@@ -174,19 +145,16 @@ export function AboutSection() {
             </div>
           </div>
 
-          {/* Right Column: Visual Image with Floating Card */}
+          {/* ── RIGHT: Image ── */}
           <div className="relative flex justify-center">
-            {/* Outer border decoration */}
             <div className="absolute -inset-2 rounded-[32px] border border-white/10 pointer-events-none" />
-
-            {/* Image Container */}
-            <div className="relative h-90 w-full max-w-115 overflow-hidden rounded-[24px] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] md:h-105">
+            <div className="relative h-52 w-full max-w-115 overflow-hidden rounded-[20px] border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.22)] sm:h-80 md:h-105">
               <Image
                 src="/images/arjamukti.png"
                 alt="RT 04 Arjamukti Neighborhood"
                 fill
                 className="object-cover transition-transform duration-700 hover:scale-105"
-                sizes="(max-w-768px) 100vw, 500px"
+                sizes="(max-width: 768px) 100vw, 500px"
                 priority
               />
             </div>

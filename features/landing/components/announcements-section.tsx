@@ -67,35 +67,26 @@ export function AnnouncementsSection() {
   return (
     <section
       id="pengumuman"
-      className="relative py-12 overflow-hidden bg-white text-foreground"
+      className="relative py-8 md:py-12 overflow-hidden bg-white text-foreground"
     >
-      {/* Subtle Background Lights */}
+      {/* Background */}
       <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
         <div
           className="absolute"
           style={{
-            top: "10%",
-            right: "5%",
-            width: "450px",
-            height: "450px",
+            top: "10%", right: "5%", width: "450px", height: "450px",
             borderRadius: "50%",
-            background:
-              "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+            background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute"
           style={{
-            bottom: "10%",
-            left: "5%",
-            width: "450px",
-            height: "450px",
+            bottom: "10%", left: "5%", width: "450px", height: "450px",
             borderRadius: "50%",
-            background:
-              "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
+            background: "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
           }}
         />
-        {/* Subtle grid pattern overlay */}
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{
@@ -106,82 +97,109 @@ export function AnnouncementsSection() {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-[1100px] px-6">
+      <div className="container relative z-10 mx-auto max-w-[1100px] px-4 sm:px-6">
+
         {/* Header */}
-        <div className="mb-12 text-center max-w-4xl mx-auto">
-          {/* <Badge className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.8px] text-primary">
-            <Megaphone className="h-3.5 w-3.5" />
-            Pengumuman RT
-          </Badge> */}
+        <div className="mb-6 md:mb-10 text-center max-w-4xl mx-auto">
           <h2
             className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
-            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
+            style={{ fontSize: "clamp(20px, 4.5vw, 42px)", letterSpacing: "-0.5px", marginBottom: "6px" }}
           >
             Pengumuman & Kegiatan <em className="italic text-primary">RT 04</em>
           </h2>
-          {/* <p
-            className="text-[16px] leading-[1.6] text-muted-foreground"
-            title="Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan imbauan penting terbaru dari pengurus RT 04 Arjamukti."
-          >
-            Ikuti terus perkembangan informasi, jadwal kegiatan warga, dan imbauan penting terbaru dari pengurus RT 04 Arjamukti.
-          </p> */}
         </div>
 
-        {/* Announcement Grid */}
+        {/* Mobile: vertical list / Desktop: 3-col grid */}
         <div
           ref={ref}
-          className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-            }`}
+          className={`transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
         >
-          {announcements.map((item) => (
-            <Card
-              key={item.id}
-              className="flex flex-col justify-between p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-2xl text-foreground group"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                    <Calendar className="h-3.5 w-3.5 text-muted-foreground/85" />
-                    {item.date}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${item.tagBg}`}
-                  >
-                    {item.tag}
-                  </Badge>
+          {/* ── Desktop grid ── */}
+          <div className="hidden md:grid md:grid-cols-3 gap-5">
+            {announcements.map((item) => (
+              <Card
+                key={item.id}
+                className="flex flex-col justify-between p-5 md:p-6 border-border bg-card hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 rounded-2xl text-foreground group"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-muted-foreground/85" />
+                      {item.date}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${item.tagBg}`}
+                    >
+                      {item.tag}
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-fraunces font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                    {item.desc}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDetailClick(item.title)}
+                  className="mt-auto self-start rounded-lg h-9 text-xs font-semibold border-primary/20 text-primary bg-transparent hover:bg-primary hover:text-primary-foreground flex items-center gap-1 transition-all duration-300"
+                >
+                  <span>Baca Selengkapnya</span>
+                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Button>
+              </Card>
+            ))}
+          </div>
+
+          {/* ── Mobile list ── */}
+          <div className="flex flex-col gap-2.5 md:hidden">
+            {announcements.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => handleDetailClick(item.title)}
+                className="group w-full text-left flex items-start gap-3 p-3.5 rounded-xl border border-border bg-card hover:border-primary/30 active:bg-muted/40 transition-all duration-200"
+              >
+                {/* Left accent strip */}
+                <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-1">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                    <Megaphone className="h-4 w-4" />
+                  </div>
                 </div>
 
-                <h3 className="text-lg font-fraunces font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
-                  {item.title}
-                </h3>
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Badge
+                      variant="outline"
+                      className={`text-[9px] font-bold px-1.5 py-0 rounded border leading-5 ${item.tagBg}`}
+                    >
+                      {item.tag}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                      <Calendar className="h-3 w-3" />
+                      {item.date}
+                    </span>
+                  </div>
 
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                  {item.desc}
-                </p>
-              </div>
+                  <h3 className="text-[13.5px] font-fraunces font-bold text-foreground leading-snug mb-1 group-hover:text-primary transition-colors duration-200">
+                    {item.title}
+                  </h3>
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleDetailClick(item.title)}
-                className="mt-auto self-start rounded-lg h-9 text-xs font-semibold border-primary/20 text-primary bg-transparent hover:bg-primary hover:text-primary-foreground flex items-center gap-1 transition-all duration-300"
-              >
-                <span>Baca Selengkapnya</span>
-                <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </Button>
-            </Card>
-          ))}
+                  <p className="text-[11.5px] text-muted-foreground leading-relaxed line-clamp-2">
+                    {item.desc}
+                  </p>
+                </div>
+
+                {/* Chevron */}
+                <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0 mt-1 group-hover:text-primary transition-colors duration-200" />
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Info Box */}
-        {/* <div className="mt-12 max-w-full mx-auto p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-3 justify-center text-center text-xs text-muted-foreground">
-          <Info className="h-4 w-4 text-primary shrink-0" />
-          <span>
-            Pengurus RT secara berkala menerbitkan lembaran surat edaran resmi
-            yang dapat diunduh melalui panel portal warga.
-          </span>
-        </div> */}
       </div>
     </section>
   );
