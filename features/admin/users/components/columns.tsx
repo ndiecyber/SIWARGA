@@ -1,14 +1,9 @@
-import { Eye, SquareArrowUpRight } from "lucide-react";
-import type { UserGetPayload } from "@/generated/prisma/models";
+import { SquareArrowUpRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ButtonGroup } from "@/components/ui/button-group";
-import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 
-import DetailUserDialog from "./detail-user-dialog";
-import { UpdateUserDialog } from "./update-user-dialog";
-import { DeleteUserDialog } from "./delete-user-dialog";
 import { UserWithResident } from "../types";
 
 const formatCurrency = (amount: number) =>
@@ -94,31 +89,5 @@ export const columns: ColumnDef<UserWithResident>[] = [
         </Button>
       </ButtonGroup>
     ),
-  },
-  {
-    id: "aksi",
-    header: "Aksi",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const user = row.original;
-
-      return (
-        <ButtonActionDropdown>
-          {/* Detail */}
-          <DetailUserDialog user={user}>
-            <Button variant="ghost" className="justify-start w-full gap-2">
-              <Eye className="size-4" />
-              <span>Detail</span>
-            </Button>
-          </DetailUserDialog>
-
-          {/* Update */}
-          <UpdateUserDialog id={row.original.id} />
-
-          {/* Delete */}
-          <DeleteUserDialog user={user} />
-        </ButtonActionDropdown>
-      );
-    },
   },
 ];

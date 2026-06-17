@@ -1,94 +1,24 @@
 "use client";
 
-import {
-  ArrowDown,
-  ArrowUp,
-  ArrowUpRight,
-  ChevronsUpDown,
-  Eye,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ColumnDef, HeaderContext } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ColumnDef } from "@tanstack/react-table";
 import { HouseStatus } from "@/generated/prisma/browser";
-import { FieldDialog } from "@/components/shared/field-dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import ButtonActionDropdown from "@/components/shared/button-action-dropdown";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 
-import HouseShow from "../pages/show";
 import { HouseWithOwner } from "../types";
-import { HouseEditForm } from "./edit-form";
-import DeleteHouseDialog from "./delete-dialog";
-
-// ─── Sortable Header Helper ────────────────────────────────────────────────────
-
-type SortableColumn = HeaderContext<HouseWithOwner, unknown>["column"];
-
-function SortableHeader({
-  column,
-  label,
-}: {
-  column: SortableColumn;
-  label: string;
-}) {
-  const sorted = column.getIsSorted();
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-8 gap-1 -ml-3 font-medium"
-      onClick={() => column.toggleSorting(sorted === "asc")}
-    >
-      {label}
-      {sorted === "asc" ? (
-        <ArrowUp className="h-3.5 w-3.5" />
-      ) : sorted === "desc" ? (
-        <ArrowDown className="h-3.5 w-3.5" />
-      ) : (
-        <ChevronsUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-      )}
-    </Button>
-  );
-}
 
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
 export const columns: ColumnDef<HouseWithOwner>[] = [
-  // ── Checkbox select ─────────────────────────────────────────────────────────
-  {
-    id: "select",
-    enableSorting: false,
-    enableHiding: false,
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-  },
-
   // ── House number ─────────────────────────────────────────────────────────────
   {
     accessorKey: "houseNumber",
     enableGlobalFilter: true,
-    header: ({ column }) => <SortableHeader column={column} label="House" />,
+    // header: ({ column }) => <SortableHeader column={column} label="House" />,
+    header: () => "House",
     cell: ({ row }) => (
       <span className="font-mono font-medium">
         {row.getValue("houseNumber")}
@@ -100,7 +30,8 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
   {
     accessorKey: "block",
     enableGlobalFilter: true,
-    header: ({ column }) => <SortableHeader column={column} label="Block" />,
+    // header: ({ column }) => <SortableHeader column={column} label="Block" />,
+    header: () => "Block",
     filterFn: (row, columnId, filterValues: string[]) => {
       if (!filterValues.length) return true;
       return filterValues.includes(row.getValue(columnId));
@@ -117,7 +48,8 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
     id: "owner",
     accessorFn: (row) => row.owner?.name ?? "",
     enableGlobalFilter: true,
-    header: ({ column }) => <SortableHeader column={column} label="Owner" />,
+    // header: ({ column }) => <SortableHeader column={column} label="Owner" />,
+    header: () => "Owner",
     cell: ({ row }) => {
       const name: string = row.getValue("owner");
       return name ? (
@@ -136,9 +68,10 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
   // ── Residents ─────────────────────────────────────────────────────────────────
   {
     accessorKey: "residents",
-    header: ({ column }) => (
-      <SortableHeader column={column} label="Residents" />
-    ),
+    // header: ({ column }) => (
+    //   <SortableHeader column={column} label="Residents" />
+    // ),
+    header: () => "Residents",
     cell: ({ row }) => {
       const count: number = row.getValue("residents") ?? 0;
       return <span className="tabular-nums">{count}</span>;
@@ -148,7 +81,8 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
   // ── Status ────────────────────────────────────────────────────────────────────
   {
     accessorKey: "status",
-    header: ({ column }) => <SortableHeader column={column} label="Status" />,
+    // header: ({ column }) => <SortableHeader column={column} label="Status" />,
+    header: () => "Status",
     filterFn: (row, columnId, filterValues: string[]) => {
       if (!filterValues.length) return true;
       return filterValues.includes(row.getValue(columnId));
@@ -166,65 +100,6 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
         >
           {status === HouseStatus.OCCUPIED ? "Occupied" : "Vacant"}
         </Badge>
-      );
-    },
-  },
-
-  // ── Actions ──────────────────────────────────────────────────────────────
-  {
-    id: "aksi",
-    header: "Aksi",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const house = row.original;
-
-      return (
-        <ButtonActionDropdown>
-          {/* View */}
-          <HouseShow house={house}>
-            <DropdownMenuItem
-              onSelect={(e) => {
-                e.preventDefault();
-              }}
-            >
-              <Eye size={16} />
-              Detail
-            </DropdownMenuItem>
-          </HouseShow>
-
-          {/* Edit */}
-          <FieldDialog
-            title="Edit house"
-            trigger={
-              <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <Pencil size={16} />
-                Edit
-              </DropdownMenuItem>
-            }
-          >
-            <HouseEditForm house={house} />
-          </FieldDialog>
-
-          {/* Delete */}
-          <DeleteHouseDialog
-            house={house}
-            trigger={
-              <DropdownMenuItem
-                variant="destructive"
-                onSelect={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <Trash2 size={16} />
-                Hapus
-              </DropdownMenuItem>
-            }
-          />
-        </ButtonActionDropdown>
       );
     },
   },

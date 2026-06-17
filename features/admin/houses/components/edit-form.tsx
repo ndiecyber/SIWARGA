@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
-import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
+import { ChevronsUpDownIcon, Loader2Icon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
 import { HouseStatus } from "@/generated/prisma/enums";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useFieldDialog } from "@/components/shared/field-dialog";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import {
   Popover,
@@ -47,13 +46,12 @@ import { getOwnersLookupAction, updateHouseAction } from "../actions";
 
 interface HouseEditFormProps {
   house: HouseWithOwner;
+  onSuccess: () => void;
 }
 
-export function HouseEditForm({ house }: HouseEditFormProps) {
+export function HouseEditForm({ house, onSuccess }: HouseEditFormProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-
-  const { close } = useFieldDialog();
 
   const form = useForm({
     resolver: standardSchemaResolver(formSchema),
@@ -113,8 +111,9 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
 
     toast.promise(mutationPromise, {
       loading: "Data rumah sedang diperbarui. Mohon tunggu sebentar...",
-      success: (response) =>
-        response.message || "Data rumah berhasil diperbarui",
+      success: (response) => {
+        return response.message || "Data rumah berhasil diperbarui";
+      },
       error: (error) =>
         error instanceof Error
           ? error.message
@@ -123,7 +122,7 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
 
     try {
       await mutationPromise;
-      close();
+      onSuccess();
     } catch (error) {
       console.error(error);
     }
@@ -259,7 +258,7 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
                         ? owners.find((option) => option.value === field.value)
                             ?.label
                         : "Pilih Pemilik Rumah"}
-                      <ChevronsUpDown className="opacity-50" />
+                      <ChevronsUpDownIcon className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -277,8 +276,8 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
                       <CommandList>
                         {isLoadingOwners && (
                           <div className="flex items-center justify-center gap-2 p-4 text-sm text-center text-muted-foreground">
-                            <Loader2 className="animate-spin size-4" /> Loading
-                            users...
+                            <Loader2Icon className="animate-spin size-4" />{" "}
+                            Loading users...
                           </div>
                         )}
                         {!isLoadingOwners && owners.length === 0 && (
@@ -324,7 +323,7 @@ export function HouseEditForm({ house }: HouseEditFormProps) {
         <Button disabled={isSubmitting}>
           {isSubmitting ? (
             <span className="flex items-center">
-              <Loader2 className="mr-2 animate-spin" />
+              <Loader2Icon className="mr-2 animate-spin" />
               Saving...
             </span>
           ) : (

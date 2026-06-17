@@ -1,24 +1,22 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { useEffect, useMemo, useState } from "react";
+
 import {
+  CalendarDays,
+  Eye,
+  Filter,
+  Megaphone,
+  Pencil,
   Plus,
   Search,
-  Pencil,
-  Trash2,
-  Eye,
-  Megaphone,
-  CalendarDays,
   Tag,
-  Filter,
+  Trash2,
 } from "lucide-react";
-import { AnnouncementFormDialog } from "./announcement-form-dialog";
-import { DeleteConfirmDialog } from "./delete-confirm-dialog";
-import { AnnouncementDetailDialog } from "./announcement-detail-dialog";
+
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -26,6 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { AnnouncementFormDialog } from "./announcement-form-dialog";
+import { AnnouncementDetailDialog } from "./announcement-detail-dialog";
 
 type Announcement = {
   id: number;
@@ -44,7 +46,11 @@ type Props = {
 
 const STATUS_CONFIG: Record<
   string,
-  { label: string; variant: "default" | "secondary" | "outline"; className: string }
+  {
+    label: string;
+    variant: "default" | "secondary" | "outline";
+    className: string;
+  }
 > = {
   upcoming: {
     label: "Akan Datang",
@@ -54,7 +60,8 @@ const STATUS_CONFIG: Record<
   ongoing: {
     label: "Berlangsung",
     variant: "secondary",
-    className: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
+    className:
+      "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100",
   },
   done: {
     label: "Selesai",
@@ -104,7 +111,8 @@ export function AnnouncementDashboard({ announcements }: Props) {
       a.category.toLowerCase().includes(search.toLowerCase()) ||
       a.description.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || a.status === statusFilter;
-    const matchCategory = categoryFilter === "all" || a.category === categoryFilter;
+    const matchCategory =
+      categoryFilter === "all" || a.category === categoryFilter;
     return matchSearch && matchStatus && matchCategory;
   });
 
@@ -150,9 +158,9 @@ export function AnnouncementDashboard({ announcements }: Props) {
     <>
       {/* ───── Header ───── */}
       <div className="px-6 pt-6 pb-2 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <div className="flex items-center justify-center w-10 h-10 shadow-sm rounded-xl bg-primary text-primary-foreground">
               <Megaphone className="size-5" />
             </div>
             <div>
@@ -164,34 +172,62 @@ export function AnnouncementDashboard({ announcements }: Props) {
               </p>
             </div>
           </div>
-          <Button onClick={openCreate} className="gap-2 shrink-0" id="btn-add-announcement">
+          <Button
+            onClick={openCreate}
+            className="gap-2 shrink-0"
+            id="btn-add-announcement"
+          >
             <Plus className="size-4" />
             Tambah Pengumuman
           </Button>
         </div>
 
         {/* ───── Stats Cards ───── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { label: "Total", value: total, color: "text-foreground", bg: "bg-card border" },
-            { label: "Akan Datang", value: upcoming, color: "text-blue-600", bg: "bg-blue-50 border-blue-100" },
-            { label: "Berlangsung", value: ongoing, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-100" },
-            { label: "Selesai", value: done, color: "text-gray-500", bg: "bg-gray-50 border-gray-100" },
+            {
+              label: "Total",
+              value: total,
+              color: "text-foreground",
+              bg: "bg-card border",
+            },
+            {
+              label: "Akan Datang",
+              value: upcoming,
+              color: "text-blue-600",
+              bg: "bg-blue-50 border-blue-100",
+            },
+            {
+              label: "Berlangsung",
+              value: ongoing,
+              color: "text-emerald-600",
+              bg: "bg-emerald-50 border-emerald-100",
+            },
+            {
+              label: "Selesai",
+              value: done,
+              color: "text-gray-500",
+              bg: "bg-gray-50 border-gray-100",
+            },
           ].map((s) => (
             <div
               key={s.label}
               className={`rounded-xl border px-4 py-3 ${s.bg} transition-all`}
             >
-              <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
-              <p className={`text-2xl font-bold mt-0.5 ${s.color}`}>{s.value}</p>
+              <p className="text-xs font-medium text-muted-foreground">
+                {s.label}
+              </p>
+              <p className={`text-2xl font-bold mt-0.5 ${s.color}`}>
+                {s.value}
+              </p>
             </div>
           ))}
         </div>
 
         {/* ───── Filters ───── */}
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute -translate-y-1/2 left-3 top-1/2 size-4 text-muted-foreground" />
             <Input
               id="search-announcement"
               placeholder="Cari judul, kategori, atau isi..."
@@ -238,8 +274,8 @@ export function AnnouncementDashboard({ announcements }: Props) {
       <div className="px-6 pb-8">
         <Card className="overflow-hidden border shadow-sm">
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+            <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
+              <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-muted">
                 <Megaphone className="size-8 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-foreground">
@@ -247,7 +283,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
                   ? "Tidak ada pengumuman yang cocok"
                   : "Belum ada pengumuman"}
               </p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="mt-1 text-sm text-muted-foreground">
                 {search || statusFilter !== "all"
                   ? "Coba ubah filter atau kata kunci pencarian"
                   : "Klik tombol Tambah Pengumuman untuk memulai"}
@@ -258,22 +294,22 @@ export function AnnouncementDashboard({ announcements }: Props) {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-muted/40">
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground w-8">
+                    <th className="w-8 px-4 py-3 text-xs font-semibold tracking-wide text-left uppercase text-muted-foreground">
                       No
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left uppercase text-muted-foreground">
                       Judul
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground hidden md:table-cell">
+                    <th className="hidden px-4 py-3 text-xs font-semibold tracking-wide text-left uppercase text-muted-foreground md:table-cell">
                       Kategori
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground hidden lg:table-cell">
+                    <th className="hidden px-4 py-3 text-xs font-semibold tracking-wide text-left uppercase text-muted-foreground lg:table-cell">
                       Tgl. Acara
                     </th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-left uppercase text-muted-foreground">
                       Status
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide text-right uppercase text-muted-foreground">
                       Aksi
                     </th>
                   </tr>
@@ -289,7 +325,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
                     return (
                       <tr
                         key={a.id}
-                        className="hover:bg-muted/30 transition-colors group"
+                        className="transition-colors hover:bg-muted/30 group"
                       >
                         {/* No */}
                         <td className="px-4 py-3.5 text-muted-foreground font-medium w-8">
@@ -327,7 +363,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
                                   day: "numeric",
                                   month: "short",
                                   year: "numeric",
-                                }
+                                },
                               )}
                             </span>
                           ) : (
@@ -384,11 +420,21 @@ export function AnnouncementDashboard({ announcements }: Props) {
                   })}
                 </tbody>
               </table>
-              <div className="border-t px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-col items-center justify-between gap-4 px-6 py-4 text-sm border-t sm:flex-row text-muted-foreground">
                 <div>
-                  Menampilkan <span className="font-medium text-foreground">{totalItems === 0 ? 0 : startIndex + 1}</span> sampai{" "}
-                  <span className="font-medium text-foreground">{endIndex}</span> dari{" "}
-                  <span className="font-medium text-foreground">{totalItems}</span> pengumuman
+                  Menampilkan{" "}
+                  <span className="font-medium text-foreground">
+                    {totalItems === 0 ? 0 : startIndex + 1}
+                  </span>{" "}
+                  sampai{" "}
+                  <span className="font-medium text-foreground">
+                    {endIndex}
+                  </span>{" "}
+                  dari{" "}
+                  <span className="font-medium text-foreground">
+                    {totalItems}
+                  </span>{" "}
+                  pengumuman
                   {filtered.length !== announcements.length && (
                     <span> (difilter dari {total} total)</span>
                   )}
@@ -402,7 +448,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
                       value={String(pageSize)}
                       onValueChange={(v) => setPageSize(Number(v))}
                     >
-                      <SelectTrigger className="h-8 w-16 text-xs">
+                      <SelectTrigger className="w-16 h-8 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -425,14 +471,16 @@ export function AnnouncementDashboard({ announcements }: Props) {
                     >
                       Sebelumnya
                     </Button>
-                    <span className="text-xs font-medium px-2">
+                    <span className="px-2 text-xs font-medium">
                       Halaman {currentPage} dari {totalPages}
                     </span>
                     <Button
                       variant="outline"
                       size="sm"
                       className="h-8 px-2"
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Selanjutnya

@@ -1,8 +1,9 @@
 import { useState } from "react";
 
 import { toast } from "sonner";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2Icon, Trash2Icon } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { House } from "@/generated/prisma/browser";
 import {
@@ -18,14 +19,26 @@ import {
 
 import { deleteHouseAction } from "../actions";
 
-interface DeleteHouseDialogProps {
+type Props = {
   house: House;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   trigger?: React.ReactNode;
-}
+};
 
-function DeleteHouseDialog({ house, trigger }: DeleteHouseDialogProps) {
+function DeleteHouseDialog({ house, open, onOpenChange, trigger }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const handleOpenChange = (nextOpenState: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(nextOpenState);
+    }
+    onOpenChange?.(nextOpenState);
+  };
 
   async function handleDelete() {
     setIsDeleting(true);
@@ -34,7 +47,10 @@ function DeleteHouseDialog({ house, trigger }: DeleteHouseDialogProps) {
 
     toast.promise(deleteHouse, {
       loading: "Menghapus data rumah...",
-      success: (response) => response.message || `Data rumah berhasil dihapus!`,
+      success: (response) => {
+        handleOpenChange(false);
+        return response.message || `Data rumah berhasil dihapus!`;
+      },
       error: (error) => `Terjadi kesalahan: ${error}`,
     });
 
@@ -42,27 +58,14 @@ function DeleteHouseDialog({ house, trigger }: DeleteHouseDialogProps) {
       await deleteHouse;
     } catch (error) {
       console.error("DELETE_HOUSE_ERROR: ", error);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        {trigger ? (
-          trigger
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="w-8 h-8 text-muted-foreground hover:text-destructive"
-            title="Hapus"
-            disabled={isDeleting}
-          >
-            <Trash2 className="w-4 h-4" />
-            <span className="sr-only">Hapus</span>
-          </Button>
-        )}
-      </AlertDialogTrigger>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+      {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Hapus rumah?</AlertDialogTitle>
@@ -77,19 +80,32 @@ function DeleteHouseDialog({ house, trigger }: DeleteHouseDialogProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Batal</AlertDialogCancel>
+          {/* NOTE: alert dialog action is not used since it is optimistic */}
           <Button
-            className="text-white bg-destructive hover:bg-destructive/90"
-            onClick={() => handleDelete()}
+            variant="destructive"
             disabled={isDeleting}
+            onClick={handleDelete}
           >
-            {isDeleting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            <>
+              <span
+                className={cn(
+                  "flex items-center gap-2",
+                  isDeleting && "hidden",
+                )}
+              >
+                <Trash2Icon className="w-4 h-4" />
+                Hapus
+              </span>
+              <span
+                className={cn(
+                  "flex items-center gap-2",
+                  !isDeleting && "hidden",
+                )}
+              >
+                <Loader2Icon className="w-4 h-4 animate-spin" />
                 Menghapus...
-              </>
-            ) : (
-              "Hapus"
-            )}
+              </span>
+            </>
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

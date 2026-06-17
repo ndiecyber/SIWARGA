@@ -1,53 +1,137 @@
-import { Plus } from "lucide-react";
+"use client";
 
-import prisma from "@/lib/db";
+import { useState } from "react";
+
+import {
+  DownloadIcon,
+  EyeIcon,
+  PencilIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { fraunces } from "@/lib/fonts";
-import { FilterCategory } from "@/lib/types/filter";
-import { DataTable } from "@/components/shared/data-table";
-import { FieldDialog } from "@/components/shared/field-dialog";
-
-import { columns } from "../components/columns";
-import { HouseCreateForm } from "../components/create-form";
+import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
+import { FilterCategory } from "@/lib/types/filter";
+import { FieldDialog } from "@/components/shared/field-dialog";
+import {
+  ActionOption,
+  DataTable,
+  withActionColumn,
+  withSelectColumn,
+} from "@/components/shared/data-table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import HouseShow from "./detail-show";
+import { HouseWithOwner } from "../types";
+import { columns } from "../components/columns";
+import { HouseEditForm } from "../components/edit-form";
+import { HouseCreateForm } from "../components/create-form";
+import DeleteHouseDialog from "../components/delete-dialog";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const FILTER_CATEGORIES: FilterCategory[] = [
+const filterCategories: FilterCategory[] = [
   {
     id: "block",
     label: "Block",
     options: [
       {
         label: "A",
-        value: "A",
+        value: "a",
         icon: (
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
         ),
       },
       {
         label: "B",
-        value: "B",
+        value: "b",
         icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
       },
       {
         label: "C",
-        value: "C",
+        value: "c",
         icon: (
           <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
         ),
       },
       {
         label: "D",
-        value: "D",
+        value: "d",
         icon: <span className="inline-block w-2 h-2 rounded-full bg-sky-500" />,
       },
     ],
   },
 ];
 
-export default async function HousesPage() {
-  const data = await prisma.house.findMany({ include: { owner: true } });
+const sortOptions: SortOption[] = [
+  {
+    id: "houseNumber",
+    label: "House",
+  },
+  {
+    id: "block",
+    label: "Block",
+  },
+  {
+    id: "owner",
+    label: "Owner",
+  },
+  {
+    id: "status",
+    label: "Status",
+  },
+];
+
+const batchActions: ActionOption<HouseWithOwner>[] = [
+  {
+    label: "Export",
+    icon: <DownloadIcon size={16} />,
+    onClick: (rows) => console.log("edit", rows),
+  },
+  {
+    label: "Delete",
+    icon: <Trash2Icon size={16} />,
+    onClick: (rows) => console.log("delete", rows),
+    destructive: true,
+  },
+];
+
+interface Props {
+  houses: HouseWithOwner[];
+}
+
+export default function HousesPage({ houses }: Props) {
+  const [detailTarget, setDetailTarget] = useState<HouseWithOwner | null>(null);
+  const [editTarget, setEditTarget] = useState<HouseWithOwner | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
+
+  const houseColumns = withActionColumn(withSelectColumn(columns), [
+    {
+      label: "Detail",
+      icon: <EyeIcon size={16} />,
+      onClick: (row) => setDetailTarget(row as HouseWithOwner),
+    },
+    {
+      label: "Edit",
+      icon: <PencilIcon size={16} />,
+      onClick: (row) => setEditTarget(row as HouseWithOwner),
+    },
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (row) => setDeleteTarget(row as HouseWithOwner),
+      destructive: true,
+    },
+  ]);
 
   return (
     <main className="container mx-auto">
@@ -57,7 +141,7 @@ export default async function HousesPage() {
           title="Add new house"
           trigger={
             <Button variant="default">
-              <Plus className="mr-2" />
+              <PlusIcon className="mr-2" />
               Add
             </Button>
           }
@@ -66,11 +150,57 @@ export default async function HousesPage() {
         </FieldDialog>
       </header>
 
-      <DataTable
-        columns={columns}
-        data={data}
-        filterCategories={FILTER_CATEGORIES}
-      />
+      <>
+        <DataTable
+          columns={houseColumns}
+          data={houses}
+          filterCategories={filterCategories}
+          sortOptions={sortOptions}
+          batchActions={batchActions}
+        />
+
+        {detailTarget && (
+          <HouseShow
+            house={detailTarget}
+            open={detailTarget !== null}
+            onOpenChange={(open) => {
+              if (!open) setDetailTarget(null);
+            }}
+          />
+        )}
+
+        {editTarget && (
+          <Dialog
+            open={editTarget !== null}
+            onOpenChange={(open) => {
+              if (!open) setEditTarget(null);
+            }}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit data rumah</DialogTitle>
+                <DialogDescription>
+                  Edit data rumah, data hanya dapat diubah
+                </DialogDescription>
+              </DialogHeader>
+              <HouseEditForm
+                house={editTarget}
+                onSuccess={() => setEditTarget(null)}
+              />
+            </DialogContent>
+          </Dialog>
+        )}
+
+        {deleteTarget && (
+          <DeleteHouseDialog
+            house={deleteTarget}
+            open={true}
+            onOpenChange={(open) => {
+              if (!open) setDeleteTarget(null);
+            }}
+          />
+        )}
+      </>
     </main>
   );
 }
