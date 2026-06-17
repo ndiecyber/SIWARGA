@@ -85,6 +85,10 @@ const RELATIONSHIP_OPTIONS = [
   { value: RelationshipType.OTHER, label: "Lainnya" },
 ];
 
+// Sentinel index used to track which field array entry was injected by the
+// "owner as resident" toggle so we can remove it cleanly on untoggle.
+const OWNER_RESIDENT_MARKER = "__owner__";
+
 function SectionHeader({
   icon: Icon,
   title,
@@ -110,6 +114,9 @@ export function HouseCreateForm() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
+  // Tracks whether the owner-as-resident toggle is pressed
+  const [ownerAsResident, setOwnerAsResident] = useState(false);
+
   const { close } = useFieldDialog();
 
   const form = useForm<InputFormSchema>({
@@ -128,12 +135,26 @@ export function HouseCreateForm() {
     formState: { isSubmitting },
   } = form;
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, update } = useFieldArray({
     control: form.control,
     name: "residents",
   });
 
-  // Query: owner lookup
+  // ── Derived state ────────────────────────────────────────────────────────────
+
+  const watchedResidents = form.watch("residents");
+  const watchedStatus = form.watch("status");
+  const selectedOwnerId = form.watch("ownerId");
+
+  const isVacant = watchedStatus === HouseStatus.VACANT;
+
+  // Index of the resident currently set as MAIN_RESIDENT (-1 if none)
+  const mainResidentIndex = watchedResidents.findIndex(
+    (r) => r.residentRole === ResidentRole.MAIN_RESIDENT,
+  );
+  const hasMainResident = mainResidentIndex !== -1;
+
+  // ── Query: owner lookup ──────────────────────────────────────────────────────
   const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
     queryKey: ["users-search", debouncedSearch],
     queryFn: async () => {
@@ -143,12 +164,18 @@ export function HouseCreateForm() {
       return response.data.map((user) => ({
         value: user.id,
         label: user.name,
+        isResident: user.isResident,
       }));
     },
     enabled: true,
   });
 
-  // Mutation: create house
+  const selectedOwner = owners.find((o) => o.value === selectedOwnerId);
+  const selectedOwnerLabel = selectedOwner?.label;
+  // Owner is already a resident in another house
+  const ownerAlreadyResident = selectedOwner?.isResident ?? false;
+
+  // ── Mutation: create house ───────────────────────────────────────────────────
   const { mutateAsync } = useMutation({
     mutationKey: ["create-house"],
     mutationFn: async (data: InputFormSchema) => {
@@ -159,8 +186,88 @@ export function HouseCreateForm() {
     },
   });
 
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+
+  /**
+   * When a resident is set to MAIN_RESIDENT, force all others to FAMILY_MEMBER.
+   * Called after append or after a role select change.
+   */
+  function enforceMainResidentConstraint(newMainIndex: number) {
+    watchedResidents.forEach((r, i) => {
+      if (i !== newMainIndex && r.residentRole === ResidentRole.MAIN_RESIDENT) {
+        update(i, { ...r, residentRole: ResidentRole.FAMILY_MEMBER });
+      }
+    });
+  }
+
+  /** Index of the owner-injected resident entry, or -1. */
+  function ownerResidentIndex(): number {
+    // We store the owner's userId; match by userId === selectedOwnerId
+    return watchedResidents.findIndex((r) => r.userId === selectedOwnerId);
+  }
+
+  // ── Toggle: owner as resident ────────────────────────────────────────────────
+  function handleOwnerToggle(pressed: boolean) {
+    if (pressed) {
+      if (!selectedOwnerId) {
+        toast.warning("Pilih pemilik terlebih dahulu.");
+        return;
+      }
+      // Add owner as MAIN_RESIDENT at the front
+      append({
+        userId: selectedOwnerId,
+        residentRole: ResidentRole.MAIN_RESIDENT,
+        relationship: RelationshipType.SELF,
+      });
+      // After append the new entry lands at fields.length (current length before append)
+      const newIndex = watchedResidents.length;
+      enforceMainResidentConstraint(newIndex);
+      setOwnerAsResident(true);
+    } else {
+      // Remove the owner-resident entry
+      const idx = ownerResidentIndex();
+      if (idx !== -1) remove(idx);
+      setOwnerAsResident(false);
+    }
+  }
+
+  // ── Status change: VACANT handling ──────────────────────────────────────────
+  function handleStatusChange(value: string) {
+    form.setValue("status", value as HouseStatus, { shouldValidate: true });
+    if (value === HouseStatus.VACANT) {
+      // Keep the data in the field array but it will be excluded on submit.
+      // Also turn off owner-as-resident toggle visually (data kept, disabled UI).
+      // We do NOT remove entries — they're simply greyed out and excluded on submit.
+    }
+  }
+
+  // ── Add resident ─────────────────────────────────────────────────────────────
+  function handleAddResident() {
+    // New residents default to FAMILY_MEMBER when a main resident already exists
+    append({
+      residentRole: hasMainResident
+        ? ResidentRole.FAMILY_MEMBER
+        : ResidentRole.MAIN_RESIDENT,
+      relationship: RelationshipType.SELF,
+    });
+  }
+
+  // ── Role change for a specific resident ─────────────────────────────────────
+  function handleRoleChange(index: number, value: ResidentRole) {
+    const current = watchedResidents[index];
+    update(index, { ...current, residentRole: value });
+    if (value === ResidentRole.MAIN_RESIDENT) {
+      enforceMainResidentConstraint(index);
+    }
+  }
+
+  // ── Submit ───────────────────────────────────────────────────────────────────
   const handleSubmit = form.handleSubmit(async (data: InputFormSchema) => {
-    const mutationPromise = mutateAsync(data);
+    // Exclude residents when house is VACANT
+    const submitData: InputFormSchema =
+      data.status === HouseStatus.VACANT ? { ...data, residents: [] } : data;
+
+    const mutationPromise = mutateAsync(submitData);
 
     toast.promise(mutationPromise, {
       loading: "Data rumah sedang ditambahkan. Mohon tunggu sebentar...",
@@ -174,16 +281,14 @@ export function HouseCreateForm() {
     try {
       await mutationPromise;
       form.reset();
+      setOwnerAsResident(false);
       close();
     } catch (error) {
       console.error(error);
     }
   });
 
-  const selectedOwnerId = form.watch("ownerId");
-  const selectedOwnerLabel = owners.find(
-    (o) => o.value === selectedOwnerId,
-  )?.label;
+  // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
     <form onSubmit={handleSubmit} className="w-full mx-auto space-y-6">
@@ -243,6 +348,7 @@ export function HouseCreateForm() {
               />
             </div>
           </div>
+
           {/* Status */}
           <Controller
             name="status"
@@ -250,7 +356,7 @@ export function HouseCreateForm() {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Status Hunian *</FieldLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value} onValueChange={handleStatusChange}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih status" />
                   </SelectTrigger>
@@ -279,22 +385,35 @@ export function HouseCreateForm() {
             className="mb-0"
           />
 
+          {/* Owner-as-resident toggle */}
           <Tooltip>
-            <TooltipTrigger>
-              <Toggle
-                type="button"
-                variant="outline"
-                size="default"
-                className="data-[state=on]:bg-primary/10 data-[state=on]:border-primary"
-              >
-                <div className="group-aria-pressed/toggle:text-primary flex items-center gap-2">
-                  <CheckCircleIcon size={16} />
-                  Penghuni
-                </div>
-              </Toggle>
+            <TooltipTrigger asChild>
+              {/* Wrapper span so Tooltip still works when the Toggle is disabled */}
+              <span className="inline-flex">
+                <Toggle
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  pressed={ownerAsResident}
+                  disabled={
+                    isVacant || !selectedOwnerId || ownerAlreadyResident
+                  }
+                  onPressedChange={handleOwnerToggle}
+                  className="group/toggle aria-pressed:bg-primary/10 aria-pressed:border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <div className="group-aria-pressed/toggle:text-primary flex items-center gap-2">
+                    <CheckCircleIcon size={16} />
+                    Penghuni
+                  </div>
+                </Toggle>
+              </span>
             </TooltipTrigger>
             <TooltipContent className="w-fit">
-              Pemilik rumah sebagai penghuni rumah
+              {ownerAlreadyResident
+                ? "Pemilik ini sudah terdaftar sebagai penghuni di rumah lain"
+                : isVacant
+                  ? "Tidak dapat menambah penghuni pada rumah kosong"
+                  : "Jadikan pemilik sebagai penghuni utama rumah ini"}
             </TooltipContent>
           </Tooltip>
         </header>
@@ -348,11 +467,18 @@ export function HouseCreateForm() {
                           <CommandItem
                             value={label}
                             key={value}
-                            onSelect={() =>
+                            onSelect={() => {
+                              // If owner changes while toggle is on, remove the old
+                              // owner-resident entry first
+                              if (ownerAsResident) {
+                                const idx = ownerResidentIndex();
+                                if (idx !== -1) remove(idx);
+                                setOwnerAsResident(false);
+                              }
                               form.setValue("ownerId", value, {
                                 shouldValidate: true,
-                              })
-                            }
+                              });
+                            }}
                             className="cursor-pointer"
                           >
                             {label}
@@ -377,24 +503,37 @@ export function HouseCreateForm() {
             title="Daftar Penghuni"
             className="mb-0"
           />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="text-primary font-semibold gap-1"
-            onClick={() =>
-              append({
-                // name: "",
-                // houseId: "",
-                residentRole: ResidentRole.MAIN_RESIDENT,
-                relationship: RelationshipType.SELF,
-              })
-            }
-          >
-            <PlusIcon className="size-4" />
-            Tambah Penghuni
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-primary font-semibold gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isVacant}
+                  onClick={handleAddResident}
+                >
+                  <PlusIcon className="size-4" />
+                  Tambah Penghuni
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {isVacant && (
+              <TooltipContent>
+                Tidak dapat menambah penghuni pada rumah kosong
+              </TooltipContent>
+            )}
+          </Tooltip>
         </div>
+
+        {/* Vacant banner */}
+        {isVacant && fields.length > 0 && (
+          <p className="text-xs text-muted-foreground bg-muted/40 border border-dashed border-border rounded-lg px-3 py-2">
+            Data penghuni di bawah tidak akan disimpan karena status rumah
+            adalah <strong>Kosong</strong>.
+          </p>
+        )}
 
         {fields.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4 border border-dashed border-border rounded-xl">
@@ -405,80 +544,49 @@ export function HouseCreateForm() {
 
         <ScrollArea className={cn("h-34", fields.length === 0 && "hidden")}>
           <div className="space-y-3">
-            {fields.map((fieldItem, index) => (
-              <div
-                key={fieldItem.id}
-                className="grid md:grid-cols-3 gap-3 p-4 bg-muted/20 border border-border rounded-xl items-start"
-              >
-                {/* Nama */}
-                {/* <Controller
-                  name={`residents.${index}.name`}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Nama Penghuni</FieldLabel>
-                      <Input
-                        {...field}
-                        placeholder="Nama Lengkap"
-                        autoComplete="off"
-                        aria-invalid={fieldState.invalid}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                /> */}
+            {fields.map((fieldItem, index) => {
+              const isOwnerEntry =
+                watchedResidents[index]?.userId === selectedOwnerId &&
+                !!selectedOwnerId;
 
-                {/* Peran */}
-                <Controller
-                  name={`residents.${index}.residentRole`}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Peran</FieldLabel>
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Pilih peran" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {RESIDENT_ROLE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
+              // This entry is the current main resident
+              const isThisMainResident =
+                watchedResidents[index]?.residentRole ===
+                ResidentRole.MAIN_RESIDENT;
 
-                {/* Hubungan + Delete */}
-                <div className="flex gap-2 items-end">
+              // Role select is disabled when:
+              // - house is vacant (whole row is greyed)
+              // - another resident is already the main resident AND this one isn't
+              const roleSelectDisabled =
+                isVacant || (hasMainResident && !isThisMainResident);
+
+              return (
+                <div
+                  key={fieldItem.id}
+                  className={cn(
+                    "grid md:grid-cols-3 gap-3 p-4 bg-muted/20 border border-border rounded-xl items-start transition-opacity",
+                    isVacant && "opacity-50 pointer-events-none select-none",
+                  )}
+                >
+                  {/* Peran */}
                   <Controller
-                    name={`residents.${index}.relationship`}
+                    name={`residents.${index}.residentRole`}
                     control={form.control}
                     render={({ field, fieldState }) => (
-                      <Field
-                        data-invalid={fieldState.invalid}
-                        className="flex-1"
-                      >
-                        <FieldLabel>Hubungan</FieldLabel>
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel>Peran</FieldLabel>
                         <Select
                           value={field.value}
-                          onValueChange={field.onChange}
+                          onValueChange={(val) =>
+                            handleRoleChange(index, val as ResidentRole)
+                          }
+                          disabled={roleSelectDisabled}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Pilih hubungan" />
+                            <SelectValue placeholder="Pilih peran" />
                           </SelectTrigger>
                           <SelectContent>
-                            {RELATIONSHIP_OPTIONS.map((opt) => (
+                            {RESIDENT_ROLE_OPTIONS.map((opt) => (
                               <SelectItem key={opt.value} value={opt.value}>
                                 {opt.label}
                               </SelectItem>
@@ -492,19 +600,58 @@ export function HouseCreateForm() {
                     )}
                   />
 
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 self-end"
-                    onClick={() => remove(index)}
-                    aria-label="Hapus penghuni"
-                  >
-                    <Trash2Icon className="size-4" />
-                  </Button>
+                  {/* Hubungan + Delete */}
+                  <div className="flex gap-2 items-end md:col-span-2">
+                    <Controller
+                      name={`residents.${index}.relationship`}
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field
+                          data-invalid={fieldState.invalid}
+                          className="flex-1"
+                        >
+                          <FieldLabel>Hubungan</FieldLabel>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            disabled={isVacant}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Pilih hubungan" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {RELATIONSHIP_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                          )}
+                        </Field>
+                      )}
+                    />
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 self-end"
+                      onClick={() => {
+                        // If removing the owner-resident entry, also untoggle
+                        if (isOwnerEntry) setOwnerAsResident(false);
+                        remove(index);
+                      }}
+                      aria-label="Hapus penghuni"
+                    >
+                      <Trash2Icon className="size-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollArea>
       </section>
@@ -515,7 +662,10 @@ export function HouseCreateForm() {
           type="reset"
           variant="outline"
           disabled={isSubmitting}
-          onClick={() => form.reset()}
+          onClick={() => {
+            form.reset();
+            setOwnerAsResident(false);
+          }}
         >
           Reset
         </Button>

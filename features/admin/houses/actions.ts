@@ -89,7 +89,9 @@ export async function deleteHouseAction(
 
 export async function getOwnersLookupAction(
   search: string = "",
-): Promise<ActionResponse<{ id: string; name: string }[]>> {
+): Promise<
+  ActionResponse<{ id: string; name: string; isResident: boolean }[]>
+> {
   const sanitizedSearch = search.trim();
 
   try {
@@ -103,6 +105,9 @@ export async function getOwnersLookupAction(
       select: {
         id: true,
         name: true,
+        residentProfile: {
+          select: { id: true },
+        },
       },
       take: 10,
       orderBy: {
@@ -113,7 +118,11 @@ export async function getOwnersLookupAction(
     return {
       success: true,
       message: "Data pemilik berhasil diambil",
-      data: owners,
+      data: owners.map((u) => ({
+        id: u.id,
+        name: u.name,
+        isResident: u.residentProfile !== null,
+      })),
     };
   } catch (error) {
     return {
