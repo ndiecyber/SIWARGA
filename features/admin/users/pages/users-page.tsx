@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 import { FilterCategory } from "@/lib/types/filter";
-import { DataTable } from "@/components/shared/data-table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import { columns } from "../components/columns";
@@ -21,9 +20,10 @@ import { SortOption } from "@/lib/types/sort";
 import { useState } from "react";
 import {
   ActionOption,
+  DataTable,
   withActionColumn,
   withSelectColumn,
-} from "@/components/shared/column-helpers";
+} from "@/components/shared/data-table";
 import DetailUserDialog from "../components/detail-user-dialog";
 import { UpdateUserDialog } from "../components/update-user-dialog";
 import { DeleteUserDialog } from "../components/delete-user-dialog";

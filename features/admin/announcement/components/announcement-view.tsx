@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/shared/data-table";
 import { FilterCategory } from "@/lib/types/filter";
 import { SortOption } from "@/lib/types/sort";
 
@@ -22,9 +21,10 @@ import { AnnouncementFormDialog } from "./announcement-form-dialog";
 import { AnnouncementDetailDialog } from "./announcement-detail-dialog";
 import {
   ActionOption,
+  DataTable,
   withActionColumn,
   withSelectColumn,
-} from "@/components/shared/column-helpers";
+} from "@/components/shared/data-table";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

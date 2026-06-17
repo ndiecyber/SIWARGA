@@ -15,13 +15,13 @@ import { fraunces } from "@/lib/fonts";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
-import { DataTable } from "@/components/shared/data-table";
 import { FieldDialog } from "@/components/shared/field-dialog";
 import {
   ActionOption,
+  DataTable,
   withActionColumn,
   withSelectColumn,
-} from "@/components/shared/column-helpers";
+} from "@/components/shared/data-table";
 import {
   Dialog,
   DialogContent,
@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import HouseShow from "./show";
+import HouseShow from "./detail-show";
 import { HouseWithOwner } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
@@ -46,26 +46,26 @@ const filterCategories: FilterCategory[] = [
     options: [
       {
         label: "A",
-        value: "A",
+        value: "a",
         icon: (
           <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
         ),
       },
       {
         label: "B",
-        value: "B",
+        value: "b",
         icon: <span className="inline-block w-2 h-2 bg-red-500 rounded-full" />,
       },
       {
         label: "C",
-        value: "C",
+        value: "c",
         icon: (
           <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
         ),
       },
       {
         label: "D",
-        value: "D",
+        value: "d",
         icon: <span className="inline-block w-2 h-2 rounded-full bg-sky-500" />,
       },
     ],
