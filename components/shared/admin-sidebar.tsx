@@ -1,38 +1,6 @@
 "use client";
 
-import { toast } from "sonner";
-import {
-  Banknote,
-  BookMarked,
-  Home,
-  LayoutDashboard,
-  LogOut,
-  LucideIcon,
-  Megaphone,
-  ScrollText,
-  User2,
-  Users,
-} from "lucide-react";
-
-import Link from "next/link";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import { Button } from "../ui/button";
+import * as React from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -45,192 +13,234 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "../ui/sidebar";
+  useSidebar,
+} from "@/components/ui/sidebar";
+import {
+  LayoutDashboard,
+  Settings,
+  UsersRound,
+  Home,
+  Megaphone,
+  MonitorCog,
+} from "lucide-react";
 
-type SidebarData = {
-  title: string;
-  href: string;
-  icon?: LucideIcon;
-  items: SidebarData[];
-};
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
 
-const sidebarData: SidebarData[] = [
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { cn, getInitialName } from "@/lib/utils";
+import { Separator } from "../ui/separator";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+
+const NAV_SECTIONS = [
   {
-    title: "",
-    href: "",
-    icon: undefined,
+    label: "Manajemen",
     items: [
-      {
-        title: "Dashboard",
-        href: "/admin",
-        icon: LayoutDashboard,
-        items: [],
-      },
+      { label: "Dashboard", icon: LayoutDashboard, href: "/admin" },
+      { label: "Warga", icon: UsersRound, href: "/admin/users" },
+      { label: "Perumahan", icon: Home, href: "/admin/houses" },
+      { label: "Pengumuman", icon: Megaphone, href: "/admin/announcement" },
     ],
   },
   {
-    title: "Manajemen",
-    href: "",
-    icon: undefined,
-    items: [
-      {
-        title: "Data Warga",
-        href: "/admin/users",
-        icon: User2,
-        items: [],
-      },
-      // {
-      //   title: "Data Iuran",
-      //   href: "/admin/iuran",
-      //   icon: Banknote,
-      //   items: [],
-      // },
-      {
-        title: "Houses",
-        href: "/admin/houses",
-        icon: Home,
-        items: [],
-      },
-      {
-        title: "Pengumuman",
-        href: "/admin/announcement",
-        icon: Megaphone,
-        items: [],
-      },
-    ],
+    label: "Settings",
+    items: [{ label: "General", icon: Settings, href: "/admin/settings" }],
   },
-  // {
-  //   title: "Keuangan",
-  //   href: "",
-  //   icon: undefined,
-  //   items: [
-  //     {
-  //       title: "Keuangan",
-  //       href: "/admin/keuangan",
-  //       icon: ScrollText,
-  //       items: [],
-  //     },
-  //     {
-  //       title: "Laporan",
-  //       href: "/admin/laporan",
-  //       icon: BookMarked,
-  //       items: [],
-  //     },
-  //   ],
-  // },
 ];
 
-function RenderSidebarItem({ item }: { item: SidebarData }) {
-  const pathName = usePathname();
-  const Icon = item.icon;
+export default function AdministrationSidebar() {
+  const pathname = usePathname();
 
-  const isActive = item.href
-    ? pathName === item.href
-    : item.items.some((child) => pathName.startsWith(child.href));
-
-  if (item.items.length === 0) {
-    return (
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={isActive}
-          className={cn(
-            "transition-all ease-in-out text-primary-foreground/70",
-            isActive ? "" : "hover:bg-white/10 hover:text-primary-foreground",
-          )}
-        >
-          <Link href={item.href}>
-            {Icon && <Icon className="size-4" />}
-            <span>{item.title}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-    );
-  }
+  const data = authClient.useSession();
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="text-primary-foreground/60">
-        {Icon && <Icon className="size-4 mr-2" />}
-        {item.title}
-      </SidebarGroupLabel>
-
-      <SidebarGroupContent>
+    <Sidebar collapsible="icon">
+      {/* Brand header */}
+      <SidebarHeader>
         <SidebarMenu>
-          {item.items.map((child) => (
-            <RenderSidebarItem
-              key={`${item.title}-${child.title}`}
-              item={child}
-            />
-          ))}
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link href="/">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <MonitorCog className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">SIWARGA</span>
+                  <span className="truncate text-xs">Admin Panel</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  );
-}
-
-function AdministrationSidebar() {
-  const router = useRouter();
-  const { isPending } = authClient.useSession();
-
-  function handleSignOut() {
-    authClient.signOut();
-    router.push("/");
-
-    toast.success("Logout berhasil");
-  }
-
-  return (
-    <Sidebar>
-      <SidebarHeader className="bg-primary py-2">
-        <div className="flex items-center justify-center bg-muted rounded-md border border-white">
-          <Image
-            src="/logo/logo-versi-1.png"
-            alt="Logo SIWARGA"
-            width={172}
-            height={172}
-          />
-        </div>
       </SidebarHeader>
-      <SidebarContent className="bg-primary">
-        <SidebarMenu>
-          {sidebarData.map((item) => (
-            <RenderSidebarItem key={item.title} item={item} />
-          ))}
-        </SidebarMenu>
+
+      {/*<Separator className="group-data-[collapsible=icon]:hidden" />*/}
+
+      {/* Nav sections */}
+      <SidebarContent>
+        {NAV_SECTIONS.map((section) => {
+          return (
+            <React.Fragment key={section.label}>
+              <SidebarGroup>
+                <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {section.items.map((item) => {
+                      const key = `${section.label}-${item.label}`;
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+
+                      return (
+                        <Link key={key} href={item.href}>
+                          <SidebarMenuItem>
+                            <SidebarMenuButton
+                              isActive={isActive}
+                              tooltip={item.label}
+                              className={cn(
+                                "relative rounded-sm border-r-2 border-transparent transition-colors",
+                                "data-[active=true]:bg-primary/10",
+                                "data-[active=true]:text-primary",
+                                "data-[active=true]:border-primary",
+                                "data-[active=true]:font-medium",
+                              )}
+                            >
+                              <Icon />
+                              <span>{item.label}</span>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        </Link>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </React.Fragment>
+          );
+        })}
       </SidebarContent>
-      <SidebarFooter className="bg-primary border-t border-t-border/25 pt-8">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="outline"
-              className="bg-transparent text-primary-foreground"
-              disabled={isPending}
-            >
-              <LogOut className="mr-2" /> Logout
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>
-                Are you sure you want to sign out?
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                You will be signed out from this device.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction variant="destructive" onClick={handleSignOut}>
-                Sign out
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+
+      {/* Footer actions */}
+      <SidebarFooter>
+        <Separator />
+        <NavUser
+          user={data.data ? data.data.user : { name: "Pengurus RT", email: "" }}
+        />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
 }
 
-export default AdministrationSidebar;
+function NavUser({
+  user,
+}: {
+  user: {
+    name: string;
+    email: string;
+  };
+}) {
+  const { isMobile } = useSidebar();
+
+  const [isSigningOut, setIsSigningOut] = React.useState(false);
+  const router = useRouter();
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success("Proses Logout Berhasil", { id: "signout" });
+          router.replace("/");
+        },
+        onRequest: () => {
+          toast.loading("Logging out...", { id: "signout" });
+        },
+        onError: () => {
+          toast.error("Proses Logout Gagal", { id: "signout" });
+        },
+      },
+    });
+
+    setIsSigningOut(false);
+  }
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <Avatar className="h-8 w-8 rounded-lg">
+                {/*<AvatarImage src={user.avatar} alt={user.name} />*/}
+                <AvatarFallback className="rounded-lg">
+                  {getInitialName(user.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
+              </div>
+              <ChevronsUpDown className="ml-auto size-4" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  {/*<AvatarImage src={user.avatar} alt={user.name} />*/}
+                  <AvatarFallback className="rounded-lg">
+                    {getInitialName(user.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate text-xs">{user.email}</span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              className="cursor-pointer"
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+            >
+              <LogOut />
+              Log out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}
