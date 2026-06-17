@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChevronRight,
   Megaphone,
@@ -11,9 +13,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import HeaderProfile from "../components/header-profile";
 import WelcomeCard from "../components/welcome-card";
-import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import DuesProgressCard from "../components/dues-progress-card";
+import { authClient } from "@/lib/auth-client";
+import DashboardLoading from "../components/dashboard-loading";
 
 const announcements = [
   {
@@ -44,13 +47,23 @@ const piket = [
 ];
 
 export default function DashboardPage() {
+  const { data, isPending } = authClient.useSession();
+
+  if (isPending) {
+    return <DashboardLoading />;
+  }
+
+  if (!data?.user) {
+    return <DashboardLoading />;
+  }
+
   return (
     <>
-      <HeaderProfile />
+      <HeaderProfile name={data.user.name} />
 
       <div className="flex min-h-dvh flex-col gap-6 bg-muted/40 px-4 py-6">
         {/* Welcome Banner */}
-        <WelcomeCard />
+        <WelcomeCard name={data.user.name} />
 
         {/* Highlight banner */}
         <HighlightBanner />
