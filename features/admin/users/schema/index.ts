@@ -38,7 +38,7 @@ export const createUserSchema = z.object({
     .trim()
     .min(16, "Nomor Induk Penduduk Tidak Valid")
     .max(16, "Nomor Induk Penduduk Tidak Valid"),
-  role: z.enum(["ADMIN", "USER"]).default("USER"),
+  role: z.enum(["admin", "user"]).default("user"),
   kkFile: fileSchema("File KK wajib diunggah").optional(),
   ktpFile: fileSchema("File KTP wajib diunggah").optional(),
 }) satisfies z.ZodType<UserCreateInput>;

@@ -36,7 +36,10 @@ function SignIn({ children }: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Masuk ke SiWarga</DialogTitle>
+          <DialogTitle>
+            Masuk ke <span className="text-green-400">Si</span>
+            <span className="text-indigo-800">WARGA</span>
+          </DialogTitle>
           <DialogDescription>
             Pilih jenis akun yang sesuai untuk masuk ke sistem.
           </DialogDescription>
