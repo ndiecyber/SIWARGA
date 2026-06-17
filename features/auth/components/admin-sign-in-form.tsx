@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/field";
 
 import { adminSignInSchema, AdminSignInValues } from "../schemas";
+import { useRouter } from "next/navigation";
 
 interface Props {
   onSuccess?: () => void;
@@ -29,6 +30,8 @@ interface Props {
 
 function AdminSignInForm({ onSuccess }: Props) {
   const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter();
 
   const form = useForm({
     resolver: standardSchemaResolver(adminSignInSchema),
@@ -56,6 +59,8 @@ function AdminSignInForm({ onSuccess }: Props) {
       if (error) {
         throw new Error(error.message);
       }
+
+      router.push("/admin");
 
       return data;
     },
@@ -159,7 +164,7 @@ function AdminSignInForm({ onSuccess }: Props) {
 
         <Button type="submit" disabled={isSubmitting} className="gap-2">
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Memproses..." : "Masuk sebagai pengurus"}
+          {isSubmitting ? "Memproses..." : "Masuk"}
         </Button>
       </DialogFooter>
     </form>

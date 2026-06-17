@@ -19,12 +19,15 @@ import {
 } from "@/components/ui/field";
 
 import { userSignInSchema, UserSignInValues } from "../schemas";
+import { useRouter } from "next/navigation";
 
 interface Props {
   onSuccess?: () => void;
 }
 
 function UserSignInForm({ onSuccess }: Props) {
+  const router = useRouter();
+
   const form = useForm({
     resolver: standardSchemaResolver(userSignInSchema),
     mode: "onChange",
@@ -46,6 +49,8 @@ function UserSignInForm({ onSuccess }: Props) {
       if (error) {
         throw new Error(error.message);
       }
+
+      router.push("/dashboard");
 
       return data;
     },
@@ -116,7 +121,7 @@ function UserSignInForm({ onSuccess }: Props) {
 
         <Button type="submit" disabled={isSubmitting} className="gap-2">
           {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Memproses..." : "Masuk sebagai warga"}
+          {isSubmitting ? "Memproses..." : "Masuk"}
         </Button>
       </DialogFooter>
     </form>
