@@ -3,7 +3,13 @@
 import { useState } from "react";
 
 import { toast } from "sonner";
-import { ArrowUpRight, Copy, House, Phone, User } from "lucide-react";
+import {
+  ArrowUpRightIcon,
+  CopyIcon,
+  HouseIcon,
+  PhoneIcon,
+  UserIcon,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +32,11 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
       setTimeout(() => setCopied(false), 3000);
       toast.success(message);
     } catch (error) {
-      toast.error("Gagal menyalin data. Silahkan coba lagi.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Gagal menyalin data. Silahkan coba lagi.",
+      );
     }
   }
 
@@ -35,7 +45,7 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
       <header className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
         <div className="flex gap-2">
           <div className="flex items-center justify-center rounded-md bg-primary/20">
-            <House className="m-4 text-primary" />
+            <HouseIcon className="m-4 text-primary" />
           </div>
           <div className="flex flex-col gap-1 leading-tight">
             <h1 className="flex gap-0 text-2xl font-bold uppercase">
@@ -53,7 +63,7 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
       <section about="House owner information">
         <div className="flex items-center justify-between w-full mb-2">
           <h1 className="flex items-center gap-2 text-xs font-medium uppercase text-muted-foreground">
-            <User size={16} />
+            <UserIcon size={16} />
             Informasi Pemilik
           </h1>
 
@@ -61,7 +71,7 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
             <DetailUserDialog user={house.owner}>
               <Button variant="outline" size="sm">
                 Detail
-                <ArrowUpRight size={16} />
+                <ArrowUpRightIcon size={16} />
               </Button>
             </DetailUserDialog>
           )}
@@ -79,7 +89,7 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
             <h2 className="text-sm text-muted-foreground">No. Telepon</h2>
             <div className="flex items-center justify-between h-10 gap-4 mt-1">
               <div className="flex items-center min-w-0 gap-2">
-                <Phone size={16} className="shrink-0" />
+                <PhoneIcon size={16} className="shrink-0" />
                 <span className="truncate">
                   {house.owner?.phoneNumber ?? "-"}
                 </span>
@@ -96,7 +106,7 @@ function DetailHouseView({ house }: DetailHouseViewProps) {
                     );
                   }}
                 >
-                  <Copy />
+                  <CopyIcon />
                 </Button>
               )}
             </div>

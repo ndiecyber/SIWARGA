@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SignIn from "@/features/auth/pages/sign-in";
 
 const avatarInitials = ["BS", "SR", "AF", "DA"];
 
@@ -87,19 +88,25 @@ export function Hero() {
           <div
             className="absolute"
             style={{
-              top: "-120px", right: "-80px",
-              width: "500px", height: "500px",
+              top: "-120px",
+              right: "-80px",
+              width: "500px",
+              height: "500px",
               borderRadius: "50%",
-              background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+              background:
+                "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
             }}
           />
           <div
             className="absolute"
             style={{
-              bottom: "-60px", left: "-100px",
-              width: "400px", height: "400px",
+              bottom: "-60px",
+              left: "-100px",
+              width: "400px",
+              height: "400px",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(201,151,58,.06) 0%, transparent 70%)",
+              background:
+                "radial-gradient(circle, rgba(201,151,58,.06) 0%, transparent 70%)",
             }}
           />
           <div
@@ -108,7 +115,8 @@ export function Hero() {
               backgroundImage:
                 "linear-gradient(hsl(var(--primary)/.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/.04) 1px, transparent 1px)",
               backgroundSize: "60px 60px",
-              maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 100%)",
+              maskImage:
+                "radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 100%)",
             }}
           />
         </div>
@@ -136,7 +144,11 @@ export function Hero() {
 
               <h1
                 className="font-fraunces font-bold leading-[1.1] tracking-tight text-foreground"
-                style={{ fontSize: "clamp(24px, 5vw, 46px)", letterSpacing: "-1px", marginBottom: "16px" }}
+                style={{
+                  fontSize: "clamp(24px, 5vw, 46px)",
+                  letterSpacing: "-1px",
+                  marginBottom: "16px",
+                }}
               >
                 Satu Platform untuk
                 <br />
@@ -151,14 +163,22 @@ export function Hero() {
                 warga, pengumuman, dan laporan keuangan dalam satu genggaman.
               </p>
 
-              <div className="hero-actions flex flex-wrap" style={{ gap: "12px" }}>
-                <Button size="lg">
-                  <ArrowRight className="h-4 w-4" />
-                  Masuk sebagai Warga
-                </Button>
+              <div
+                className="hero-actions flex flex-wrap"
+                style={{ gap: "12px" }}
+              >
+                <SignIn>
+                  <Button size="lg">
+                    <ArrowRight className="h-4 w-4" />
+                    Masuk sebagai Warga
+                  </Button>
+                </SignIn>
               </div>
 
-              <div className="hero-trust flex items-center" style={{ marginTop: "20px", gap: "10px" }}>
+              <div
+                className="hero-trust flex items-center"
+                style={{ marginTop: "20px", gap: "10px" }}
+              >
                 <div className="flex">
                   {avatarInitials.map((init, i) => (
                     <span
@@ -171,7 +191,9 @@ export function Hero() {
                   ))}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  <strong className="font-semibold text-foreground">120+ warga</strong>{" "}
+                  <strong className="font-semibold text-foreground">
+                    120+ warga
+                  </strong>{" "}
                   telah bergabung
                 </p>
               </div>
@@ -186,28 +208,43 @@ export function Hero() {
                 className="hero-float-1 animate-float1 absolute z-[3] rounded-2xl border border-border bg-card px-4 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,.08)]"
                 style={{ top: "-20px", right: "-20px" }}
               >
-                <div className="float-val text-xl font-bold text-foreground" style={{ fontFamily: "var(--font-fraunces)" }}>
+                <div
+                  className="float-val text-xl font-bold text-foreground"
+                  style={{ fontFamily: "var(--font-fraunces)" }}
+                >
                   Rp2,75 jt
                 </div>
-                <div className="float-lbl text-[10px] text-muted-foreground">Iuran terkumpul</div>
+                <div className="float-lbl text-[10px] text-muted-foreground">
+                  Iuran terkumpul
+                </div>
               </div>
 
               {/* Phone mockup */}
               <div className="hero-phone-wrap relative z-[2] mx-auto max-w-[280px] overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_24px_60px_hsl(var(--primary)/.12),0_4px_12px_rgba(0,0,0,.06)]">
                 <div className="flex h-7 items-center justify-center bg-foreground">
-                  <div className="h-3.5 w-20 rounded-full" style={{ background: "#1a2a28" }} />
+                  <div
+                    className="h-3.5 w-20 rounded-full"
+                    style={{ background: "#1a2a28" }}
+                  />
                 </div>
 
                 <div className="p-3.5" style={{ background: "#f0f7f6" }}>
                   {/* Header card */}
                   <div className="mb-3 rounded-2xl bg-primary p-3.5 text-primary-foreground">
-                    <div className="mb-0.5 text-[10px] opacity-70">Selamat datang,</div>
-                    <div className="text-[15px] font-bold" style={{ fontFamily: "var(--font-fraunces)" }}>
+                    <div className="mb-0.5 text-[10px] opacity-70">
+                      Selamat datang,
+                    </div>
+                    <div
+                      className="text-[15px] font-bold"
+                      style={{ fontFamily: "var(--font-fraunces)" }}
+                    >
                       Randi Rizal
                     </div>
                     <div className="mt-2.5 flex items-center justify-between rounded-[9px] bg-primary-foreground/15 px-2.5 py-2">
                       <div>
-                        <div className="text-[9px] opacity-70">Iuran Juni 2025</div>
+                        <div className="text-[9px] opacity-70">
+                          Iuran Juni 2025
+                        </div>
                         <div className="text-[13px] font-bold">Rp 25.000</div>
                       </div>
                       <span className="rounded-[10px] bg-green-100 px-2 py-0.5 text-[9px] font-bold text-green-700">
@@ -223,9 +260,16 @@ export function Hero() {
                       { val: "12", lbl: "Lunas", cls: "text-green-600" },
                       { val: "2", lbl: "Nunggak", cls: "text-red-600" },
                     ].map(({ val, lbl, cls }) => (
-                      <div key={lbl} className="rounded-[9px] bg-card px-1.5 py-2 text-center">
-                        <div className={`text-[15px] font-bold ${cls}`}>{val}</div>
-                        <div className="mt-0.5 text-[8px] text-muted-foreground">{lbl}</div>
+                      <div
+                        key={lbl}
+                        className="rounded-[9px] bg-card px-1.5 py-2 text-center"
+                      >
+                        <div className={`text-[15px] font-bold ${cls}`}>
+                          {val}
+                        </div>
+                        <div className="mt-0.5 text-[8px] text-muted-foreground">
+                          {lbl}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -233,14 +277,40 @@ export function Hero() {
                   {/* Announcements */}
                   <div className="flex flex-col gap-1.5">
                     {[
-                      { dot: "bg-green-600", text: "Kerja Bakti 15 Jun", tagClass: "bg-green-100 text-green-700", tag: "Kegiatan" },
-                      { dot: "bg-red-600", text: "Tagihan Iuran Juni", tagClass: "bg-red-100 text-red-700", tag: "Penting" },
-                      { dot: "bg-primary", text: "Rapat RT 20 Jun", tagClass: "bg-primary/10 text-primary", tag: "Info" },
+                      {
+                        dot: "bg-green-600",
+                        text: "Kerja Bakti 15 Jun",
+                        tagClass: "bg-green-100 text-green-700",
+                        tag: "Kegiatan",
+                      },
+                      {
+                        dot: "bg-red-600",
+                        text: "Tagihan Iuran Juni",
+                        tagClass: "bg-red-100 text-red-700",
+                        tag: "Penting",
+                      },
+                      {
+                        dot: "bg-primary",
+                        text: "Rapat RT 20 Jun",
+                        tagClass: "bg-primary/10 text-primary",
+                        tag: "Info",
+                      },
                     ].map((item) => (
-                      <div key={item.text} className="flex items-center gap-2 rounded-[9px] bg-card px-2.5 py-2">
-                        <div className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${item.dot}`} />
-                        <span className="flex-1 text-[10px] font-medium text-foreground">{item.text}</span>
-                        <span className={`rounded-[6px] px-1.5 py-0.5 text-[8px] font-bold ${item.tagClass}`}>{item.tag}</span>
+                      <div
+                        key={item.text}
+                        className="flex items-center gap-2 rounded-[9px] bg-card px-2.5 py-2"
+                      >
+                        <div
+                          className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${item.dot}`}
+                        />
+                        <span className="flex-1 text-[10px] font-medium text-foreground">
+                          {item.text}
+                        </span>
+                        <span
+                          className={`rounded-[6px] px-1.5 py-0.5 text-[8px] font-bold ${item.tagClass}`}
+                        >
+                          {item.tag}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -256,7 +326,9 @@ export function Hero() {
                   <CheckCircle className="h-4 w-4" strokeWidth={2.5} />
                   87% Lunas
                 </div>
-                <div className="float-lbl mt-0.5 text-[10px] opacity-75">Iuran bulan ini</div>
+                <div className="float-lbl mt-0.5 text-[10px] opacity-75">
+                  Iuran bulan ini
+                </div>
               </div>
             </div>
           </div>

@@ -1,10 +1,29 @@
 "use client";
 
+import { getInitialName } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { LogOut, User } from "lucide-react";
+
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Bell } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
-export default function HeaderProfile() {
+type HeaderProfileProps = {
+  name: string;
+};
+
+export default function HeaderProfile(props: HeaderProfileProps) {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
 
@@ -61,10 +80,81 @@ export default function HeaderProfile() {
           <span className="absolute right-2 top-2 size-1.5 rounded-full bg-destructive" />
         </button>
 
-        <div className="grid h-8 w-8 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-          BS
-        </div>
+        <ProfileDropdown name={props.name} />
       </div>
     </header>
+  );
+}
+
+type ProfileDropdownProps = {
+  name?: string | null;
+};
+
+function ProfileDropdown({ name }: ProfileDropdownProps) {
+  const router = useRouter();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.replace("/");
+        },
+      },
+    });
+
+    setIsSigningOut(false);
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-full p-0"
+        >
+          <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+            {getInitialName(name)}
+          </span>
+          <span className="sr-only">Buka menu profil</span>
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuLabel>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold">{name ?? "Warga"}</span>
+            <span className="text-xs font-normal text-muted-foreground">
+              Akun warga
+            </span>
+          </div>
+        </DropdownMenuLabel>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/profile" className="cursor-pointer">
+            <User className="mr-2 h-4 w-4" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          variant="destructive"
+          className="cursor-pointer"
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          {isSigningOut ? "Keluar..." : "Keluar"}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

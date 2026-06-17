@@ -1,8 +1,27 @@
+import type { Metadata } from "next";
 import layoutWithAuthUser, {
   LayoutWithAuthUserProps,
 } from "@/components/layouts/auth/layout-with-auth-user";
 import BottomNavigation from "@/features/users/components/bottom-navigation";
 import { ReactNode } from "react";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Portal Warga | SIWARGA",
+    template: "%s | Portal Warga SIWARGA",
+  },
+  description:
+    "Area internal warga untuk melihat iuran, pengumuman, dan aktivitas lingkungan RT.",
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
+};
 
 function Layout({
   children,

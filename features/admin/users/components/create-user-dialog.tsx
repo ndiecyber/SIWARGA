@@ -51,7 +51,7 @@ export function CreateUserDialog() {
       phoneNumber: "",
       // familyCount: undefined,
       identificationNumber: "",
-      role: "USER",
+      role: "user",
       kkFile: undefined,
       ktpFile: undefined,
     },
@@ -95,7 +95,7 @@ export function CreateUserDialog() {
       form.reset({
         name: "",
         phoneNumber: "",
-        role: "USER",
+        role: "user",
         kkFile: undefined,
         ktpFile: undefined,
       });
@@ -284,8 +284,8 @@ export function CreateUserDialog() {
                         align="start"
                         // sideOffset={4}
                       >
-                        <SelectItem value="ADMIN">Pengurus</SelectItem>
-                        <SelectItem value="USER">Warga</SelectItem>
+                        <SelectItem value="admin">Pengurus</SelectItem>
+                        <SelectItem value="user">Warga</SelectItem>
                       </SelectContent>
                     </Select>
 

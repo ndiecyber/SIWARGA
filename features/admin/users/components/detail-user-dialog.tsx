@@ -26,14 +26,16 @@ import {
 } from "lucide-react";
 // import { User } from "../types";
 import { User } from "@/generated/prisma/browser";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { toast } from "sonner";
 
 export type Role = "ADMIN" | "WARGA" | "KETUA_RT";
 
 interface Props {
   user: User;
-  children: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children?: ReactNode;
 }
 
 const formatDate = (d: string | Date) =>
@@ -68,10 +70,27 @@ export function Field({
   );
 }
 
-export default function DetailUserDialog({ user, children }: Props) {
+export default function DetailUserDialog({
+  user,
+  open,
+  onOpenChange,
+  children,
+}: Props) {
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const handleOpenChange = (nextOpenState: boolean) => {
+    if (!isControlled) {
+      setInternalOpen(nextOpenState);
+    }
+    onOpenChange?.(nextOpenState);
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="w-[calc(100vw-2rem)] max-h-[calc(100dvh-2rem)] overflow-hidden p-0 sm:max-w-lg md:max-w-5xl">
         <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
           <DialogHeader className="px-6 pt-6 pb-4 shrink-0">

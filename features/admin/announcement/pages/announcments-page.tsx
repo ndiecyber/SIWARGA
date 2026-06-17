@@ -1,4 +1,5 @@
-import { AnnouncementDashboard } from "../components/announcment-view";
+// import { AnnouncementDashboard } from "../components/announcment-view";
+import { AnnouncementDashboard } from "../components/announcement-view";
 
 export type Announcement = {
   id: number;

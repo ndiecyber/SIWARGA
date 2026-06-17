@@ -1,8 +1,12 @@
-import layoutWithAuthAdmin, {
-  LayoutWithAuthAdminProps,
-} from "@/components/layouts/auth/layout-with-auth-admin";
+import type { Metadata } from "next";
+import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
 
-function Page({ user }: LayoutWithAuthAdminProps) {
+export const metadata: Metadata = {
+  title: "Dashboard Admin",
+  description: "Ringkasan panel admin untuk pengurus RT SIWARGA.",
+};
+
+function Page() {
   return (
     <>
       <h1>Admin Page</h1>
