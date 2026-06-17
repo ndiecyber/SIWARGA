@@ -55,7 +55,7 @@ export function BatchActionBar<TData>({
             {action.icon && (
               <span className="size-4 shrink-0">{action.icon}</span>
             )}
-            {action.label}
+            <span className="hidden md:block">{action.label}</span>
           </Button>
         ))}
       </div>
