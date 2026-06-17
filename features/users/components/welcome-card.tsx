@@ -2,7 +2,11 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-export default function WelcomeCard() {
+type WelcomeCardProps = {
+  name: string;
+};
+
+export default function WelcomeCard(props: WelcomeCardProps) {
   return (
     <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
       <div className="absolute -right-5 -top-5 size-24 rounded-full bg-primary/10" />
@@ -15,7 +19,7 @@ export default function WelcomeCard() {
           </p>
 
           <h2 className="mt-1 text-base font-extrabold leading-tight text-foreground">
-            Budi Santoso
+            {props.name}
           </h2>
 
           <p className="mt-1 max-w-64 text-xs leading-4 text-muted-foreground">

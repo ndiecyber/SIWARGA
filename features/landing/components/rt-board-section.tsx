@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Users, Mail, Phone } from "lucide-react";
+import { Mail, Phone, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 
 function useReveal() {
@@ -26,135 +26,240 @@ function useReveal() {
 }
 
 const boardMembers = [
-  {
-    name: "Bpk. Supriyadi",
-    role: "Ketua RT 04",
-    desc: "Memimpin koordinasi antar-warga, mewakili RT dalam hubungan eksternal, dan mengawasi jalannya seluruh kegiatan lingkungan.",
-    avatar: "/images/avatars/supriyadi.png",
-    phone: "6281234567890",
-    email: "supriyadi@siwarga.id",
-  },
-  {
-    name: "Ibu Retno Lestari",
-    role: "Sekretaris RT 04",
-    desc: "Mengelola administrasi surat-menyurat, pencatatan kependudukan, dokumentasi rapat warga, dan pelaporan berkala.",
-    avatar: "/images/avatars/retno.png",
-    phone: "6281234567891",
-    email: "retno@siwarga.id",
-  },
-  {
-    name: "Bpk. Budi Santoso",
-    role: "Bendahara RT 04",
-    desc: "Mengelola keuangan RT secara transparan, mencatat iuran warga, dan menyusun laporan pemasukan/pengeluaran bulanan.",
-    avatar: "/images/avatars/budi.png",
-    phone: "6281234567892",
-    email: "budi@siwarga.id",
-  },
-  {
-    name: "Bpk. Joko Susilo",
-    role: "Seksi Keamanan & Ketertiban",
-    desc: "Mengoordinasikan jadwal siskamling, berkolaborasi dengan petugas keamanan warga, dan menjaga ketertiban lingkungan.",
-    avatar: "/images/avatars/joko.png",
-    phone: "6281234567893",
-    email: "joko@siwarga.id",
-  },
+  { name: "Bpk. Supriyadi", role: "Ketua RT 04", avatar: "/images/avatars/supriyadi.png", phone: "6281234567890", email: "supriyadi@siwarga.id" },
+  { name: "Ibu Retno Lestari", role: "Sekretaris RT 04", avatar: "/images/avatars/retno.png", phone: "6281234567891", email: "retno@siwarga.id" },
+  { name: "Bpk. Budi Santoso", role: "Bendahara RT 04", avatar: "/images/avatars/budi.png", phone: "6281234567892", email: "budi@siwarga.id" },
+  { name: "Bpk. Joko Susilo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/joko.png", phone: "6281234567893", email: "joko@siwarga.id" },
+  { name: "Bpk. Ahmad Dahlan", role: "Seksi Humas & Informasi", avatar: "/images/avatars/supriyadi.png", phone: "6281234567894", email: "ahmad@siwarga.id" },
+  { name: "Ibu Siti Aminah", role: "Seksi Sosial & Kesejahteraan", avatar: "/images/avatars/retno.png", phone: "6281234567895", email: "siti@siwarga.id" },
+  { name: "Bpk. Heru Prasetyo", role: "Seksi Pembangunan & Sarana", avatar: "/images/avatars/budi.png", phone: "6281234567896", email: "heru@siwarga.id" },
+  { name: "Bpk. Agus Wijaya", role: "Seksi Kepemudaan & Olahraga", avatar: "/images/avatars/joko.png", phone: "6281234567897", email: "agus@siwarga.id" },
+  { name: "Bpk. Slamet Riyadi", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567898", email: "slamet@siwarga.id" },
+  { name: "Ibu Sri Wahyuni", role: "Seksi Pemberdayaan Perempuan", avatar: "/images/avatars/retno.png", phone: "6281234567899", email: "sri@siwarga.id" },
+  { name: "Bpk. Bambang Utomo", role: "Seksi Kerohanian & Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567900", email: "bambang@siwarga.id" },
+  { name: "Bpk. Dwi Cahyono", role: "Humas Wilayah I", avatar: "/images/avatars/joko.png", phone: "6281234567901", email: "dwi@siwarga.id" },
+  { name: "Bpk. Eko Prasetyo", role: "Humas Wilayah II", avatar: "/images/avatars/supriyadi.png", phone: "6281234567902", email: "eko@siwarga.id" },
+  { name: "Ibu Kartika Sari", role: "Seksi Pendidikan & Budaya", avatar: "/images/avatars/retno.png", phone: "6281234567903", email: "kartika@siwarga.id" },
+  { name: "Bpk. Tri Wibowo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/budi.png", phone: "6281234567904", email: "tri@siwarga.id" },
+  { name: "Bpk. Roni Setiawan", role: "Seksi Sarana & Prasarana", avatar: "/images/avatars/joko.png", phone: "6281234567905", email: "roni@siwarga.id" },
+  { name: "Bpk. Hendra Wijaya", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567906", email: "hendra@siwarga.id" },
+  { name: "Ibu Indah Permatasari", role: "Seksi Kesejahteraan Sosial", avatar: "/images/avatars/retno.png", phone: "6281234567907", email: "indah@siwarga.id" },
+  { name: "Bpk. Yusuf Ginanjar", role: "Seksi Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567908", email: "yusuf@siwarga.id" },
+  { name: "Bpk. Aris Munandar", role: "Seksi Kepemudaan", avatar: "/images/avatars/joko.png", phone: "6281234567909", email: "aris@siwarga.id" },
 ];
 
+const CARD_HEIGHT_MOBILE = 260;
+const CARD_HEIGHT_DESKTOP = 320;
+
 export function RTBoardSection() {
-  const { ref, visible } = useReveal();
+  const { ref: revealRef, visible } = useReveal();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const cardHeight = isMobile ? CARD_HEIGHT_MOBILE : CARD_HEIGHT_DESKTOP;
+
+  const getSpacerWidth = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return 0;
+    const spacer = container.firstElementChild as HTMLElement | null;
+    return spacer ? spacer.getBoundingClientRect().width + (isMobile ? 12 : 24) : 0;
+  };
+
+  const getStep = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return 0;
+    const card = container.children[1] as HTMLElement | null;
+    return card ? card.getBoundingClientRect().width + (isMobile ? 12 : 24) : 0;
+  };
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const step = getStep();
+    const spacer = getSpacerWidth();
+    if (!step) return;
+    const newIndex = Math.round(Math.max(0, container.scrollLeft - spacer) / step);
+    setCurrentIndex(newIndex);
+  };
+
+  const scrollLeft = () => {
+    const step = getStep();
+    if (step) scrollContainerRef.current?.scrollBy({ left: -step, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    const step = getStep();
+    if (step) scrollContainerRef.current?.scrollBy({ left: step, behavior: "smooth" });
+  };
+
+  const scrollToMember = (idx: number) => {
+    const step = getStep();
+    const spacer = getSpacerWidth();
+    if (step)
+      scrollContainerRef.current?.scrollTo({ left: spacer + idx * step, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollLeft = 0;
+        setCurrentIndex(0);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const totalGroups = Math.ceil(boardMembers.length / 5);
+  const activeGroup = Math.min(Math.floor(currentIndex / 5), totalGroups - 1);
+  const arrowTopStyle = { top: `${cardHeight / 2}px`, transform: "translateY(-50%)" };
 
   return (
-    <section id="pengurus-rt" className="py-12 bg-[#F8FAFC]">
-      <div className="container mx-auto max-w-275 px-6">
-        <div className="mb-14 text-center">
-          <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[.4px] text-primary">
-            <Users className="h-3.5 w-3.5" />
-            Pengurus RT 04
-          </div>
+    <section id="pengurus-rt" className="py-8 md:py-10 bg-[#F8FAFC] overflow-hidden w-full relative">
+      {/* Header */}
+      <div className="container mx-auto max-w-275 px-4 sm:px-6 mb-8 md:mb-12">
+        <div className="text-center max-w-3xl mx-auto">
           <h2
             className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
-            style={{
-              fontSize: "clamp(38px, 5.5vw, 62px)",
-              letterSpacing: "-1px",
-              marginBottom: "20px",
-            }}
+            style={{ fontSize: "clamp(22px, 5vw, 42px)", letterSpacing: "-0.5px", marginBottom: "8px" }}
           >
-            Struktur
-            <br />
-            <em className="italic text-primary">Pengurus RT 04</em>
+            Struktur <em className="italic text-primary">Pengurus RT 04</em>
           </h2>
-          <p className="mx-auto mt-4 max-w-135 text-[17px] leading-[1.7] text-muted-foreground">
-            Dedikasi para pengurus untuk mewujudkan lingkungan yang rukun,
-            bersih, aman, dan transparan.
+          <p className="text-sm md:text-[16px] leading-[1.6] text-muted-foreground">
+            Dedikasi para pengurus untuk mewujudkan lingkungan yang rukun, bersih, aman, dan transparan.
           </p>
         </div>
+      </div>
 
-        <div
-          ref={ref}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+      {/* Carousel */}
+      <div ref={revealRef} className="relative w-full group/carousel">
+        {/* Fade edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 md:w-32 bg-gradient-to-r from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 md:w-32 bg-gradient-to-l from-[#F8FAFC] to-transparent z-10 pointer-events-none" />
+
+        {/* Arrow kiri */}
+        <button
+          onClick={scrollLeft}
+          style={arrowTopStyle}
+          className="absolute left-1 sm:left-4 lg:left-8 z-20 flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-border bg-white/90 shadow-md text-foreground hover:bg-white hover:text-primary hover:border-primary active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100 focus:opacity-100 cursor-pointer"
+          aria-label="Previous board member"
         >
+          <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" />
+        </button>
+
+        {/* Arrow kanan */}
+        <button
+          onClick={scrollRight}
+          style={arrowTopStyle}
+          className="absolute right-1 sm:right-4 lg:right-8 z-20 flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-border bg-white/90 shadow-md text-foreground hover:bg-white hover:text-primary hover:border-primary active:scale-95 transition-all opacity-100 sm:opacity-0 sm:group-hover/carousel:opacity-100 focus:opacity-100 cursor-pointer"
+          aria-label="Next board member"
+        >
+          <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6" />
+        </button>
+
+        {/* Scroll container */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto gap-3 sm:gap-6 scroll-smooth snap-x snap-mandatory no-scrollbar pb-6 sm:pb-8"
+          style={{ scrollPaddingLeft: "clamp(16px, 4vw, 80px)" }}
+        >
+          <div className="shrink-0 w-[clamp(16px,4vw,80px)]" aria-hidden="true" />
+
           {boardMembers.map((m, i) => (
             <div
-              key={m.name}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.05)] ${
-                visible
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-6 opacity-0"
-              }`}
-              style={{ transitionDelay: `${i * 80}ms` }}
+              key={i}
+              className={[
+                "group/card relative flex flex-col justify-end overflow-hidden",
+                "rounded-[18px] sm:rounded-[24px] border border-border bg-card",
+                "transition-all duration-500 hover:-translate-y-1.5",
+                "hover:shadow-[0_16px_36px_rgba(0,0,0,0.12)]",
+                "h-[260px] sm:h-[320px]",
+                "w-[155px] sm:w-[210px] md:w-[250px]",
+                "shrink-0 snap-start",
+                visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+              ].join(" ")}
+              style={{ transitionDelay: `${(i % 6) * 80}ms` }}
             >
-              <div>
-                {/* Profile Picture */}
-                <div className="relative mx-auto mb-5 h-47.5 w-full overflow-hidden rounded-xl bg-muted">
-                  <Image
-                    src={m.avatar}
-                    alt={m.name}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-w-768px) 100vw, 250px"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                </div>
-
-                {/* Role Badge */}
-                <span className="inline-block rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary mb-2">
-                  {m.role}
-                </span>
-
-                {/* Name */}
-                <h3 className="mb-2 font-fraunces text-[18px] font-bold text-foreground">
-                  {m.name}
-                </h3>
-
-                {/* Description */}
-                <p className="text-[13px] leading-[1.65] text-muted-foreground">
-                  {m.desc}
-                </p>
+              <div className="absolute inset-0 w-full h-full">
+                <Image
+                  src={m.avatar}
+                  alt={m.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                  sizes="(max-width: 640px) 155px, (max-width: 768px) 210px, 250px"
+                />
               </div>
 
-              {/* Contact Icons */}
-              <div className="mt-5 flex items-center gap-3 border-t border-border pt-4">
-                <a
-                  href={`https://wa.me/${m.phone}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-all hover:bg-green-50 hover:text-green-600 hover:border-green-200"
-                  title="Hubungi via WhatsApp"
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent opacity-85 transition-opacity duration-300 group-hover/card:opacity-95" />
+
+              <div className="absolute top-3 right-3 z-10 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/10 border border-white/20 text-white backdrop-blur-md transition-all duration-300 group-hover/card:bg-white group-hover/card:text-primary group-hover/card:border-white">
+                <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              </div>
+
+              <div className="relative p-3.5 sm:p-5 text-white z-10">
+                <p
+                  className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-primary-foreground/90 uppercase mb-0.5 truncate"
+                  title={m.role}
                 >
-                  <Phone className="h-4 w-4" />
-                </a>
-                <a
-                  href={`mailto:${m.email}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-all hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                  title="Hubungi via Email"
+                  {m.role}
+                </p>
+                <h3
+                  className="font-fraunces text-[15px] sm:text-[18px] font-bold leading-tight mb-2.5 sm:mb-3 truncate"
+                  title={m.name}
                 >
-                  <Mail className="h-4 w-4" />
-                </a>
+                  {m.name}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://wa.me/${m.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 border border-white/10 text-white backdrop-blur-xs transition-all hover:scale-105 active:scale-95"
+                    title="Hubungi via WhatsApp"
+                  >
+                    <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </a>
+
+                  <a
+                    href={`mailto:${m.email}`}
+                    className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 border border-white/10 text-white backdrop-blur-xs transition-all hover:scale-105 active:scale-95"
+                    title="Hubungi via Email"
+                  >
+                    <Mail className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                  </a>
+                </div>
               </div>
             </div>
           ))}
+
+          <div className="shrink-0 w-[clamp(16px,4vw,80px)]" aria-hidden="true" />
         </div>
-      </div>
-    </section>
+
+        {/* Dot pagination */}
+        <div className="flex justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-8 flex-wrap px-6 max-w-4xl mx-auto">
+          {Array.from({ length: totalGroups }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => scrollToMember(index * 5)}
+              className={[
+                "h-2 sm:h-2.5 rounded-full transition-all duration-300 cursor-pointer",
+                activeGroup === index
+                  ? "w-6 sm:w-8 bg-primary"
+                  : "w-2 sm:w-2.5 bg-slate-300 hover:bg-slate-400",
+              ].join(" ")}
+              aria-label={`Go to group ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div >
+    </section >
   );
 }

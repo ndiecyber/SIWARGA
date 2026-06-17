@@ -76,22 +76,24 @@ const HowItWorksSection = () => {
       id="how-it-works"
       className="overflow-hidden bg-primary py-18 text-white"
     >
-      <div className="mx-auto max-w-275 px-6 space-y-6">
-        <div className="text-center">
-          <Badge className="inline-flex items-center gap-1.5 rounded-[20px] border border-primary/20 bg-secondary px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.4px] text-primary">
+      <div className="mx-auto max-w-275 px-6">
+        <div className="mb-12 text-center max-w-3xl mx-auto">
+          <Badge className="mb-4 inline-flex items-center gap-1.5 rounded-[20px] border border-primary/20 bg-secondary px-3.5 py-1.25 text-[12px] font-semibold uppercase tracking-[0.4px] text-primary">
             <ListOrdered className="size-3.5" />
             <span>Cara Penggunaan</span>
           </Badge>
-
           <h2
-            className={cn(
-              "text-[clamp(32px,5vw,52px)] font-semibold leading-[1.15] tracking-[-0.5px] font-fraunces mt-4",
-            )}
+            className="font-fraunces font-semibold leading-[1.1] tracking-tight text-white"
+            style={{ fontSize: "clamp(32px, 4.5vw, 50px)", letterSpacing: "-1px", marginBottom: "8px" }}
           >
-            Mulai dalam
-            <br />
-            <em className="italic opacity-85">4 langkah mudah</em>
+            Mulai dalam <em className="italic text-secondary">4 langkah mudah</em>
           </h2>
+          <p
+            className="text-[16px] leading-[1.6] text-white/85 truncate"
+            title="Panduan singkat bagi warga untuk mulai menggunakan layanan portal digital SIWARGA."
+          >
+            Panduan singkat bagi warga untuk mulai menggunakan layanan portal digital SIWARGA.
+          </p>
         </div>
 
         {/* Desktop view */}

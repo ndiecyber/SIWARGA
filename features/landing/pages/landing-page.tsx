@@ -19,14 +19,14 @@ const LandingPage = () => {
       <AboutSection />
       <RTBoardSection />
       <Highlight />
-      <HowItWorksSection />
-      <TwoViews />
+      {/* <HowItWorksSection /> */}
+      {/* <TwoViews /> */}
       <DataReportsSection />
       {/* <TestimonialSection /> */}
       <AnnouncementsSection />
       <GallerySection />
       {/* <FAQSection /> */}
-      <ContactLanding />
+      {/* <ContactLanding /> */}
     </div>
   );
 };
