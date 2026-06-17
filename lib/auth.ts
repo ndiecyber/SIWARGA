@@ -13,6 +13,26 @@ export const auth = betterAuth({
         required: true,
         input: true,
       },
+      identificationNumber: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      kkUrl: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      ktpUrl: {
+        type: "string",
+        required: false,
+        input: true,
+      },
+      userType: {
+        type: "string",
+        required: false,
+        input: false,
+      },
     },
   },
   emailAndPassword: {

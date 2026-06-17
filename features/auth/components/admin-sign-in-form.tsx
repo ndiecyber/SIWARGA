@@ -97,7 +97,7 @@ function AdminSignInForm({ onSuccess }: Props) {
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="login-admin-email">email</FieldLabel>
+              <FieldLabel htmlFor="login-admin-email">Email</FieldLabel>
 
               <Input
                 {...field}
