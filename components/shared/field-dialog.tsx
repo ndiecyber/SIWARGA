@@ -75,7 +75,7 @@ export function FieldDialog({
         {trigger ? trigger : <Button>Open</Button>}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit ">
         <FieldDialogWrapper open={open} onOpenChange={setOpen}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>

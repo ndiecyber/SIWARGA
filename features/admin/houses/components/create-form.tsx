@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
+  CheckCircleIcon,
   ChevronsUpDownIcon,
   HomeIcon,
   Loader2Icon,
@@ -17,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toggle } from "@/components/ui/toggle";
 import { useDebounce } from "@uidotdev/usehooks";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -33,6 +35,11 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   HouseStatus,
   RelationshipType,
@@ -89,10 +96,10 @@ function SectionHeader({
 }) {
   return (
     <div className={cn("flex items-center gap-2 mb-4", className)}>
-      <div className="w-8 h-8 rounded-md bg-muted flex items-center justify-center">
-        <Icon className="size-4 text-primary" />
+      <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+        <Icon className="size-4 text-primary " />
       </div>
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">
+      <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
         {title}
       </h4>
     </div>
@@ -179,10 +186,7 @@ export function HouseCreateForm() {
   )?.label;
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="w-full max-w-3xl mx-auto space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="w-full mx-auto space-y-6">
       {/* ── Section 1: Detail Rumah ── */}
       <section className="space-y-4">
         <SectionHeader icon={HomeIcon} title="Detail Rumah" />
@@ -190,7 +194,10 @@ export function HouseCreateForm() {
         <FieldGroup className="flex flex-col md:grid md:gap-4 md:grid-cols-3">
           {/* House Number, Block, Occupancy */}
           <div className="md:col-span-2 space-y-3">
-            <FieldLabel>Nomor Rumah *</FieldLabel>
+            <FieldLabel>
+              Nomor Rumah
+              <span className="text-destructive">*</span>
+            </FieldLabel>
             <div className="flex flex-col gap-2 md:grid grid-cols-2">
               <Controller
                 name="block"
@@ -247,7 +254,7 @@ export function HouseCreateForm() {
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent position="popper" align="end">
                     <SelectItem value={HouseStatus.OCCUPIED}>
                       Ditempati
                     </SelectItem>
@@ -265,7 +272,32 @@ export function HouseCreateForm() {
 
       {/* ── Section 2: Pemilik Properti ── */}
       <section className="space-y-4 p-4 bg-muted/40 rounded-xl border border-border">
-        <SectionHeader icon={UserIcon} title="Pemilik Properti" />
+        <header className="flex items-center justify-between">
+          <SectionHeader
+            icon={UserIcon}
+            title="Pemilik Properti"
+            className="mb-0"
+          />
+
+          <Tooltip>
+            <TooltipTrigger>
+              <Toggle
+                type="button"
+                variant="outline"
+                size="default"
+                className="data-[state=on]:bg-primary/10 data-[state=on]:border-primary"
+              >
+                <div className="group-aria-pressed/toggle:text-primary flex items-center gap-2">
+                  <CheckCircleIcon size={16} />
+                  Penghuni
+                </div>
+              </Toggle>
+            </TooltipTrigger>
+            <TooltipContent className="w-fit">
+              Pemilik rumah sebagai penghuni rumah
+            </TooltipContent>
+          </Tooltip>
+        </header>
 
         <Controller
           name="ownerId"
