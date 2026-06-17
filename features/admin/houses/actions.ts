@@ -2,26 +2,20 @@
 
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { HouseStatus } from "@/generated/prisma/enums";
-
-import { InputFormSchema } from "./schemas";
 import { ActionResponse } from "@/lib/types";
 import { House } from "@/generated/prisma/browser";
+import { HouseStatus } from "@/generated/prisma/enums";
+
+import { createFormSchema, InputFormSchema, updateFormSchema } from "./schemas";
 
 export async function createHouseAction(
   data: InputFormSchema,
 ): Promise<ActionResponse<House | null, InputFormSchema>> {
   try {
-    const result = await prisma.house.create({
-      data: {
-        ownerId: data.ownerId,
-        block: data.block,
-        status: data.status as HouseStatus,
-        houseNumber: data.houseNumber,
-      },
-    });
+    const parsedData = createFormSchema.parse(data);
 
-    // Revalidate BEFORE returning
+    const result = await prisma.house.create({ data: parsedData });
+
     revalidatePath("/admin/houses");
 
     return {
@@ -44,17 +38,13 @@ export async function updateHouseAction(
   data: InputFormSchema,
 ): Promise<ActionResponse<House | null, InputFormSchema>> {
   try {
+    const parsedData = updateFormSchema.parse(data);
+
     const result = await prisma.house.update({
       where: { id },
-      data: {
-        ownerId: data.ownerId,
-        block: data.block,
-        status: data.status as HouseStatus,
-        houseNumber: data.houseNumber,
-      },
+      data: parsedData,
     });
 
-    // Revalidate the cache to reflect changes on the listing page
     revalidatePath("/admin/houses");
 
     return {
