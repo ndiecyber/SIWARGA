@@ -81,8 +81,6 @@ jobs:
             cp .env .next/standalone/.env
 
             npx -y prisma@7.8.0 migrate deploy
-            npm run seed:admin
-            npm run seed:users
 
             if pm2 describe siwarga-app >/dev/null 2>&1; then
               pm2 restart siwarga-app
