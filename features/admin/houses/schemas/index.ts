@@ -26,6 +26,7 @@ export const formSchema = z.object({
         RelationshipType.SIBLING,
         RelationshipType.OTHER,
       ]),
+      isOwnerToggle: z.boolean().optional(),
     }),
   ),
 });
