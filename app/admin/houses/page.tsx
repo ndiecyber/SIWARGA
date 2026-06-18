@@ -12,6 +12,7 @@ async function Page() {
     },
     include: {
       owner: true,
+      residents: true,
     },
   });
 

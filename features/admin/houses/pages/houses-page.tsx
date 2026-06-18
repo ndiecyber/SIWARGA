@@ -15,6 +15,7 @@ import { fraunces } from "@/lib/fonts";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { FieldDialog } from "@/components/shared/field-dialog";
 import {
   ActionOption,
@@ -31,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 
 import HouseShow from "./detail-show";
-import { HouseWithOwner } from "../types";
+import { HouseWithOwner, HouseWithResidents } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
 import { HouseCreateForm } from "../components/create-form";
@@ -106,12 +107,15 @@ const batchActions: ActionOption<HouseWithOwner>[] = [
 ];
 
 interface Props {
-  houses: HouseWithOwner[];
+  houses: (HouseWithOwner & HouseWithResidents)[];
+  // houses: HouseWithOwner[];
 }
 
 export default function HousesPage({ houses }: Props) {
   const [detailTarget, setDetailTarget] = useState<HouseWithOwner | null>(null);
-  const [editTarget, setEditTarget] = useState<HouseWithOwner | null>(null);
+  const [editTarget, setEditTarget] = useState<
+    (HouseWithOwner & HouseWithResidents) | null
+  >(null);
   const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
 
   const houseColumns = withActionColumn(withSelectColumn(columns), [
@@ -123,7 +127,8 @@ export default function HousesPage({ houses }: Props) {
     {
       label: "Edit",
       icon: <PencilIcon size={16} />,
-      onClick: (row) => setEditTarget(row as HouseWithOwner),
+      onClick: (row) =>
+        setEditTarget(row as HouseWithOwner & HouseWithResidents),
     },
     {
       label: "Delete",
@@ -176,17 +181,26 @@ export default function HousesPage({ houses }: Props) {
               if (!open) setEditTarget(null);
             }}
           >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit data rumah</DialogTitle>
-                <DialogDescription>
-                  Edit data rumah, data hanya dapat diubah
-                </DialogDescription>
+            <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit gap-0">
+              <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
+                <main className="px-6">
+                  <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
+                    Tambah Rumah Baru
+                  </DialogTitle>
+
+                  <DialogDescription>
+                    Lengkapi informasi properti, kepemilikan, dan penghuni
+                  </DialogDescription>
+                </main>
               </DialogHeader>
-              <HouseEditForm
-                house={editTarget}
-                onSuccess={() => setEditTarget(null)}
-              />
+
+              {/* FIXME: house select block input focus state and form buttons are clipped */}
+              <ScrollArea className="h-[calc(100vh-12rem)] -mr-6 pr-6 ">
+                <HouseEditForm
+                  house={editTarget}
+                  onSuccess={() => setEditTarget(null)}
+                />
+              </ScrollArea>
             </DialogContent>
           </Dialog>
         )}

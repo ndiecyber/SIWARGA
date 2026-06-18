@@ -8,11 +8,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { HouseStatus } from "@/generated/prisma/browser";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 
-import { HouseWithOwner } from "../types";
+import { HouseWithOwner, HouseWithResidents } from "../types";
 
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
-export const columns: ColumnDef<HouseWithOwner>[] = [
+export const columns: ColumnDef<HouseWithOwner & HouseWithResidents>[] = [
   // ── House number ─────────────────────────────────────────────────────────────
   {
     accessorKey: "houseNumber",
@@ -68,13 +68,12 @@ export const columns: ColumnDef<HouseWithOwner>[] = [
   // ── Residents ─────────────────────────────────────────────────────────────────
   {
     accessorKey: "residents",
-    // header: ({ column }) => (
-    //   <SortableHeader column={column} label="Residents" />
-    // ),
     header: () => "Residents",
     cell: ({ row }) => {
-      const count: number = row.getValue("residents") ?? 0;
-      return <span className="tabular-nums">{count}</span>;
+      const residentsArray = row.getValue("residents") as [];
+      const count = residentsArray?.length ?? 0;
+
+      return <span className="tabular-nums">{count} Orang</span>;
     },
   },
 
