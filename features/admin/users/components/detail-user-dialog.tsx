@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Eye,
   User as UserIcon,
   Phone,
   Shield,
@@ -22,9 +21,7 @@ import {
   IdCard,
   Info,
   Copy,
-  LucideIcon,
 } from "lucide-react";
-// import { User } from "../types";
 import { User } from "@/generated/prisma/browser";
 import { ReactNode, useState } from "react";
 import { toast } from "sonner";

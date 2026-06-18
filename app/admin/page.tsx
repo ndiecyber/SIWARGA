@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
 import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
 import prisma from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  Home, 
-  Megaphone, 
-  Wallet, 
-  PlusCircle, 
-  Calendar, 
-  ChevronRight, 
+import {
+  Users,
+  Home,
+  Megaphone,
+  Wallet,
+  PlusCircle,
+  Calendar,
+  ChevronRight,
   Activity,
   CheckCircle2,
   XCircle,
   Clock,
   ArrowUpRight,
   TrendingUp,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -50,7 +56,7 @@ const formatDateTime = (date: Date) => {
     month: "short",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
   }).format(date);
 };
 
@@ -60,8 +66,12 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
   // Fetch live stats from DB
   const totalResidents = await prisma.user.count();
   const totalHouses = await prisma.house.count();
-  const occupiedHouses = await prisma.house.count({ where: { status: "OCCUPIED" } });
-  const vacantHouses = await prisma.house.count({ where: { status: "VACANT" } });
+  const occupiedHouses = await prisma.house.count({
+    where: { status: "OCCUPIED" },
+  });
+  const vacantHouses = await prisma.house.count({
+    where: { status: "VACANT" },
+  });
   const totalAnnouncements = await prisma.announcement.count();
 
   // Fetch dues/payment aggregates
@@ -75,13 +85,13 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
-  
+
   const paidDuesThisMonth = await prisma.monthlyDues.count({
-    where: { month: currentMonth, year: currentYear, status: "PAID" }
+    where: { month: currentMonth, year: currentYear, status: "PAID" },
   });
-  
+
   const unpaidDuesThisMonth = await prisma.monthlyDues.count({
-    where: { month: currentMonth, year: currentYear, status: "UNPAID" }
+    where: { month: currentMonth, year: currentYear, status: "UNPAID" },
   });
 
   // Recent payments
@@ -93,12 +103,12 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
         include: {
           house: {
             include: {
-              owner: true
-            }
-          }
-        }
-      }
-    }
+              owner: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   // Recent registered users
@@ -108,30 +118,42 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
     include: {
       residentProfile: {
         include: {
-          house: true
-        }
-      }
-    }
+          house: true,
+        },
+      },
+    },
   });
 
   // Calculating percentages
-  const occupancyPercentage = totalHouses > 0 ? (occupiedHouses / totalHouses) * 100 : 0;
+  const occupancyPercentage =
+    totalHouses > 0 ? (occupiedHouses / totalHouses) * 100 : 0;
   const totalDuesThisMonthCount = paidDuesThisMonth + unpaidDuesThisMonth;
-  const duesPaidPercentage = totalDuesThisMonthCount > 0 ? (paidDuesThisMonth / totalDuesThisMonthCount) * 100 : 0;
+  const duesPaidPercentage =
+    totalDuesThisMonthCount > 0
+      ? (paidDuesThisMonth / totalDuesThisMonthCount) * 100
+      : 0;
 
   return (
     <div className="space-y-6">
       {/* Welcome Banner / Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b pb-6">
+      <div className="flex flex-col gap-4 pb-6 border-b md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard Overview</h1>
-          <p className="text-muted-foreground text-sm">
-            Selamat datang kembali, <span className="font-semibold text-foreground">{user.name}</span>. Berikut ringkasan status RT 04 hari ini.
+          <h1 className="text-2xl font-bold tracking-tight">
+            Dashboard Overview
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Selamat datang kembali,{" "}
+            <span className="font-semibold text-foreground">{user.name}</span>.
+            Berikut ringkasan status RT 04 hari ini.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl bg-card border px-4 py-2 shadow-xs text-xs font-medium text-muted-foreground self-start md:self-auto">
+        <div className="flex items-center self-start gap-2 px-4 py-2 text-xs font-medium border shadow-xs rounded-xl bg-card text-muted-foreground md:self-auto">
           <Calendar className="size-4 text-primary" />
-          <span>{new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(new Date())}</span>
+          <span>
+            {new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(
+              new Date(),
+            )}
+          </span>
         </div>
       </div>
 
@@ -140,56 +162,79 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
         {/* Metric 1: Total Warga */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Warga</CardTitle>
+            <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Total Warga
+            </CardTitle>
             <div className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
               <Users className="size-5" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalResidents}</div>
-            <p className="text-xs text-muted-foreground mt-1">warga terdaftar di portal</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              warga terdaftar di portal
+            </p>
           </CardContent>
         </Card>
 
         {/* Metric 2: Okupansi Rumah */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Okupansi Rumah</CardTitle>
+            <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Okupansi Rumah
+            </CardTitle>
             <div className="grid size-9 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
               <Home className="size-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{occupiedHouses} <span className="text-sm font-medium text-muted-foreground">/ {totalHouses}</span></div>
-            <p className="text-xs text-muted-foreground mt-1">{occupancyPercentage.toFixed(0)}% rumah terisi</p>
+            <div className="text-2xl font-bold">
+              {occupiedHouses}{" "}
+              <span className="text-sm font-medium text-muted-foreground">
+                / {totalHouses}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {occupancyPercentage.toFixed(0)}% rumah terisi
+            </p>
           </CardContent>
         </Card>
 
         {/* Metric 3: Kas Iuran */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Kas Masuk (Iuran)</CardTitle>
+            <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Kas Masuk (Iuran)
+            </CardTitle>
             <div className="grid size-9 place-items-center rounded-xl bg-emerald-500/10 text-emerald-500">
               <Wallet className="size-5" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatRupiah(totalCollectedFunds)}</div>
-            <p className="text-xs text-muted-foreground mt-1">total pembayaran lunas</p>
+            <div className="text-2xl font-bold">
+              {formatRupiah(totalCollectedFunds)}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              total pembayaran lunas
+            </p>
           </CardContent>
         </Card>
 
         {/* Metric 4: Pengumuman */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pengumuman</CardTitle>
-            <div className="grid size-9 place-items-center rounded-xl bg-blue-500/10 text-blue-500">
+            <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Pengumuman
+            </CardTitle>
+            <div className="grid text-blue-500 size-9 place-items-center rounded-xl bg-blue-500/10">
               <Megaphone className="size-5" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalAnnouncements}</div>
-            <p className="text-xs text-muted-foreground mt-1">kegiatan & info lingkungan</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              kegiatan & info lingkungan
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -197,14 +242,18 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
       {/* Charts & Quick Actions Row */}
       <div className="grid gap-6 md:grid-cols-12">
         {/* Occupancy Donut Chart Card */}
-        <Card className="md:col-span-4 flex flex-col justify-between">
+        <Card className="flex flex-col justify-between md:col-span-4">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Okupansi Perumahan</CardTitle>
-            <CardDescription className="text-xs">Rasio rumah terisi vs kosong</CardDescription>
+            <CardTitle className="text-sm font-semibold">
+              Okupansi Perumahan
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Rasio rumah terisi vs kosong
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center py-6">
             <div className="relative flex items-center justify-center">
-              <svg className="w-36 h-36 transform -rotate-90">
+              <svg className="transform -rotate-90 w-36 h-36">
                 <circle
                   cx="72"
                   cy="72"
@@ -217,72 +266,112 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
                   cx="72"
                   cy="72"
                   r="55"
-                  className="stroke-amber-500 transition-all duration-500"
+                  className="transition-all duration-500 stroke-amber-500"
                   strokeWidth="12"
                   fill="transparent"
                   strokeDasharray={2 * Math.PI * 55}
-                  strokeDashoffset={2 * Math.PI * 55 * (1 - occupancyPercentage / 100)}
+                  strokeDashoffset={
+                    2 * Math.PI * 55 * (1 - occupancyPercentage / 100)
+                  }
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute text-center">
-                <span className="text-2xl font-bold tracking-tight">{occupancyPercentage.toFixed(0)}%</span>
-                <span className="block text-[10px] uppercase font-bold tracking-wider text-muted-foreground">Terisi</span>
+                <span className="text-2xl font-bold tracking-tight">
+                  {occupancyPercentage.toFixed(0)}%
+                </span>
+                <span className="block text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
+                  Terisi
+                </span>
               </div>
             </div>
-            <div className="mt-6 w-full grid grid-cols-2 gap-4 border-t pt-4 text-center">
+            <div className="grid w-full grid-cols-2 gap-4 pt-4 mt-6 text-center border-t">
               <div>
-                <span className="text-xs text-muted-foreground block">Terisi</span>
-                <span className="text-lg font-bold text-foreground">{occupiedHouses} Unit</span>
+                <span className="block text-xs text-muted-foreground">
+                  Terisi
+                </span>
+                <span className="text-lg font-bold text-foreground">
+                  {occupiedHouses} Unit
+                </span>
               </div>
               <div>
-                <span className="text-xs text-muted-foreground block">Kosong</span>
-                <span className="text-lg font-bold text-muted-foreground">{vacantHouses} Unit</span>
+                <span className="block text-xs text-muted-foreground">
+                  Kosong
+                </span>
+                <span className="text-lg font-bold text-muted-foreground">
+                  {vacantHouses} Unit
+                </span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Dues Realization Progress Card */}
-        <Card className="md:col-span-4 flex flex-col justify-between">
+        <Card className="flex flex-col justify-between md:col-span-4">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Realisasi Iuran Bulan Ini</CardTitle>
-            <CardDescription className="text-xs">Pembayaran iuran periode {new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(new Date())}</CardDescription>
+            <CardTitle className="text-sm font-semibold">
+              Realisasi Iuran Bulan Ini
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Pembayaran iuran periode{" "}
+              {new Intl.DateTimeFormat("id-ID", {
+                month: "long",
+                year: "numeric",
+              }).format(new Date())}
+            </CardDescription>
           </CardHeader>
           <CardContent className="py-2">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-muted-foreground">Tingkat Kelunasan</span>
-                <span className="font-bold text-emerald-600">{duesPaidPercentage.toFixed(0)}% Lunas</span>
+                <span className="font-semibold text-muted-foreground">
+                  Tingkat Kelunasan
+                </span>
+                <span className="font-bold text-emerald-600">
+                  {duesPaidPercentage.toFixed(0)}% Lunas
+                </span>
               </div>
-              <div className="h-4 w-full rounded-full bg-muted overflow-hidden flex">
-                <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: `${duesPaidPercentage}%` }} />
-                <div className="bg-amber-500 h-full transition-all duration-500" style={{ width: `${100 - duesPaidPercentage}%` }} />
+              <div className="flex w-full h-4 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full transition-all duration-500 bg-emerald-500"
+                  style={{ width: `${duesPaidPercentage}%` }}
+                />
+                <div
+                  className="h-full transition-all duration-500 bg-amber-500"
+                  style={{ width: `${100 - duesPaidPercentage}%` }}
+                />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2 mt-2">
-                <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3 text-emerald-700">
-                  <div className="size-2 rounded-full bg-emerald-500" />
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-500/10 text-emerald-700">
+                  <div className="rounded-full size-2 bg-emerald-500" />
                   <div>
-                    <span className="font-bold text-sm block">{paidDuesThisMonth} Rumah</span>
-                    <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">Lunas</span>
+                    <span className="block text-sm font-bold">
+                      {paidDuesThisMonth} Rumah
+                    </span>
+                    <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">
+                      Lunas
+                    </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 rounded-xl bg-amber-500/10 p-3 text-amber-700">
-                  <div className="size-2 rounded-full bg-amber-500" />
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/10 text-amber-700">
+                  <div className="rounded-full size-2 bg-amber-500" />
                   <div>
-                    <span className="font-bold text-sm block">{unpaidDuesThisMonth} Rumah</span>
-                    <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">Tertunda</span>
+                    <span className="block text-sm font-bold">
+                      {unpaidDuesThisMonth} Rumah
+                    </span>
+                    <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">
+                      Tertunda
+                    </span>
                   </div>
                 </div>
               </div>
-              
-              <div className="border-t pt-4 mt-2">
+
+              <div className="pt-4 mt-2 border-t">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Tarif Iuran:</span>
                   <span>Rp 25.000 / bulan</span>
                 </div>
-                <div className="flex items-center justify-between text-xs font-bold mt-1 text-foreground">
+                <div className="flex items-center justify-between mt-1 text-xs font-bold text-foreground">
                   <span>Total Potensi Kas Bulan Ini:</span>
                   <span>{formatRupiah(totalHouses * 25000)}</span>
                 </div>
@@ -292,49 +381,74 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
         </Card>
 
         {/* Quick Actions Panel */}
-        <Card className="md:col-span-4 flex flex-col justify-between">
+        <Card className="flex flex-col justify-between md:col-span-4">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Aksi Cepat Admin</CardTitle>
-            <CardDescription className="text-xs">Shortcuts menu administrasi RT</CardDescription>
+            <CardTitle className="text-sm font-semibold">
+              Aksi Cepat Admin
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Shortcuts menu administrasi RT
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 py-2">
-            <Link href="/admin/users" className="group flex items-center justify-between rounded-xl border bg-card p-3 shadow-xs transition-all hover:bg-muted/50 hover:shadow-md">
+            <Link
+              href="/admin/users"
+              className="flex items-center justify-between p-3 transition-all border shadow-xs group rounded-xl bg-card hover:bg-muted/50 hover:shadow-md"
+            >
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                <div className="grid transition-transform rounded-lg size-9 place-items-center bg-primary/10 text-primary group-hover:scale-110">
                   <Users className="size-5" />
                 </div>
                 <div>
-                  <span className="font-semibold text-sm block">Kelola Warga</span>
-                  <span className="text-xs text-muted-foreground">Daftar & verifikasi warga</span>
+                  <span className="block text-sm font-semibold">
+                    Kelola Warga
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Daftar & verifikasi warga
+                  </span>
                 </div>
               </div>
-              <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="transition-transform size-4 text-muted-foreground group-hover:translate-x-1" />
             </Link>
 
-            <Link href="/admin/announcement" className="group flex items-center justify-between rounded-xl border bg-card p-3 shadow-xs transition-all hover:bg-muted/50 hover:shadow-md">
+            <Link
+              href="/admin/announcement"
+              className="flex items-center justify-between p-3 transition-all border shadow-xs group rounded-xl bg-card hover:bg-muted/50 hover:shadow-md"
+            >
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-blue-500/10 text-blue-500 group-hover:scale-110 transition-transform">
+                <div className="grid text-blue-500 transition-transform rounded-lg size-9 place-items-center bg-blue-500/10 group-hover:scale-110">
                   <Megaphone className="size-5" />
                 </div>
                 <div>
-                  <span className="font-semibold text-sm block">Buat Pengumuman</span>
-                  <span className="text-xs text-muted-foreground">Publikasikan info & agenda RT</span>
+                  <span className="block text-sm font-semibold">
+                    Buat Pengumuman
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Publikasikan info & agenda RT
+                  </span>
                 </div>
               </div>
-              <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="transition-transform size-4 text-muted-foreground group-hover:translate-x-1" />
             </Link>
 
-            <Link href="/admin/houses" className="group flex items-center justify-between rounded-xl border bg-card p-3 shadow-xs transition-all hover:bg-muted/50 hover:shadow-md">
+            <Link
+              href="/admin/houses"
+              className="flex items-center justify-between p-3 transition-all border shadow-xs group rounded-xl bg-card hover:bg-muted/50 hover:shadow-md"
+            >
               <div className="flex items-center gap-3">
-                <div className="grid size-9 place-items-center rounded-lg bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
+                <div className="grid transition-transform rounded-lg size-9 place-items-center bg-amber-500/10 text-amber-500 group-hover:scale-110">
                   <Home className="size-5" />
                 </div>
                 <div>
-                  <span className="font-semibold text-sm block">Kelola Perumahan</span>
-                  <span className="text-xs text-muted-foreground">Petakan rumah & blok</span>
+                  <span className="block text-sm font-semibold">
+                    Kelola Perumahan
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Petakan rumah & blok
+                  </span>
                 </div>
               </div>
-              <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+              <ChevronRight className="transition-transform size-4 text-muted-foreground group-hover:translate-x-1" />
             </Link>
           </CardContent>
         </Card>
@@ -346,42 +460,63 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-semibold">Pendaftaran Warga Terbaru</CardTitle>
-              <CardDescription className="text-xs">Warga terdaftar di portal SIWARGA</CardDescription>
+              <CardTitle className="text-sm font-semibold">
+                Pendaftaran Warga Terbaru
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Warga terdaftar di portal SIWARGA
+              </CardDescription>
             </div>
-            <Link href="/admin/users" className="text-xs font-semibold text-primary flex items-center hover:underline">
+            <Link
+              href="/admin/users"
+              className="flex items-center text-xs font-semibold text-primary hover:underline"
+            >
               Lihat Semua <ArrowUpRight className="size-3.5 ml-0.5" />
             </Link>
           </CardHeader>
           <CardContent className="py-2">
             {recentUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
-                <Users className="size-8 stroke-muted-foreground/50 mb-2" />
-                <span className="text-xs font-medium">Belum ada warga terdaftar</span>
+                <Users className="mb-2 size-8 stroke-muted-foreground/50" />
+                <span className="text-xs font-medium">
+                  Belum ada warga terdaftar
+                </span>
               </div>
             ) : (
               <div className="divide-y divide-border">
                 {recentUsers.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                      <div className="grid text-sm font-bold rounded-full size-9 place-items-center bg-primary/10 text-primary">
                         {item.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <span className="font-semibold text-sm block">{item.name}</span>
-                        <span className="text-xs text-muted-foreground block">{item.phoneNumber}</span>
+                        <span className="block text-sm font-semibold">
+                          {item.name}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {item.phoneNumber}
+                        </span>
                       </div>
                     </div>
                     <div className="text-right">
                       {item.residentProfile?.house ? (
                         <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                           <MapPin className="size-3 text-primary" />
-                          {item.residentProfile.house.block}-{item.residentProfile.house.houseNumber}
+                          {item.residentProfile.house.block}-
+                          {item.residentProfile.house.houseNumber}
                         </span>
                       ) : (
-                        <span className="text-xs text-muted-foreground italic">Belum menetap</span>
+                        <span className="text-xs italic text-muted-foreground">
+                          Belum menetap
+                        </span>
                       )}
-                      <span className="block text-[10px] text-muted-foreground mt-0.5">{formatDate(item.createdAt)}</span>
+                      <span className="block text-[10px] text-muted-foreground mt-0.5">
+                        {formatDate(item.createdAt)}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -394,18 +529,24 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-sm font-semibold">Aktivitas Pembayaran Terbaru</CardTitle>
-              <CardDescription className="text-xs">Riwayat iuran masuk dari perumahan</CardDescription>
+              <CardTitle className="text-sm font-semibold">
+                Aktivitas Pembayaran Terbaru
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Riwayat iuran masuk dari perumahan
+              </CardDescription>
             </div>
-            <span className="text-xs font-semibold text-muted-foreground flex items-center">
+            <span className="flex items-center text-xs font-semibold text-muted-foreground">
               Real-time
             </span>
           </CardHeader>
           <CardContent className="py-2">
             {recentPayments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
-                <Clock className="size-8 stroke-muted-foreground/50 mb-2" />
-                <span className="text-xs font-medium">Belum ada riwayat pembayaran</span>
+                <Clock className="mb-2 size-8 stroke-muted-foreground/50" />
+                <span className="text-xs font-medium">
+                  Belum ada riwayat pembayaran
+                </span>
               </div>
             ) : (
               <div className="divide-y divide-border">
@@ -413,25 +554,42 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
                   const dues = p.monthlyDues?.[0];
                   const house = dues?.house;
                   const ownerName = house?.owner?.name || "Warga";
-                  const houseCode = house ? `${house.block}-${house.houseNumber}` : "-";
+                  const houseCode = house
+                    ? `${house.block}-${house.houseNumber}`
+                    : "-";
                   const statusSuccess = p.status === "SUCCESS";
-                  
+
                   return (
-                    <div key={p.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                    >
                       <div className="flex items-center gap-3">
-                        <div className={`grid size-9 place-items-center rounded-lg ${statusSuccess ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600"}`}>
-                          {statusSuccess ? <CheckCircle2 className="size-5" /> : <XCircle className="size-5" />}
+                        <div
+                          className={`grid size-9 place-items-center rounded-lg ${statusSuccess ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-600"}`}
+                        >
+                          {statusSuccess ? (
+                            <CheckCircle2 className="size-5" />
+                          ) : (
+                            <XCircle className="size-5" />
+                          )}
                         </div>
                         <div>
-                          <span className="font-bold text-sm block">{formatRupiah(Number(p.amountPaid))}</span>
-                          <span className="text-xs text-muted-foreground block">
+                          <span className="block text-sm font-bold">
+                            {formatRupiah(Number(p.amountPaid))}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
                             {ownerName} ({houseCode})
                           </span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-semibold text-muted-foreground block">{p.paymentMethod}</span>
-                        <span className="block text-[10px] text-muted-foreground mt-0.5">{formatDateTime(p.paidAt)}</span>
+                        <span className="block text-xs font-semibold text-muted-foreground">
+                          {p.paymentMethod}
+                        </span>
+                        <span className="block text-[10px] text-muted-foreground mt-0.5">
+                          {formatDateTime(p.paidAt)}
+                        </span>
                       </div>
                     </div>
                   );
