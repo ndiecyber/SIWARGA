@@ -13,7 +13,7 @@ export const formSchema = z.object({
   houseNumber: z.string().min(1, "Nomor rumah wajib diisi"),
   residents: z.array(
     z.object({
-      userId: z.uuid().optional(),
+      userId: z.string().optional(),
       residentRole: z.enum([
         ResidentRole.MAIN_RESIDENT,
         ResidentRole.FAMILY_MEMBER,

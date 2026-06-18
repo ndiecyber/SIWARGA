@@ -209,23 +209,30 @@ export function HouseCreateForm() {
   // ── Toggle: owner as resident ────────────────────────────────────────────────
   function handleOwnerToggle(pressed: boolean) {
     if (pressed) {
-      if (!selectedOwnerId) {
+      // Dynamically grab the absolute freshest value directly from the form store
+      const currentOwnerId = form.getValues("ownerId");
+
+      // Strictly check against both undefined/null AND empty strings
+      if (!currentOwnerId || currentOwnerId.trim() === "") {
         toast.warning("Pilih pemilik terlebih dahulu.");
         return;
       }
-      // Add owner as MAIN_RESIDENT at the front
+
+      const newIndex = fields.length;
+
       append({
-        userId: selectedOwnerId,
+        userId: currentOwnerId, // Use the guaranteed valid UUID string here
         residentRole: ResidentRole.MAIN_RESIDENT,
         relationship: RelationshipType.SELF,
       });
-      // After append the new entry lands at fields.length (current length before append)
-      const newIndex = watchedResidents.length;
+
       enforceMainResidentConstraint(newIndex);
       setOwnerAsResident(true);
     } else {
-      // Remove the owner-resident entry
-      const idx = ownerResidentIndex();
+      const currentOwnerId = form.getValues("ownerId");
+      const idx = watchedResidents.findIndex(
+        (r) => r.userId === currentOwnerId,
+      );
       if (idx !== -1) remove(idx);
       setOwnerAsResident(false);
     }
@@ -262,31 +269,36 @@ export function HouseCreateForm() {
   }
 
   // ── Submit ───────────────────────────────────────────────────────────────────
-  const handleSubmit = form.handleSubmit(async (data: InputFormSchema) => {
-    // Exclude residents when house is VACANT
-    const submitData: InputFormSchema =
-      data.status === HouseStatus.VACANT ? { ...data, residents: [] } : data;
+  const handleSubmit = form.handleSubmit(
+    async (data: InputFormSchema) => {
+      // Exclude residents when house is VACANT
+      const submitData: InputFormSchema =
+        data.status === HouseStatus.VACANT ? { ...data, residents: [] } : data;
 
-    const mutationPromise = mutateAsync(submitData);
+      const mutationPromise = mutateAsync(submitData);
 
-    toast.promise(mutationPromise, {
-      loading: "Data rumah sedang ditambahkan. Mohon tunggu sebentar...",
-      success: (res) => res.message || "Data rumah berhasil ditambahkan",
-      error: (err) =>
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan. Silakan coba lagi.",
-    });
+      toast.promise(mutationPromise, {
+        loading: "Data rumah sedang ditambahkan. Mohon tunggu sebentar...",
+        success: (res) => res.message || "Data rumah berhasil ditambahkan",
+        error: (err) =>
+          err instanceof Error
+            ? err.message
+            : "Terjadi kesalahan. Silakan coba lagi.",
+      });
 
-    try {
-      await mutationPromise;
-      form.reset();
-      setOwnerAsResident(false);
-      close();
-    } catch (error) {
-      console.error(error);
-    }
-  });
+      try {
+        await mutationPromise;
+        form.reset();
+        setOwnerAsResident(false);
+        close();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    (errors) => {
+      console.log("Error on submit: ", errors);
+    },
+  );
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
@@ -465,16 +477,17 @@ export function HouseCreateForm() {
                       <CommandGroup>
                         {owners.map(({ label, value }) => (
                           <CommandItem
-                            value={label}
+                            // Use the UUID 'value' here so cmdk maps the selected value correctly to the callback argument
+                            value={value}
                             key={value}
-                            onSelect={() => {
-                              // If owner changes while toggle is on, remove the old
-                              // owner-resident entry first
+                            onSelect={(currentValue) => {
                               if (ownerAsResident) {
                                 const idx = ownerResidentIndex();
                                 if (idx !== -1) remove(idx);
                                 setOwnerAsResident(false);
                               }
+
+                              // Use the explicit mapped 'value' variable directly to bypass internal cmdk lowercase string matching quirks
                               form.setValue("ownerId", value, {
                                 shouldValidate: true,
                               });
