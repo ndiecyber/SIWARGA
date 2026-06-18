@@ -70,8 +70,15 @@ function UserSignInForm({ onSuccess }: Props) {
 
         return "Login warga berhasil";
       },
-      error: (error) =>
-        error instanceof Error ? error.message : "Unknown error",
+      error: (error) => {
+        console.log(error);
+
+        if (error instanceof Error) {
+          return error.message;
+        } else {
+          return "Unknown error";
+        }
+      },
     });
 
     try {
