@@ -5,8 +5,8 @@ import { useState } from "react";
 import {
   DownloadIcon,
   EyeIcon,
+  HousePlusIcon,
   PencilIcon,
-  PlusIcon,
   Trash2Icon,
 } from "lucide-react";
 
@@ -16,7 +16,6 @@ import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FieldDialog } from "@/components/shared/field-dialog";
 import {
   ActionOption,
   DataTable,
@@ -29,6 +28,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 
 import HouseShow from "./detail-show";
@@ -142,17 +142,32 @@ export default function HousesPage({ houses }: Props) {
     <main className="container mx-auto">
       <header className="flex items-center justify-between py-4 md:py-6">
         <h1 className={cn(fraunces.className, "text-3xl font-bold")}>Houses</h1>
-        <FieldDialog
-          title="Add new house"
-          trigger={
+        <Dialog>
+          <DialogTrigger asChild>
             <Button variant="default">
-              <PlusIcon className="mr-2" />
-              Add
+              <HousePlusIcon size={16} />
+              <span className="ml-2">Tambah Rumah</span>
             </Button>
-          }
-        >
-          <HouseCreateForm />
-        </FieldDialog>
+          </DialogTrigger>
+          <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit gap-0">
+            <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
+              <main className="px-6">
+                <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
+                  Tambah Rumah Baru
+                </DialogTitle>
+
+                <DialogDescription>
+                  Lengkapi informasi properti, kepemilikan, dan penghuni
+                </DialogDescription>
+              </main>
+            </DialogHeader>
+
+            {/* FIXME: house select block input focus state and form buttons are clipped */}
+            <ScrollArea className="h-[calc(100vh-12rem)] -mr-6 pr-6 ">
+              <HouseCreateForm className="pt-6" />
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
       </header>
 
       <>
@@ -185,11 +200,11 @@ export default function HousesPage({ houses }: Props) {
               <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
                 <main className="px-6">
                   <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
-                    Tambah Rumah Baru
+                    Update Data Rumah
                   </DialogTitle>
 
                   <DialogDescription>
-                    Lengkapi informasi properti, kepemilikan, dan penghuni
+                    Perbaharui informasi properti, kepemilikan, dan penghuni
                   </DialogDescription>
                 </main>
               </DialogHeader>
@@ -199,6 +214,7 @@ export default function HousesPage({ houses }: Props) {
                 <HouseEditForm
                   house={editTarget}
                   onSuccess={() => setEditTarget(null)}
+                  className="pt-6"
                 />
               </ScrollArea>
             </DialogContent>

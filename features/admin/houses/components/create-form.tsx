@@ -6,21 +6,24 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
 import { HouseStatus } from "@/generated/prisma/enums";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useFieldDialog } from "@/components/shared/field-dialog";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 
+import { HouseFormFields } from "./form-fields";
 import { formSchema, InputFormSchema } from "../schemas";
 import { createHouseAction, getOwnersLookupAction } from "../actions";
-import { HouseFormFields } from "./form-fields";
 
-export function HouseCreateForm() {
+interface Props {
+  className?: string;
+}
+
+export function HouseCreateForm({ className }: Props) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const { close } = useFieldDialog();
 
   const form = useForm<InputFormSchema>({
     resolver: standardSchemaResolver(formSchema),
@@ -75,7 +78,6 @@ export function HouseCreateForm() {
       loading: "Data rumah sedang ditambahkan...",
       success: () => {
         form.reset();
-        close();
         return "Data rumah berhasil ditambahkan";
       },
       error: (err) =>
@@ -84,7 +86,10 @@ export function HouseCreateForm() {
   });
 
   return (
-    <form onSubmit={onSubmit} className="w-full mx-auto space-y-6">
+    <form
+      onSubmit={onSubmit}
+      className={cn("w-full mx-auto space-y-6", className)}
+    >
       <HouseFormFields
         control={form.control}
         setValue={form.setValue}

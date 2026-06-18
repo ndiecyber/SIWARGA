@@ -6,23 +6,29 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Loader2Icon } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@uidotdev/usehooks";
 import { HouseStatus } from "@/generated/prisma/enums";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 
-import { HouseWithOwner, HouseWithResidents } from "../types";
 import { HouseFormFields } from "./form-fields";
 import { formSchema, InputFormSchema } from "../schemas";
+import { HouseWithOwner, HouseWithResidents } from "../types";
 import { getOwnersLookupAction, updateHouseAction } from "../actions";
 
 interface HouseEditFormProps {
   house: HouseWithOwner & HouseWithResidents;
+  className?: string;
   onSuccess: () => void;
 }
 
-export function HouseEditForm({ house, onSuccess }: HouseEditFormProps) {
+export function HouseEditForm({
+  house,
+  className,
+  onSuccess,
+}: HouseEditFormProps) {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
 
@@ -114,7 +120,7 @@ export function HouseEditForm({ house, onSuccess }: HouseEditFormProps) {
   return (
     <form
       onSubmit={onSubmit}
-      className="w-full max-w-3xl gap-2 pt-6 mx-auto rounded-md"
+      className={cn("w-full max-w-3xl gap-2 mx-auto rounded-md", className)}
     >
       <HouseFormFields
         control={form.control}
