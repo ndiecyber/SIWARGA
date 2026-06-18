@@ -159,10 +159,12 @@ export function AnnouncementDashboard({ announcements }: Props) {
     <>
       <main className="container mx-auto">
         {/* Header */}
-        <header className="flex flex-col justify-between gap-4 py-4 sm:flex-row sm:items-center md:py-6">
+        <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center space-y-4">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 shadow-sm rounded-xl bg-primary text-primary-foreground">
-              <Megaphone className="size-5" />
+              <div className="rounded-md bg-primary p-2.5">
+                <Megaphone className="text-white" />
+              </div>
             </div>
             <div>
               <h1 className="text-xl font-semibold text-foreground">

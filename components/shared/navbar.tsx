@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { ChevronDown, LogIn, LogOut } from "lucide-react";
+import {
+  ChevronDown,
+  LogIn,
+  LogOut,
+  LucideLayoutDashboard,
+} from "lucide-react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -174,9 +179,14 @@ function Navbar() {
 
           <div className="grid">
             {session ? (
-              <Button variant="destructive" onClick={handleSignOut}>
-                Sign Out
-              </Button>
+              <Link
+                href={session.user.role === "admin" ? "/admin" : "/dashboard"}
+              >
+                <Button variant="outline">
+                  <LucideLayoutDashboard />
+                  Dashboard
+                </Button>
+              </Link>
             ) : (
               <SignIn />
             )}

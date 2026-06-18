@@ -11,14 +11,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { LogIn } from "lucide-react";
+import { LogIn, LucideLayoutDashboard } from "lucide-react";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
+import SignIn from "@/features/auth/pages/sign-in";
+import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 const data = {
   navMain: [
@@ -35,9 +35,7 @@ const data = {
     },
     {
       title: "Layanan & Fitur",
-      items: [
-        { title: "Fitur Unggulan", href: "#features" },
-      ],
+      items: [{ title: "Fitur Unggulan", href: "#features" }],
     },
     {
       title: "Informasi & Data",
@@ -54,6 +52,7 @@ export function AppSidebar({
   isShow,
   ...props
 }: { isShow?: boolean } & React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = authClient.useSession();
   if (isShow) {
     return;
   }
@@ -64,7 +63,10 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="cursor-default">
-              <p className="text-sm font-bold text-primary">SIWARGA</p>
+              <p className="text-sm font-bold text-primary">
+                <span className="text-green-400">Si</span>
+                <span className="text-indigo-800">WARGA</span>
+              </p>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -96,9 +98,25 @@ export function AppSidebar({
       <SidebarRail />
       <Separator />
       <SidebarFooter>
-        <Button>
-          <LogIn /> Masuk
-        </Button>
+        <div className="grid">
+          {session ? (
+            <Link
+              href={session.user.role === "admin" ? "/admin" : "/dashboard"}
+              className="w-full"
+            >
+              <Button variant="outline" className="w-full">
+                <LucideLayoutDashboard />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <SignIn>
+              <Button>
+                <LogIn /> Masuk
+              </Button>
+            </SignIn>
+          )}
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

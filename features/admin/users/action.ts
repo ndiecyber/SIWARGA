@@ -5,19 +5,39 @@ import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { CreateUserSchema, UpdateUserSchema } from "./schema";
 import { Prisma } from "@/generated/prisma/client";
+import { auth } from "@/lib/auth";
 
 export async function createUserAction(values: CreateUserSchema) {
+  console.log({ values });
 
-  console.log({ values })
+  const newEmail = `user-${Date.now()}@gmail.com`;
 
   try {
-    await prisma.user.create({
-      data: {
-        ...values,
-        ktpUrl: "",
+    const existing = await prisma.user.findUnique({
+      where: { phoneNumber: values.phoneNumber },
+    });
+
+    if (existing) {
+      throw new Error("Nomor telepon sudah terdaftar. Gunakan nomor lain.");
+    }
+
+    const newUser = await auth.api.signUpEmail({
+      body: {
+        name: values.name,
+        email: newEmail,
+        password: "password1234",
+        username: values.phoneNumber,
+        displayUsername: values.name,
+        phoneNumber: values.phoneNumber,
+        identificationNumber: values.identificationNumber,
         kkUrl: "",
+        ktpUrl: "",
       },
     });
+
+    if (!newUser?.user?.id) {
+      throw new Error("Gagal dalam membuat user.");
+    }
 
     revalidatePath("/admin/users");
 
@@ -35,6 +55,13 @@ export async function createUserAction(values: CreateUserSchema) {
           message: "Nomor telepon sudah terdaftar. Gunakan nomor lain.",
         };
       }
+    }
+
+    if (error instanceof Error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
 
     return {
