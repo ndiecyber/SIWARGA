@@ -159,7 +159,7 @@ export default function HousesPage({ houses }: Props) {
             </DialogHeader>
 
             {/* FIXME: house select block input focus state and form buttons are clipped */}
-            <ScrollArea className="h-[calc(100vh-12rem)] -mr-6 pr-6 ">
+            <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6 ">
               <HouseCreateForm className="pt-6" />
             </ScrollArea>
           </DialogContent>
@@ -206,7 +206,7 @@ export default function HousesPage({ houses }: Props) {
               </DialogHeader>
 
               {/* FIXME: house select block input focus state and form buttons are clipped */}
-              <ScrollArea className="h-[calc(100vh-12rem)] -mr-6 pr-6 ">
+              <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6 ">
                 <HouseEditForm
                   house={editTarget}
                   onSuccess={() => setEditTarget(null)}
