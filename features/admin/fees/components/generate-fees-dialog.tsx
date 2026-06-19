@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AlertTriangle, FileSpreadsheet, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { generateDuesAction } from "../actions/generate-dues";
 
 const MONTHS = [
   "Januari", "Februari", "Maret", "April", "Mei", "Juni",
@@ -27,22 +31,43 @@ const MONTHS = [
 ];
 
 const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth();
 
 export function GenerateFeesDialog() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialMonth = searchParams.get("month")
+    ? String(searchParams.get("month"))
+    : String(new Date().getMonth() + 1);
+  const initialYear = searchParams.get("year")
+    ? String(searchParams.get("year"))
+    : String(currentYear);
+
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(
-    String(currentMonth),
-  );
-  const [selectedYear, setSelectedYear] = useState(String(currentYear));
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [selectedYear, setSelectedYear] = useState(initialYear);
 
   const handleGenerate = async () => {
     setIsSubmitting(true);
-    // Placeholder: integrasi dengan action nanti
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const toastId = toast.loading("Membuat tagihan...");
+
+    const result = await generateDuesAction({
+      month: Number(selectedMonth),
+      year: Number(selectedYear),
+    });
+
+    if (result.success) {
+      toast.success(result.message, { id: toastId });
+      setOpen(false);
+      router.push(
+        `/admin/fees?month=${selectedMonth}&year=${selectedYear}`,
+      );
+    } else {
+      toast.error(result.message, { id: toastId });
+    }
+
     setIsSubmitting(false);
-    setOpen(false);
   };
 
   return (
@@ -65,16 +90,13 @@ export function GenerateFeesDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Bulan</label>
-              <Select
-                value={selectedMonth}
-                onValueChange={setSelectedMonth}
-              >
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {MONTHS.map((month, i) => (
-                    <SelectItem key={i} value={String(i)}>
+                    <SelectItem key={i} value={String(i + 1)}>
                       {month}
                     </SelectItem>
                   ))}
@@ -83,10 +105,7 @@ export function GenerateFeesDialog() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Tahun</label>
-              <Select
-                value={selectedYear}
-                onValueChange={setSelectedYear}
-              >
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -108,14 +127,10 @@ export function GenerateFeesDialog() {
               <span className="text-muted-foreground">Tarif Iuran</span>
               <span className="font-medium">Rp 25.000 / rumah</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Total Rumah</span>
-              <span className="font-medium">50 rumah</span>
-            </div>
             <div className="flex justify-between border-t pt-2">
-              <span className="font-medium">Total Tagihan</span>
-              <span className="font-semibold text-primary">
-                Rp 1.250.000
+              <span className="font-medium">Catatan</span>
+              <span className="text-muted-foreground">
+                Rumah dengan tagihan yang sudah ada akan dilewatkan
               </span>
             </div>
           </div>
@@ -123,12 +138,12 @@ export function GenerateFeesDialog() {
           <div className="flex items-start gap-3 rounded-lg border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" />
             <p>
-              Tagihan untuk periode{" "}
+              Generate akan melewati rumah yang sudah memiliki tagihan untuk
+              periode{" "}
               <strong>
-                {MONTHS[Number(selectedMonth)]} {selectedYear}
-              </strong>{" "}
-              sudah ada. Generate akan melewati rumah yang sudah memiliki
-              tagihan.
+                {MONTHS[Number(selectedMonth) - 1]} {selectedYear}
+              </strong>
+              .
             </p>
           </div>
         </div>

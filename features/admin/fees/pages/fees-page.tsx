@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import {
   AlertTriangle,
   CheckCircle2,
   Clock,
+  ChevronLeft,
+  ChevronRight,
   Download,
   EyeIcon,
+  FileSpreadsheet,
   HandCoins,
   Receipt,
   Wallet,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -32,9 +37,15 @@ import { SortOption } from "@/lib/types/sort";
 
 import { columns } from "../components/columns";
 import { GenerateFeesDialog } from "../components/generate-fees-dialog";
-import type { FeeRow } from "../types";
+import { MarkPaidDialog } from "../components/mark-paid-dialog";
+import type { FeeRow, FeesPageProps } from "../types";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
+
+const MONTHS = [
+  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+];
 
 const filterCategories: FilterCategory<FeeRow>[] = [
   {
@@ -74,8 +85,70 @@ const batchActions: ActionOption<FeeRow>[] = [
   },
 ];
 
-export default function FeesPage() {
+function formatRupiah(value: number): string {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+// ─── Period Selector ─────────────────────────────────────────────────────────
+
+function PeriodSelector({
+  month,
+  year,
+}: {
+  month: number;
+  year: number;
+}) {
+  const router = useRouter();
+
+  const goToPeriod = (m: number, y: number) => {
+    router.push(`/admin/fees?month=${m}&year=${y}`);
+  };
+
+  const goPrevMonth = () => {
+    if (month === 1) {
+      goToPeriod(12, year - 1);
+    } else {
+      goToPeriod(month - 1, year);
+    }
+  };
+
+  const goNextMonth = () => {
+    if (month === 12) {
+      goToPeriod(1, year + 1);
+    } else {
+      goToPeriod(month + 1, year);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button variant="ghost" size="icon" onClick={goPrevMonth}>
+        <ChevronLeft className="size-4" />
+      </Button>
+      <span className="min-w-[140px] text-center text-sm font-medium">
+        {MONTHS[month - 1]} {year}
+      </span>
+      <Button variant="ghost" size="icon" onClick={goNextMonth}>
+        <ChevronRight className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+export default function FeesPage({
+  houses,
+  stats,
+  period,
+}: FeesPageProps) {
   const [detailTarget, setDetailTarget] = useState<FeeRow | null>(null);
+  const [paidTarget, setPaidTarget] = useState<FeeRow | null>(null);
 
   const feeColumns = withActionColumn(withSelectColumn(columns), [
     {
@@ -83,7 +156,24 @@ export default function FeesPage() {
       icon: <EyeIcon size={16} />,
       onClick: (row) => setDetailTarget(row as FeeRow),
     },
+    {
+      label: "Catat Pembayaran",
+      icon: <FileSpreadsheet size={16} />,
+      onClick: (row) => {
+        const fee = row as FeeRow;
+        if (fee.monthlyDueId) {
+          setPaidTarget(fee);
+        } else {
+          toast.error(
+            "Tagihan belum dibuat. Generate tagihan terlebih dahulu.",
+          );
+        }
+      },
+    },
   ]);
+
+  const hasGeneratedData = stats.notGeneratedCount < stats.totalHouses;
+  const allGenerated = stats.notGeneratedCount === 0;
 
   return (
     <section className="space-y-8">
@@ -111,6 +201,11 @@ export default function FeesPage() {
         </div>
       </div>
 
+      {/* ── Period Navigation ────────────────────────────────────────────── */}
+      <div className="flex items-center justify-center">
+        <PeriodSelector month={period.month} year={period.year} />
+      </div>
+
       {/* ── Summary Cards ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -123,8 +218,12 @@ export default function FeesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rp —</div>
-            <p className="mt-1 text-xs text-muted-foreground">Periode bulan ini</p>
+            <div className="text-2xl font-bold">
+              {hasGeneratedData ? formatRupiah(stats.totalTagihan) : "Rp —"}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {stats.totalHouses} rumah terdaftar
+            </p>
           </CardContent>
         </Card>
 
@@ -138,9 +237,11 @@ export default function FeesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.paidCount}</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              0% dari total rumah
+              {stats.totalHouses > 0
+                ? `${Math.round((stats.paidCount / stats.totalHouses) * 100)}% dari total rumah`
+                : "Belum ada data"}
             </p>
           </CardContent>
         </Card>
@@ -155,9 +256,11 @@ export default function FeesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-2xl font-bold">{stats.unpaidCount}</div>
             <p className="mt-1 text-xs text-muted-foreground">
-              0% dari total rumah
+              {stats.totalHouses > 0
+                ? `${Math.round((stats.unpaidCount / stats.totalHouses) * 100)}% dari total rumah`
+                : "Belum ada data"}
             </p>
           </CardContent>
         </Card>
@@ -172,34 +275,48 @@ export default function FeesPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rp —</div>
+            <div className="text-2xl font-bold">
+              {hasGeneratedData ? formatRupiah(stats.paidAmount) : "Rp —"}
+            </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              Dari total target Rp —
+              {hasGeneratedData
+                ? `Dari total target ${formatRupiah(stats.totalTarget)}`
+                : "Generate tagihan terlebih dahulu"}
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* ── Alert Info ───────────────────────────────────────────────────── */}
-      <Alert className="border-blue-200 bg-blue-50 text-blue-800">
-        <AlertTriangle className="size-4" />
-        <AlertTitle>Informasi Periode</AlertTitle>
-        <AlertDescription>
-          Tagihan bulan ini belum digenerate. Klik tombol{" "}
-          <strong>&ldquo;Generate Tagihan&rdquo;</strong> untuk membuat tagihan iuran
-          bulan{" "}
-          {new Intl.DateTimeFormat("id-ID", {
-            month: "long",
-            year: "numeric",
-          }).format(new Date())}
-          .
-        </AlertDescription>
-      </Alert>
+      {!allGenerated && (
+        <Alert className="border-blue-200 bg-blue-50 text-blue-800">
+          <AlertTriangle className="size-4" />
+          <AlertTitle>Informasi Periode</AlertTitle>
+          <AlertDescription>
+            {stats.notGeneratedCount === stats.totalHouses ? (
+              <>
+                Tagihan bulan{" "}
+                {MONTHS[period.month - 1]} {period.year} belum
+                digenerate. Klik tombol{" "}
+                <strong>&ldquo;Generate Tagihan&rdquo;</strong> untuk membuat
+                tagihan iuran.
+              </>
+            ) : (
+              <>
+                {stats.notGeneratedCount} rumah belum memiliki tagihan untuk
+                periode ini. Klik{" "}
+                <strong>&ldquo;Generate Tagihan&rdquo;</strong> untuk
+                melengkapinya.
+              </>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* ── Data Table ───────────────────────────────────────────────────── */}
       <div className="bg-white">
         <DataTable
-          data={[]}
+          data={houses}
           columns={feeColumns}
           filterCategories={filterCategories}
           sortOptions={sortOptions}
@@ -207,9 +324,30 @@ export default function FeesPage() {
         />
       </div>
 
-      {/* ── Detail Dialog (placeholder) ──────────────────────────────────── */}
+      {/* ── Detail Dialog ────────────────────────────────────────────────── */}
       {detailTarget && (
-        <p>TODO: Detail dialog untuk {detailTarget.ownerName}</p>
+        <MarkPaidDialog
+          key="detail"
+          monthlyDueId={detailTarget.monthlyDueId}
+          houseLabel={`${detailTarget.block}-${detailTarget.houseNumber} (${detailTarget.ownerName})`}
+          open={detailTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) setDetailTarget(null);
+          }}
+        />
+      )}
+
+      {/* ── Mark Paid Dialog ─────────────────────────────────────────────── */}
+      {paidTarget && (
+        <MarkPaidDialog
+          key="paid"
+          monthlyDueId={paidTarget.monthlyDueId}
+          houseLabel={`${paidTarget.block}-${paidTarget.houseNumber} (${paidTarget.ownerName})`}
+          open={paidTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) setPaidTarget(null);
+          }}
+        />
       )}
     </section>
   );
