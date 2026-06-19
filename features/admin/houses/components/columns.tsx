@@ -13,34 +13,24 @@ import { HouseWithOwner, HouseWithResidents } from "../types";
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
 export const columns: ColumnDef<HouseWithOwner & HouseWithResidents>[] = [
-  // ── House number ─────────────────────────────────────────────────────────────
+  // ── House Number (block + number merged) ────────────────────────────────────
   {
-    accessorKey: "houseNumber",
+    id: "houseNumber",
     enableGlobalFilter: true,
-    // header: ({ column }) => <SortableHeader column={column} label="House" />,
-    header: () => "House",
-    cell: ({ row }) => (
-      <span className="font-mono font-medium">
-        {row.getValue("houseNumber")}
-      </span>
-    ),
-  },
-
-  // ── Block ────────────────────────────────────────────────────────────────────
-  {
-    accessorKey: "block",
-    enableGlobalFilter: true,
-    // header: ({ column }) => <SortableHeader column={column} label="Block" />,
-    header: () => "Block",
-    filterFn: (row, columnId, filterValues: string[]) => {
+    header: () => <div className="flex justify-start">Nomor Rumah</div>,
+    accessorFn: (row) => row.block + row.houseNumber,
+    filterFn: (row, _columnId, filterValues: string[]) => {
       if (!filterValues.length) return true;
-      return filterValues.includes(row.getValue(columnId));
+      return filterValues.includes(row.original.block.toLowerCase());
     },
-    cell: ({ row }) => (
-      <span className="rounded bg-muted px-2 py-0.5 text-xs font-semibold uppercase tracking-wide">
-        {row.getValue("block")}
-      </span>
-    ),
+    cell: ({ getValue }) => {
+      const value = getValue() as string;
+      return (
+        <div className="font-semibold uppercase text-start">
+          <span className="font-mono">{value}</span>
+        </div>
+      );
+    },
   },
 
   // ── Owner ─────────────────────────────────────────────────────────────────────

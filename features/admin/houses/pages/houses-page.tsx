@@ -42,7 +42,7 @@ import DeleteHouseDialog from "../components/delete-dialog";
 
 const filterCategories: FilterCategory[] = [
   {
-    id: "block",
+    id: "houseNumber",
     label: "Block",
     options: [
       {
@@ -77,10 +77,6 @@ const sortOptions: SortOption[] = [
   {
     id: "houseNumber",
     label: "House",
-  },
-  {
-    id: "block",
-    label: "Block",
   },
   {
     id: "owner",
