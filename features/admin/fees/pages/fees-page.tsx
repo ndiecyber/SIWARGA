@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   Clock,
   Download,
-  EyeIcon,
   FileSpreadsheet,
   HandCoins,
   Loader2,
@@ -105,13 +104,13 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
   };
 
   const feeColumns = withActionColumn(withSelectColumn(columns), [
+    // {
+    //   label: "Detail",
+    //   icon: <EyeIcon size={16} />,
+    //   onClick: (row) => setDetailTarget(row as FeeRow),
+    // },
     {
-      label: "Detail",
-      icon: <EyeIcon size={16} />,
-      onClick: (row) => setDetailTarget(row as FeeRow),
-    },
-    {
-      label: "Catat Pembayaran",
+      label: "Pembayaran",
       icon: <FileSpreadsheet size={16} />,
       onClick: (row) => {
         const fee = row as FeeRow;
@@ -131,7 +130,6 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
 
   return (
     <section className="relative space-y-4">
-
       {/* ── Loading Overlay ───────────────────────────────────────────── */}
       {isPending && (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
@@ -301,6 +299,7 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
           onOpenChange={(open) => {
             if (!open) setDetailTarget(null);
           }}
+          isLunas={detailTarget.status === "LUNAS"}
         />
       )}
 
@@ -314,6 +313,7 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
           onOpenChange={(open) => {
             if (!open) setPaidTarget(null);
           }}
+          isLunas={paidTarget.status === "LUNAS"}
         />
       )}
     </section>

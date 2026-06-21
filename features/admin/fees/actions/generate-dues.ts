@@ -11,16 +11,33 @@ interface GenerateDuesInput {
   year: number;
 }
 
+function formatMonthYear(month: number, year: number): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, month - 1));
+}
+
 export async function generateDuesAction(input: GenerateDuesInput) {
   try {
     const { month, year } = input;
     const houses = await prisma.house.findMany({
       where: { status: HouseStatus.OCCUPIED },
-      select: { id: true },
+      select: {
+        id: true,
+        block: true,
+        houseNumber: true,
+        residents: {
+          select: { createdAt: true },
+          orderBy: { createdAt: "asc" },
+          take: 1,
+        },
+      },
     });
 
     let created = 0;
-    let skipped = 0;
+    let skippedExisting = 0;
+    let skippedNotYetResident = 0;
 
     for (const house of houses) {
       const existing = await prisma.monthlyDues.findUnique({
@@ -34,8 +51,23 @@ export async function generateDuesAction(input: GenerateDuesInput) {
       });
 
       if (existing) {
-        skipped++;
+        skippedExisting++;
         continue;
+      }
+
+      const earliestResident = house.residents[0];
+      if (earliestResident) {
+        const residentDate = earliestResident.createdAt;
+        const residentMonth = residentDate.getMonth() + 1;
+        const residentYear = residentDate.getFullYear();
+
+        if (
+          year < residentYear ||
+          (year === residentYear && month < residentMonth)
+        ) {
+          skippedNotYetResident++;
+          continue;
+        }
       }
 
       await prisma.monthlyDues.create({
@@ -54,10 +86,22 @@ export async function generateDuesAction(input: GenerateDuesInput) {
 
     revalidatePath("/admin/fees");
 
+    const parts: string[] = [`Berhasil membuat ${created} tagihan.`];
+    if (skippedExisting > 0) {
+      parts.push(
+        `${skippedExisting} rumah sudah memiliki tagihan dan dilewatkan.`,
+      );
+    }
+    if (skippedNotYetResident > 0) {
+      parts.push(
+        `${skippedNotYetResident} rumah belum dihuni pada ${formatMonthYear(month, year)} dan dilewatkan.`,
+      );
+    }
+
     return {
       success: true as const,
-      message: `Berhasil membuat ${created} tagihan. ${skipped} rumah sudah memiliki tagihan dan dilewatkan.`,
-      data: { created, skipped },
+      message: parts.join(" "),
+      data: { created, skipped: skippedExisting + skippedNotYetResident },
     };
   } catch (error) {
     return {

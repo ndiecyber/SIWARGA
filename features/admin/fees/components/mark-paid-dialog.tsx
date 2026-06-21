@@ -38,6 +38,7 @@ interface MarkPaidDialogProps {
   houseLabel: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  isLunas?: boolean;
 }
 
 export function MarkPaidDialog({
@@ -45,6 +46,7 @@ export function MarkPaidDialog({
   houseLabel,
   open,
   onOpenChange,
+  isLunas = false,
 }: MarkPaidDialogProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +54,7 @@ export function MarkPaidDialog({
   const [paymentMethod, setPaymentMethod] = useState("TUNAI");
 
   const handleSubmit = async () => {
-    if (!monthlyDueId) return;
+    if (!monthlyDueId || isLunas) return;
 
     setIsSubmitting(true);
     const toastId = toast.loading("Mencatat pembayaran...");
@@ -92,6 +94,7 @@ export function MarkPaidDialog({
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              disabled
             />
           </div>
 
@@ -116,9 +119,16 @@ export function MarkPaidDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Batal
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !monthlyDueId}>
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !monthlyDueId || isLunas}
+          >
             {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {isSubmitting ? "Menyimpan..." : "Konfirmasi Pembayaran"}
+            {isSubmitting
+              ? "Menyimpan..."
+              : isLunas
+                ? "Sudah Lunas"
+                : "Konfirmasi Pembayaran"}
           </Button>
         </DialogFooter>
       </DialogContent>

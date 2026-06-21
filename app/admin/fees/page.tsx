@@ -37,12 +37,14 @@ async function Page({
       },
       residents: {
         select: {
+          createdAt: true,
           user: {
             select: {
               name: true,
             },
           },
         },
+        orderBy: { createdAt: "asc" },
       },
       monthlyDues: {
         where: {
@@ -63,10 +65,26 @@ async function Page({
     },
   });
 
-  const totalHouses = houses.length;
+  const activeHouses = houses.filter((house) => {
+    const earliestResident = house.residents[0];
+    if (earliestResident) {
+      const residentDate = earliestResident.createdAt;
+      const residentMonth = residentDate.getMonth() + 1;
+      const residentYear = residentDate.getFullYear();
+      if (
+        currentYear < residentYear ||
+        (currentYear === residentYear && currentMonth < residentMonth)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const totalHouses = activeHouses.length;
 
   const { feeRows, paidCount, unpaidCount, notGeneratedCount, paidAmount } =
-    houses.reduce(
+    activeHouses.reduce(
       (acc, house) => {
         const due = house.monthlyDues[0];
         const isPaid = due?.status === "PAID";
