@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { MonthlyDuesStatus } from "@/generated/prisma/enums";
+import { HouseStatus, MonthlyDuesStatus } from "@/generated/prisma/enums";
 
 const DUES_AMOUNT = 25000;
 
@@ -15,6 +15,7 @@ export async function generateDuesAction(input: GenerateDuesInput) {
   try {
     const { month, year } = input;
     const houses = await prisma.house.findMany({
+      where: { status: HouseStatus.OCCUPIED },
       select: { id: true },
     });
 

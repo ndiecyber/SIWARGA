@@ -20,12 +20,7 @@ import { toast } from "sonner";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ActionOption,
   DataTable,
@@ -43,8 +38,18 @@ import type { FeeRow, FeesPageProps } from "../types";
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MONTHS = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 ];
 
 const filterCategories: FilterCategory<FeeRow>[] = [
@@ -55,17 +60,23 @@ const filterCategories: FilterCategory<FeeRow>[] = [
       {
         label: "Lunas",
         value: "LUNAS",
-        icon: <span className="inline-block size-2 rounded-full bg-emerald-500" />,
+        icon: (
+          <span className="inline-block size-2 rounded-full bg-emerald-500" />
+        ),
       },
       {
         label: "Tertunda",
         value: "TERTUNDA",
-        icon: <span className="inline-block size-2 rounded-full bg-amber-500" />,
+        icon: (
+          <span className="inline-block size-2 rounded-full bg-amber-500" />
+        ),
       },
       {
         label: "Belum Dibuat",
         value: "BELUM_DIBUAT",
-        icon: <span className="inline-block size-2 rounded-full bg-slate-400" />,
+        icon: (
+          <span className="inline-block size-2 rounded-full bg-slate-400" />
+        ),
       },
     ],
   },
@@ -96,13 +107,7 @@ function formatRupiah(value: number): string {
 
 // ─── Period Selector ─────────────────────────────────────────────────────────
 
-function PeriodSelector({
-  month,
-  year,
-}: {
-  month: number;
-  year: number;
-}) {
+function PeriodSelector({ month, year }: { month: number; year: number }) {
   const router = useRouter();
 
   const goToPeriod = (m: number, y: number) => {
@@ -130,7 +135,7 @@ function PeriodSelector({
       <Button variant="ghost" size="icon" onClick={goPrevMonth}>
         <ChevronLeft className="size-4" />
       </Button>
-      <span className="min-w-[140px] text-center text-sm font-medium">
+      <span className="min-w-35 text-center text-sm font-medium">
         {MONTHS[month - 1]} {year}
       </span>
       <Button variant="ghost" size="icon" onClick={goNextMonth}>
@@ -142,11 +147,7 @@ function PeriodSelector({
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
-export default function FeesPage({
-  houses,
-  stats,
-  period,
-}: FeesPageProps) {
+export default function FeesPage({ houses, stats, period }: FeesPageProps) {
   const [detailTarget, setDetailTarget] = useState<FeeRow | null>(null);
   const [paidTarget, setPaidTarget] = useState<FeeRow | null>(null);
 
@@ -209,7 +210,7 @@ export default function FeesPage({
       {/* ── Summary Cards ────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Tagihan
             </CardTitle>
@@ -218,7 +219,7 @@ export default function FeesPage({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold tabular-nums">
               {hasGeneratedData ? formatRupiah(stats.totalTagihan) : "Rp —"}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -228,7 +229,7 @@ export default function FeesPage({
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Lunas
             </CardTitle>
@@ -238,7 +239,7 @@ export default function FeesPage({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.paidCount}</div>
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground tabular-nums">
               {stats.totalHouses > 0
                 ? `${Math.round((stats.paidCount / stats.totalHouses) * 100)}% dari total rumah`
                 : "Belum ada data"}
@@ -247,7 +248,7 @@ export default function FeesPage({
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Tertunda
             </CardTitle>
@@ -266,7 +267,7 @@ export default function FeesPage({
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Kas Masuk
             </CardTitle>
@@ -295,8 +296,7 @@ export default function FeesPage({
           <AlertDescription>
             {stats.notGeneratedCount === stats.totalHouses ? (
               <>
-                Tagihan bulan{" "}
-                {MONTHS[period.month - 1]} {period.year} belum
+                Tagihan bulan {MONTHS[period.month - 1]} {period.year} belum
                 digenerate. Klik tombol{" "}
                 <strong>&ldquo;Generate Tagihan&rdquo;</strong> untuk membuat
                 tagihan iuran.

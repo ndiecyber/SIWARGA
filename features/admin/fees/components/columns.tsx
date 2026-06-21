@@ -33,8 +33,9 @@ export const columns: ColumnDef<FeeRow>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Home className="size-4 text-muted-foreground" />
-        <span className="font-medium">
-          {row.original.block}-{row.original.houseNumber}
+        <span className="font-medium capitalize">
+          {row.original.block}
+          {row.original.houseNumber}
         </span>
       </div>
     ),

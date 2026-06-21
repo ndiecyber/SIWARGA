@@ -1,8 +1,11 @@
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+import layoutWithAuthAdmin, {
+  LayoutWithAuthAdminProps,
+} from "@/components/layouts/auth/layout-with-auth-admin";
 import FeesPage from "@/features/admin/fees/pages/fees-page";
 import prisma from "@/lib/db";
 import { connection } from "next/server";
 import { Metadata } from "next";
+import { HouseStatus } from "@/generated/prisma/enums";
 
 export const metadata: Metadata = {
   title: "Data Iuran",
@@ -15,19 +18,18 @@ async function Page({
   searchParams,
 }: {
   searchParams: Promise<{ month?: string; year?: string }>;
-}) {
+} & LayoutWithAuthAdminProps) {
   await connection();
 
   const params = await searchParams;
   const now = new Date();
-  const currentMonth = params.month
-    ? Number(params.month)
-    : now.getMonth() + 1;
-  const currentYear = params.year
-    ? Number(params.year)
-    : now.getFullYear();
+  const currentMonth = params.month ? Number(params.month) : now.getMonth() + 1;
+  const currentYear = params.year ? Number(params.year) : now.getFullYear();
 
   const houses = await prisma.house.findMany({
+    where: {
+      status: HouseStatus.OCCUPIED,
+    },
     orderBy: [{ block: "asc" }, { houseNumber: "asc" }],
     include: {
       owner: {
@@ -75,11 +77,10 @@ async function Page({
           block: house.block,
           houseNumber: house.houseNumber,
           ownerName: house.owner?.name ?? "—",
-          status: (!due
-            ? "BELUM_DIBUAT"
-            : isPaid
-              ? "LUNAS"
-              : "TERTUNDA") as "BELUM_DIBUAT" | "LUNAS" | "TERTUNDA",
+          status: (!due ? "BELUM_DIBUAT" : isPaid ? "LUNAS" : "TERTUNDA") as
+            | "BELUM_DIBUAT"
+            | "LUNAS"
+            | "TERTUNDA",
           monthlyDueId: due?.id ?? null,
           lastPaymentDate: payment?.paidAt
             ? new Intl.DateTimeFormat("id-ID", {
