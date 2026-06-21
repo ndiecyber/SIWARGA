@@ -63,16 +63,18 @@ export interface DataTableProps<TData, TValue> {
   sortOptions?: SortOption<TData>[];
   /** Batch actions shown in the toolbar when one or more rows are selected */
   batchActions?: ActionOption<TData>[];
+  /** Optional row click handler — tr shifts to cursor-pointer when set */
+  onRowClick?: (row: TData) => void;
 }
 
 // ─── DataTable ────────────────────────────────────────────────────────────────
-
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterCategories = [],
   sortOptions = [],
   batchActions = [],
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -253,7 +255,11 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="hover:bg-muted/50"
+                  className={cn(
+                    "hover:bg-muted/50",
+                    onRowClick && "cursor-pointer",
+                  )}
+                  onClick={() => onRowClick?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="whitespace-nowrap">

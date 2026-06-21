@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import {
+  ArrowLeft,
   DownloadIcon,
   EyeIcon,
   HousePlusIcon,
@@ -31,12 +32,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import HouseShow from "./detail-show";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+
 import { HouseWithOwner, HouseWithResidents } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
 import { HouseCreateForm } from "../components/create-form";
 import DeleteHouseDialog from "../components/delete-dialog";
+import HouseDetailPane from "../components/house-detail-pane";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -108,7 +112,11 @@ interface Props {
 }
 
 export default function HousesPage({ houses }: Props) {
-  const [detailTarget, setDetailTarget] = useState<HouseWithOwner | null>(null);
+  const isMobile = useIsMobile();
+
+  const [selectedHouse, setSelectedHouse] = useState<HouseWithOwner | null>(
+    null,
+  );
   const [editTarget, setEditTarget] = useState<
     (HouseWithOwner & HouseWithResidents) | null
   >(null);
@@ -118,7 +126,7 @@ export default function HousesPage({ houses }: Props) {
     {
       label: "Detail",
       icon: <EyeIcon size={16} />,
-      onClick: (row) => setDetailTarget(row as HouseWithOwner),
+      onClick: (row) => setSelectedHouse(row as HouseWithOwner),
     },
     {
       label: "Edit",
@@ -135,98 +143,129 @@ export default function HousesPage({ houses }: Props) {
   ]);
 
   return (
-    <main className="container mx-auto">
-      <header className="flex items-center justify-between py-4 md:py-6">
-        <h1 className={cn(fraunces.className, "text-3xl font-bold")}>Houses</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="default">
-              <HousePlusIcon size={16} />
-              <span className="ml-2">Tambah Rumah</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit gap-0">
-            <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
-              <main className="px-6">
-                <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
-                  Tambah Rumah Baru
-                </DialogTitle>
-
-                <DialogDescription>
-                  Lengkapi informasi properti, kepemilikan, dan penghuni
-                </DialogDescription>
-              </main>
-            </DialogHeader>
-
-            {/* FIXME: house select block input focus state and form buttons are clipped */}
-            <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6 ">
-              <HouseCreateForm className="pt-6" />
-            </ScrollArea>
-          </DialogContent>
-        </Dialog>
-      </header>
-
-      <>
-        <DataTable
-          columns={houseColumns}
-          data={houses}
-          filterCategories={filterCategories}
-          sortOptions={sortOptions}
-          batchActions={batchActions}
-        />
-
-        {detailTarget && (
-          <HouseShow
-            house={detailTarget}
-            open={detailTarget !== null}
-            onOpenChange={(open) => {
-              if (!open) setDetailTarget(null);
-            }}
-          />
-        )}
-
-        {editTarget && (
-          <Dialog
-            open={editTarget !== null}
-            onOpenChange={(open) => {
-              if (!open) setEditTarget(null);
-            }}
-          >
+    <main className="container flex h-[calc(100vh-5.1rem)] max-h-screen gap-6 mx-auto overflow-clip">
+      {/* Left: Table */}
+      <ScrollArea className="flex-1 min-w-0 max-h-[calc(100vh-5.1rem)]">
+        <header className="flex items-center justify-between py-4 md:py-6">
+          <h1 className={cn(fraunces.className, "text-3xl font-bold")}>
+            Houses
+          </h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="default">
+                <HousePlusIcon size={16} />
+                <span className="ml-2">Tambah Rumah</span>
+              </Button>
+            </DialogTrigger>
             <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit gap-0">
               <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
                 <main className="px-6">
                   <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
-                    Update Data Rumah
+                    Tambah Rumah Baru
                   </DialogTitle>
 
                   <DialogDescription>
-                    Perbaharui informasi properti, kepemilikan, dan penghuni
+                    Lengkapi informasi properti, kepemilikan, dan penghuni
                   </DialogDescription>
                 </main>
               </DialogHeader>
 
               {/* FIXME: house select block input focus state and form buttons are clipped */}
               <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6 ">
-                <HouseEditForm
-                  house={editTarget}
-                  onSuccess={() => setEditTarget(null)}
-                  className="pt-6"
-                />
+                <HouseCreateForm className="pt-6" />
               </ScrollArea>
             </DialogContent>
           </Dialog>
-        )}
+        </header>
 
-        {deleteTarget && (
-          <DeleteHouseDialog
-            house={deleteTarget}
-            open={true}
-            onOpenChange={(open) => {
-              if (!open) setDeleteTarget(null);
-            }}
+        <div className={cn(isMobile && "")}>
+          <DataTable
+            columns={houseColumns}
+            data={houses}
+            filterCategories={filterCategories}
+            sortOptions={sortOptions}
+            batchActions={batchActions}
+            onRowClick={(row) => setSelectedHouse(row as HouseWithOwner)}
           />
-        )}
-      </>
+        </div>
+      </ScrollArea>
+
+      {/* Desktop: permanent info pane */}
+      <aside className="hidden -mb-6 w-80 shrink-0 md:block">
+        <ScrollArea className="h-[calc(100vh-5.1rem)] sticky top-0">
+          <HouseDetailPane house={selectedHouse} />
+        </ScrollArea>
+      </aside>
+
+      {/* Mobile: full-screen sheet */}
+      <div className="md:hidden">
+        <Sheet
+          open={selectedHouse !== null && isMobile}
+          onOpenChange={(open) => {
+            if (!open) setSelectedHouse(null);
+          }}
+        >
+          <SheetContent
+            side="right"
+            className="w-full p-0"
+            showCloseButton={false}
+          >
+            <div className="flex items-center p-3 border-b">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedHouse(null)}
+              >
+                <ArrowLeft size={16} />
+                Kembali
+              </Button>
+            </div>
+            {selectedHouse && <HouseDetailPane house={selectedHouse} />}
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {editTarget && (
+        <Dialog
+          open={editTarget !== null}
+          onOpenChange={(open) => {
+            if (!open) setEditTarget(null);
+          }}
+        >
+          <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-52rem)] md:h-fit gap-0">
+            <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
+              <main className="px-6">
+                <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
+                  Update Data Rumah
+                </DialogTitle>
+
+                <DialogDescription>
+                  Perbaharui informasi properti, kepemilikan, dan penghuni
+                </DialogDescription>
+              </main>
+            </DialogHeader>
+
+            {/* FIXME: house select block input focus state and form buttons are clipped */}
+            <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6 ">
+              <HouseEditForm
+                house={editTarget}
+                onSuccess={() => setEditTarget(null)}
+                className="pt-6"
+              />
+            </ScrollArea>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {deleteTarget && (
+        <DeleteHouseDialog
+          house={deleteTarget}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setDeleteTarget(null);
+          }}
+        />
+      )}
     </main>
   );
 }
