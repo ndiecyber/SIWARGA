@@ -1,10 +1,16 @@
-import { SquareArrowUpRight } from "lucide-react";
+import { PhoneIcon, SquareArrowUpRight } from "lucide-react";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ButtonGroup } from "@/components/ui/button-group";
-
-import { UserWithResident } from "../types";
+import { UserGetPayload } from "@/generated/prisma/models";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -20,7 +26,18 @@ const formatDate = (dateStr: string) =>
     year: "numeric",
   });
 
-export const columns: ColumnDef<UserWithResident>[] = [
+export const columns: ColumnDef<
+  UserGetPayload<{
+    include: {
+      residentProfile: {
+        include: {
+          house: true;
+          familyMembers: true;
+        };
+      };
+    };
+  }>
+>[] = [
   {
     accessorKey: "name",
     header: "Nama",
@@ -34,18 +51,32 @@ export const columns: ColumnDef<UserWithResident>[] = [
     ),
   },
   {
-    accessorKey: "block",
-    header: "Blok",
-    cell: ({ row }) => (
-      <span className="font-semibold">{/* {row.original.block} */}A</span>
-    ),
+    id: "houseNumber",
+    // header: "Nomor Rumah",
+    header: () => <div className="flex justify-center">Nomor Rumah</div>,
+    accessorFn: (row) => {
+      if (!row.residentProfile) return "-";
+
+      return (
+        row.residentProfile.house.block + row.residentProfile.house.houseNumber
+      );
+    },
+    cell: ({ getValue }) => {
+      const houseNumber = getValue() as string;
+
+      return (
+        <div className="font-semibold text-center uppercase">{houseNumber}</div>
+      );
+    },
   },
   {
-    // 1. Point to the relation path for tracking updates/sorting accurately
-    id: "familyCount",
+    id: "familyMembers",
     header: "Anggota Keluarga",
-    // 2. Use an explicit accessorFn so TanStack can sort/filter by this calculated number
-    accessorFn: (row) => row.residentProfile?.familyMembers?.length ?? 0,
+    accessorFn: (row) => {
+      if (!row.residentProfile) return 0;
+
+      return row.residentProfile.familyMembers.length;
+    },
     cell: ({ getValue }) => {
       const count = getValue() as number;
 
@@ -57,14 +88,61 @@ export const columns: ColumnDef<UserWithResident>[] = [
     },
   },
   {
-    accessorKey: "phoneNumber",
-    header: "Nomor Telepon",
+    id: "phoneNumber",
+    header: () => <div className="flex justify-center">Nomor Telepon</div>,
+    accessorFn: (row) => {
+      const phoneNumber = parsePhoneNumberFromString(row.phoneNumber, "ID");
+
+      if (phoneNumber) {
+        return phoneNumber.formatNational();
+      }
+
+      return row.phoneNumber;
+    },
+    cell: ({ row, getValue }) => {
+      const phoneNumber = getValue() as string;
+
+      const rawPhoneNumber = parsePhoneNumberFromString(
+        row.original.phoneNumber,
+        "ID",
+      );
+
+      const internationalPhoneNumber = rawPhoneNumber!
+        .format("E.164")
+        .replace("+", "");
+
+      return (
+        <div className="flex justify-center gap-1">
+          <Badge variant="outline">{phoneNumber}</Badge>
+          <Tooltip>
+            <TooltipTrigger>
+              <a
+                href={`https://wa.me/${internationalPhoneNumber}`}
+                target="_blank"
+              >
+                <Badge
+                  variant="outline"
+                  className="cursor-pointer hover:bg-muted"
+                >
+                  <PhoneIcon size={12} />
+                  Whatsapp
+                </Badge>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>
+              <span>Buka di Whatsapp</span>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "kkUrl",
-    header: "Lampiran",
+    // header: "Lampiran",
+    header: () => <div className="flex justify-center">Lampiran</div>,
     cell: ({ row }) => (
-      <ButtonGroup>
+      <ButtonGroup className="flex justify-center w-full ">
         <Button variant="outline" disabled={row.original.kkUrl === ""} asChild>
           <a
             href={row.original.kkUrl ?? ""}

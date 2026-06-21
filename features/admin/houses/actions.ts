@@ -2,26 +2,20 @@
 
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { HouseStatus } from "@/generated/prisma/enums";
-
-import { InputFormSchema } from "./schemas";
 import { ActionResponse } from "@/lib/types";
 import { House } from "@/generated/prisma/browser";
+import { HouseStatus } from "@/generated/prisma/enums";
+
+import { createFormSchema, InputFormSchema, updateFormSchema } from "./schemas";
 
 export async function createHouseAction(
   data: InputFormSchema,
 ): Promise<ActionResponse<House | null, InputFormSchema>> {
   try {
-    const result = await prisma.house.create({
-      data: {
-        ownerId: data.ownerId,
-        block: data.block,
-        status: data.status as HouseStatus,
-        houseNumber: data.houseNumber,
-      },
-    });
+    const parsedData = createFormSchema.parse(data);
 
-    // Revalidate BEFORE returning
+    const result = await prisma.house.create({ data: parsedData });
+
     revalidatePath("/admin/houses");
 
     return {
@@ -44,17 +38,13 @@ export async function updateHouseAction(
   data: InputFormSchema,
 ): Promise<ActionResponse<House | null, InputFormSchema>> {
   try {
+    const parsedData = updateFormSchema.parse(data);
+
     const result = await prisma.house.update({
       where: { id },
-      data: {
-        ownerId: data.ownerId,
-        block: data.block,
-        status: data.status as HouseStatus,
-        houseNumber: data.houseNumber,
-      },
+      data: parsedData,
     });
 
-    // Revalidate the cache to reflect changes on the listing page
     revalidatePath("/admin/houses");
 
     return {
@@ -99,7 +89,9 @@ export async function deleteHouseAction(
 
 export async function getOwnersLookupAction(
   search: string = "",
-): Promise<ActionResponse<{ id: string; name: string }[]>> {
+): Promise<
+  ActionResponse<{ id: string; name: string; isResident: boolean }[]>
+> {
   const sanitizedSearch = search.trim();
 
   try {
@@ -113,6 +105,9 @@ export async function getOwnersLookupAction(
       select: {
         id: true,
         name: true,
+        residentProfile: {
+          select: { id: true },
+        },
       },
       take: 10,
       orderBy: {
@@ -123,7 +118,11 @@ export async function getOwnersLookupAction(
     return {
       success: true,
       message: "Data pemilik berhasil diambil",
-      data: owners,
+      data: owners.map((u) => ({
+        id: u.id,
+        name: u.name,
+        isResident: u.residentProfile !== null,
+      })),
     };
   } catch (error) {
     return {
@@ -131,6 +130,34 @@ export async function getOwnersLookupAction(
       message: "Gagal mengambil data pemilik",
       globalError:
         error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
+
+export async function getResidentsLookupAction(
+  search: string = "",
+  excludeHouseId?: string,
+): Promise<ActionResponse<{ id: string; name: string }[]>> {
+  const sanitizedSearch = search.trim();
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        name: { contains: sanitizedSearch, mode: "insensitive" },
+        OR: [
+          { residentProfile: null },
+          ...(excludeHouseId ? [{ residentProfile: { houseId: excludeHouseId } }] : []),
+        ],
+      },
+      select: { id: true, name: true },
+      take: 10,
+      orderBy: { name: "asc" },
+    });
+    return { success: true, message: "Data pengguna berhasil diambil", data: users };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Gagal mengambil data pengguna",
+      globalError: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }

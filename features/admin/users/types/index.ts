@@ -2,7 +2,11 @@ import { Role } from "@/generated/prisma/enums";
 import { UserGetPayload } from "@/generated/prisma/models";
 
 export type UserWithResident = UserGetPayload<{
-  include: { residentProfile: { include: { familyMembers: true } } };
+  include: { residentProfile: true };
+}>;
+
+export type UserWithHouse = UserGetPayload<{
+  include: { residentProfile: { include: { house: true } } };
 }>;
 
 export type User = {

@@ -1,6 +1,6 @@
 "use client";
 
-import type { UserGetPayload } from "@/generated/prisma/models";
+import { useState } from "react";
 
 import {
   AlertTriangle,
@@ -11,25 +11,30 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 
-import { FilterCategory } from "@/lib/types/filter";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-import { columns } from "../components/columns";
-import { CreateUserDialog } from "../components/create-user-dialog";
 import { SortOption } from "@/lib/types/sort";
-import { useState } from "react";
+import { FilterCategory } from "@/lib/types/filter";
+import { UserGetPayload } from "@/generated/prisma/models";
+import type { User as UserBase } from "@/generated/prisma/browser";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   ActionOption,
   DataTable,
   withActionColumn,
   withSelectColumn,
 } from "@/components/shared/data-table";
+
+import { columns } from "../components/columns";
 import DetailUserDialog from "../components/detail-user-dialog";
+import { CreateUserDialog } from "../components/create-user-dialog";
 import { UpdateUserDialog } from "../components/update-user-dialog";
 import { DeleteUserDialog } from "../components/delete-user-dialog";
 
-type UserWithResident = UserGetPayload<{
-  include: { residentProfile: { include: { familyMembers: true } } };
+type User = UserGetPayload<{
+  include: {
+    residentProfile: {
+      include: { house: true; familyMembers: true };
+    };
+  };
 }>;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -69,12 +74,12 @@ const sortOptions: SortOption[] = [
     label: "Nama",
   },
   {
-    id: "block",
-    label: "Block",
+    id: "houseNumber",
+    label: "Nomor Rumah",
   },
 ];
 
-const batchActions: ActionOption<UserWithResident>[] = [
+const batchActions: ActionOption<User>[] = [
   {
     label: "Export",
     icon: <Download size={16} />,
@@ -88,34 +93,30 @@ const batchActions: ActionOption<UserWithResident>[] = [
   },
 ];
 
-export type UserPageProps = {
-  users: UserWithResident[];
+export type Props = {
+  users: User[];
 };
 
-const UserPage = (props: UserPageProps) => {
-  const [detailTarget, setDetailTarget] = useState<UserWithResident | null>(
-    null,
-  );
-  const [editTarget, setEditTarget] = useState<UserWithResident | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<UserWithResident | null>(
-    null,
-  );
+const UserPage = (props: Props) => {
+  const [detailTarget, setDetailTarget] = useState<UserBase | null>(null);
+  const [editTarget, setEditTarget] = useState<UserBase | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserBase | null>(null);
 
   const usersColumns = withActionColumn(withSelectColumn(columns), [
     {
       label: "Detail",
       icon: <EyeIcon size={16} />,
-      onClick: (row) => setDetailTarget(row as UserWithResident),
+      onClick: (row) => setDetailTarget(row as UserBase),
     },
     {
       label: "Edit",
       icon: <PencilIcon size={16} />,
-      onClick: (row) => setEditTarget(row as UserWithResident),
+      onClick: (row) => setEditTarget(row as UserBase),
     },
     {
       label: "Delete",
       icon: <Trash2Icon size={16} />,
-      onClick: (row) => setDeleteTarget(row as UserWithResident),
+      onClick: (row) => setDeleteTarget(row as UserBase),
       destructive: true,
     },
   ]);
