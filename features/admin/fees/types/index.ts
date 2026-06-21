@@ -1,10 +1,13 @@
 export type FeeStatus = "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT";
+export type OwnershipStatus = "MILIK_SENDIRI" | "MENGONTRAK";
 
 export interface FeeRow {
   id: string;
   block: string;
   houseNumber: string;
   ownerName: string;
+  residentName: string;
+  ownershipStatus: OwnershipStatus | null;
   status: FeeStatus;
   monthlyDueId: string | null;
   lastPaymentDate: string | null;

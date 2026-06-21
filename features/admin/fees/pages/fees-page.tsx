@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  ChevronLeft,
-  ChevronRight,
   Download,
   EyeIcon,
   FileSpreadsheet,
   HandCoins,
+  Loader2,
   Receipt,
   Wallet,
 } from "lucide-react";
@@ -33,24 +31,11 @@ import { SortOption } from "@/lib/types/sort";
 import { columns } from "../components/columns";
 import { GenerateFeesDialog } from "../components/generate-fees-dialog";
 import { MarkPaidDialog } from "../components/mark-paid-dialog";
+import { MonthYearPicker } from "../components/month-year-picker";
 import type { FeeRow, FeesPageProps } from "../types";
+import { useRouter } from "next/navigation";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const MONTHS = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-];
 
 const filterCategories: FilterCategory<FeeRow>[] = [
   {
@@ -84,7 +69,7 @@ const filterCategories: FilterCategory<FeeRow>[] = [
 
 const sortOptions: SortOption<FeeRow>[] = [
   { id: "houseNumber", label: "Rumah" },
-  { id: "ownerName", label: "Pemilik" },
+  { id: "residentName", label: "Penghuni" },
   { id: "status", label: "Status" },
 ];
 
@@ -105,51 +90,19 @@ function formatRupiah(value: number): string {
   }).format(value);
 }
 
-// ─── Period Selector ─────────────────────────────────────────────────────────
-
-function PeriodSelector({ month, year }: { month: number; year: number }) {
-  const router = useRouter();
-
-  const goToPeriod = (m: number, y: number) => {
-    router.push(`/admin/fees?month=${m}&year=${y}`);
-  };
-
-  const goPrevMonth = () => {
-    if (month === 1) {
-      goToPeriod(12, year - 1);
-    } else {
-      goToPeriod(month - 1, year);
-    }
-  };
-
-  const goNextMonth = () => {
-    if (month === 12) {
-      goToPeriod(1, year + 1);
-    } else {
-      goToPeriod(month + 1, year);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-2">
-      <Button variant="ghost" size="icon" onClick={goPrevMonth}>
-        <ChevronLeft className="size-4" />
-      </Button>
-      <span className="min-w-35 text-center text-sm font-medium">
-        {MONTHS[month - 1]} {year}
-      </span>
-      <Button variant="ghost" size="icon" onClick={goNextMonth}>
-        <ChevronRight className="size-4" />
-      </Button>
-    </div>
-  );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function FeesPage({ houses, stats, period }: FeesPageProps) {
   const [detailTarget, setDetailTarget] = useState<FeeRow | null>(null);
   const [paidTarget, setPaidTarget] = useState<FeeRow | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleNavigatePeriod = (m: number, y: number) => {
+    startTransition(() => {
+      router.push(`/admin/fees?month=${m}&year=${y}`);
+    });
+  };
 
   const feeColumns = withActionColumn(withSelectColumn(columns), [
     {
@@ -177,7 +130,14 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
   const allGenerated = stats.notGeneratedCount === 0;
 
   return (
-    <section className="space-y-8">
+    <section className="relative space-y-4">
+
+      {/* ── Loading Overlay ───────────────────────────────────────────── */}
+      {isPending && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+          <Loader2 className="size-8 animate-spin text-primary" />
+        </div>
+      )}
       {/* ── Header + Actions ─────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-4">
@@ -203,8 +163,12 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
       </div>
 
       {/* ── Period Navigation ────────────────────────────────────────────── */}
-      <div className="flex items-center justify-center">
-        <PeriodSelector month={period.month} year={period.year} />
+      <div className="flex items-center justify-end">
+        <MonthYearPicker
+          month={period.month}
+          year={period.year}
+          onNavigate={handleNavigatePeriod}
+        />
       </div>
 
       {/* ── Summary Cards ────────────────────────────────────────────────── */}
@@ -296,8 +260,11 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
           <AlertDescription>
             {stats.notGeneratedCount === stats.totalHouses ? (
               <>
-                Tagihan bulan {MONTHS[period.month - 1]} {period.year} belum
-                digenerate. Klik tombol{" "}
+                Tagihan bulan{" "}
+                {new Intl.DateTimeFormat("id-ID", { month: "long" }).format(
+                  new Date(period.year, period.month - 1),
+                )}{" "}
+                {period.year} belum digenerate. Klik tombol{" "}
                 <strong>&ldquo;Generate Tagihan&rdquo;</strong> untuk membuat
                 tagihan iuran.
               </>

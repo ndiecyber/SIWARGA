@@ -35,6 +35,15 @@ async function Page({
       owner: {
         select: { name: true },
       },
+      residents: {
+        select: {
+          user: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
       monthlyDues: {
         where: {
           month: currentMonth,
@@ -72,11 +81,23 @@ async function Page({
           acc.unpaidCount++;
         }
 
+        const ownerName = house.owner?.name ?? "—";
+        const firstResident = house.residents[0];
+        const residentName = firstResident?.user?.name ?? "—";
+        const ownershipStatus =
+          residentName !== "—" && residentName !== ownerName
+            ? ("MENGONTRAK" as const)
+            : residentName !== "—"
+              ? ("MILIK_SENDIRI" as const)
+              : null;
+
         acc.feeRows.push({
           id: house.id,
           block: house.block,
           houseNumber: house.houseNumber,
-          ownerName: house.owner?.name ?? "—",
+          ownerName,
+          residentName: residentName as string,
+          ownershipStatus,
           status: (!due ? "BELUM_DIBUAT" : isPaid ? "LUNAS" : "TERTUNDA") as
             | "BELUM_DIBUAT"
             | "LUNAS"
@@ -99,6 +120,8 @@ async function Page({
           block: string;
           houseNumber: string;
           ownerName: string;
+          residentName: string;
+          ownershipStatus: "MILIK_SENDIRI" | "MENGONTRAK" | null;
           status: "BELUM_DIBUAT" | "LUNAS" | "TERTUNDA";
           monthlyDueId: string | null;
           lastPaymentDate: string | null;

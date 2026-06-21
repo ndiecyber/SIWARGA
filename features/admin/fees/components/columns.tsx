@@ -5,7 +5,7 @@ import { Home, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ColumnDef } from "@tanstack/react-table";
 
-import type { FeeRow, FeeStatus } from "../types";
+import type { FeeRow, FeeStatus, OwnershipStatus } from "../types";
 
 const STATUS_CONFIG: Record<FeeStatus, { label: string; className: string }> = {
   LUNAS: {
@@ -25,6 +25,22 @@ const STATUS_CONFIG: Record<FeeStatus, { label: string; className: string }> = {
   },
 };
 
+const OWNERSHIP_CONFIG: Record<
+  OwnershipStatus,
+  { label: string; className: string }
+> = {
+  MILIK_SENDIRI: {
+    label: "Milik Sendiri",
+    className:
+      "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-100",
+  },
+  MENGONTRAK: {
+    label: "Mengontrak",
+    className:
+      "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-100",
+  },
+};
+
 export const columns: ColumnDef<FeeRow>[] = [
   {
     accessorKey: "houseNumber",
@@ -41,15 +57,32 @@ export const columns: ColumnDef<FeeRow>[] = [
     ),
   },
   {
-    accessorKey: "ownerName",
+    accessorKey: "residentName",
     enableGlobalFilter: true,
-    header: () => "Pemilik",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <User className="size-4 text-muted-foreground" />
-        <span>{row.getValue("ownerName")}</span>
-      </div>
-    ),
+    header: () => "Penghuni",
+    cell: ({ row }) => {
+      const name: string = row.getValue("residentName");
+      return (
+        <div className="flex items-center gap-2">
+          <User className="size-4 text-muted-foreground" />
+          <span>{name}</span>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "ownershipStatus",
+    header: () => "Status",
+    cell: ({ row }) => {
+      const status: OwnershipStatus | null = row.getValue("ownershipStatus");
+      if (!status) return <span className="text-sm text-muted-foreground/50">—</span>;
+      const config = OWNERSHIP_CONFIG[status];
+      return (
+        <Badge variant="outline" className={config.className}>
+          {config.label}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "status",
