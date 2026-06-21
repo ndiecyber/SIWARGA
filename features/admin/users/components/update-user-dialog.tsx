@@ -105,7 +105,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
       phoneNumber: "",
       // familyCount: undefined,
       identificationNumber: "",
-      role: "USER",
+      role: "user",
       kkFile: undefined,
       ktpFile: undefined,
     },
@@ -120,7 +120,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     form.reset({
       name: dataUser.name ?? "",
       phoneNumber: dataUser.phoneNumber ?? "",
-      role: dataUser.role ?? "USER",
+      role: dataUser.role ?? "user",
       // familyCount: dataUser.familyCount ? dataUser.familyCount : undefined,
       identificationNumber: dataUser.identificationNumber
         ? dataUser.identificationNumber
@@ -169,7 +169,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
       form.reset({
         name: "",
         phoneNumber: "",
-        role: "USER",
+        role: "user",
         kkFile: undefined,
         ktpFile: undefined,
       });
@@ -357,8 +357,8 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                         side="bottom"
                         align="start"
                       >
-                        <SelectItem value="ADMIN">Pengurus</SelectItem>
-                        <SelectItem value="USER">Warga</SelectItem>
+                        <SelectItem value="admin">Pengurus</SelectItem>
+                        <SelectItem value="user">Warga</SelectItem>
                       </SelectContent>
                     </Select>
 

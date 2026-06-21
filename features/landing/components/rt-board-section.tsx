@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Mail, Phone, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, ChevronLeft, ChevronRight, ArrowUpRight, Home } from "lucide-react";
 import Image from "next/image";
 
 function useReveal() {
@@ -26,26 +26,26 @@ function useReveal() {
 }
 
 const boardMembers = [
-  { name: "Bpk. Supriyadi", role: "Ketua RT 04", avatar: "/images/avatars/supriyadi.png", phone: "6281234567890", email: "supriyadi@siwarga.id" },
-  { name: "Ibu Retno Lestari", role: "Sekretaris RT 04", avatar: "/images/avatars/retno.png", phone: "6281234567891", email: "retno@siwarga.id" },
-  { name: "Bpk. Budi Santoso", role: "Bendahara RT 04", avatar: "/images/avatars/budi.png", phone: "6281234567892", email: "budi@siwarga.id" },
-  { name: "Bpk. Joko Susilo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/joko.png", phone: "6281234567893", email: "joko@siwarga.id" },
-  { name: "Bpk. Ahmad Dahlan", role: "Seksi Humas & Informasi", avatar: "/images/avatars/supriyadi.png", phone: "6281234567894", email: "ahmad@siwarga.id" },
-  { name: "Ibu Siti Aminah", role: "Seksi Sosial & Kesejahteraan", avatar: "/images/avatars/retno.png", phone: "6281234567895", email: "siti@siwarga.id" },
-  { name: "Bpk. Heru Prasetyo", role: "Seksi Pembangunan & Sarana", avatar: "/images/avatars/budi.png", phone: "6281234567896", email: "heru@siwarga.id" },
-  { name: "Bpk. Agus Wijaya", role: "Seksi Kepemudaan & Olahraga", avatar: "/images/avatars/joko.png", phone: "6281234567897", email: "agus@siwarga.id" },
-  { name: "Bpk. Slamet Riyadi", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567898", email: "slamet@siwarga.id" },
-  { name: "Ibu Sri Wahyuni", role: "Seksi Pemberdayaan Perempuan", avatar: "/images/avatars/retno.png", phone: "6281234567899", email: "sri@siwarga.id" },
-  { name: "Bpk. Bambang Utomo", role: "Seksi Kerohanian & Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567900", email: "bambang@siwarga.id" },
-  { name: "Bpk. Dwi Cahyono", role: "Humas Wilayah I", avatar: "/images/avatars/joko.png", phone: "6281234567901", email: "dwi@siwarga.id" },
-  { name: "Bpk. Eko Prasetyo", role: "Humas Wilayah II", avatar: "/images/avatars/supriyadi.png", phone: "6281234567902", email: "eko@siwarga.id" },
-  { name: "Ibu Kartika Sari", role: "Seksi Pendidikan & Budaya", avatar: "/images/avatars/retno.png", phone: "6281234567903", email: "kartika@siwarga.id" },
-  { name: "Bpk. Tri Wibowo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/budi.png", phone: "6281234567904", email: "tri@siwarga.id" },
-  { name: "Bpk. Roni Setiawan", role: "Seksi Sarana & Prasarana", avatar: "/images/avatars/joko.png", phone: "6281234567905", email: "roni@siwarga.id" },
-  { name: "Bpk. Hendra Wijaya", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567906", email: "hendra@siwarga.id" },
-  { name: "Ibu Indah Permatasari", role: "Seksi Kesejahteraan Sosial", avatar: "/images/avatars/retno.png", phone: "6281234567907", email: "indah@siwarga.id" },
-  { name: "Bpk. Yusuf Ginanjar", role: "Seksi Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567908", email: "yusuf@siwarga.id" },
-  { name: "Bpk. Aris Munandar", role: "Seksi Kepemudaan", avatar: "/images/avatars/joko.png", phone: "6281234567909", email: "aris@siwarga.id" },
+  { name: "Bpk. Supriyadi", role: "Ketua RT 04", avatar: "/images/avatars/supriyadi.png", phone: "6281234567890", email: "supriyadi@siwarga.id", houseNumber: "A13" },
+  { name: "Ibu Retno Lestari", role: "Sekretaris RT 04", avatar: "/images/avatars/retno.png", phone: "6281234567891", email: "retno@siwarga.id", houseNumber: "B14" },
+  { name: "Bpk. Budi Santoso", role: "Bendahara RT 04", avatar: "/images/avatars/budi.png", phone: "6281234567892", email: "budi@siwarga.id", houseNumber: "C12" },
+  { name: "Bpk. Joko Susilo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/joko.png", phone: "6281234567893", email: "joko@siwarga.id", houseNumber: "D05" },
+  { name: "Bpk. Ahmad Dahlan", role: "Seksi Humas & Informasi", avatar: "/images/avatars/supriyadi.png", phone: "6281234567894", email: "ahmad@siwarga.id", houseNumber: "E10" },
+  { name: "Ibu Siti Aminah", role: "Seksi Sosial & Kesejahteraan", avatar: "/images/avatars/retno.png", phone: "6281234567895", email: "siti@siwarga.id", houseNumber: "F08" },
+  { name: "Bpk. Heru Prasetyo", role: "Seksi Pembangunan & Sarana", avatar: "/images/avatars/budi.png", phone: "6281234567896", email: "heru@siwarga.id", houseNumber: "G15" },
+  { name: "Bpk. Agus Wijaya", role: "Seksi Kepemudaan & Olahraga", avatar: "/images/avatars/joko.png", phone: "6281234567897", email: "agus@siwarga.id", houseNumber: "H03" },
+  { name: "Bpk. Slamet Riyadi", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567898", email: "slamet@siwarga.id", houseNumber: "I21" },
+  { name: "Ibu Sri Wahyuni", role: "Seksi Pemberdayaan Perempuan", avatar: "/images/avatars/retno.png", phone: "6281234567899", email: "sri@siwarga.id", houseNumber: "J07" },
+  { name: "Bpk. Bambang Utomo", role: "Seksi Kerohanian & Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567900", email: "bambang@siwarga.id", houseNumber: "K11" },
+  { name: "Bpk. Dwi Cahyono", role: "Humas Wilayah I", avatar: "/images/avatars/joko.png", phone: "6281234567901", email: "dwi@siwarga.id", houseNumber: "L04" },
+  { name: "Bpk. Eko Prasetyo", role: "Humas Wilayah II", avatar: "/images/avatars/supriyadi.png", phone: "6281234567902", email: "eko@siwarga.id", houseNumber: "M18" },
+  { name: "Ibu Kartika Sari", role: "Seksi Pendidikan & Budaya", avatar: "/images/avatars/retno.png", phone: "6281234567903", email: "kartika@siwarga.id", houseNumber: "N09" },
+  { name: "Bpk. Tri Wibowo", role: "Seksi Keamanan & Ketertiban", avatar: "/images/avatars/budi.png", phone: "6281234567904", email: "tri@siwarga.id", houseNumber: "O14" },
+  { name: "Bpk. Roni Setiawan", role: "Seksi Sarana & Prasarana", avatar: "/images/avatars/joko.png", phone: "6281234567905", email: "roni@siwarga.id", houseNumber: "P02" },
+  { name: "Bpk. Hendra Wijaya", role: "Seksi Kebersihan & Lingkungan", avatar: "/images/avatars/supriyadi.png", phone: "6281234567906", email: "hendra@siwarga.id", houseNumber: "Q16" },
+  { name: "Ibu Indah Permatasari", role: "Seksi Kesejahteraan Sosial", avatar: "/images/avatars/retno.png", phone: "6281234567907", email: "indah@siwarga.id", houseNumber: "R06" },
+  { name: "Bpk. Yusuf Ginanjar", role: "Seksi Keagamaan", avatar: "/images/avatars/budi.png", phone: "6281234567908", email: "yusuf@siwarga.id", houseNumber: "S12" },
+  { name: "Bpk. Aris Munandar", role: "Seksi Kepemudaan", avatar: "/images/avatars/joko.png", phone: "6281234567909", email: "aris@siwarga.id", houseNumber: "T05" },
 ];
 
 const CARD_HEIGHT_MOBILE = 260;
@@ -217,7 +217,7 @@ export function RTBoardSection() {
                 >
                   {m.name}
                 </h3>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full">
                   <a
                     href={`https://wa.me/${m.phone}`}
                     target="_blank"
@@ -235,6 +235,14 @@ export function RTBoardSection() {
                   >
                     <Mail className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                   </a>
+
+                  <span
+                    className="ml-auto flex items-center gap-1 text-[9px] sm:text-[11px] font-semibold px-2 py-1 rounded bg-white/15 border border-white/10 text-white backdrop-blur-xs"
+                    title={`Nomor Rumah: ${m.houseNumber}`}
+                  >
+                    <Home className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-white/90" />
+                    <span>No. {m.houseNumber}</span>
+                  </span>
                 </div>
               </div>
             </div>
