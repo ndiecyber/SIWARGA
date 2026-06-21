@@ -8,6 +8,7 @@ import {
   useFieldArray,
   UseFormSetValue,
   useWatch,
+  useFormState,
 } from "react-hook-form";
 import {
   CheckCircleIcon,
@@ -73,20 +74,6 @@ const BLOCK_OPTIONS = [
   { value: "d", label: "D" },
 ];
 
-const RESIDENT_ROLE_OPTIONS = [
-  { value: ResidentRole.MAIN_RESIDENT, label: "Penghuni Utama" },
-  { value: ResidentRole.FAMILY_MEMBER, label: "Anggota Keluarga" },
-];
-
-const RELATIONSHIP_OPTIONS = [
-  { value: RelationshipType.SELF, label: "Diri Sendiri" },
-  { value: RelationshipType.SPOUSE, label: "Istri/Suami" },
-  { value: RelationshipType.CHILD, label: "Anak" },
-  { value: RelationshipType.PARENT, label: "Orang Tua" },
-  { value: RelationshipType.SIBLING, label: "Saudara" },
-  { value: RelationshipType.OTHER, label: "Lainnya" },
-];
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface OwnerOption {
@@ -134,6 +121,7 @@ export function HouseFormFields({
   const watchedStatus = useWatch({ control, name: "status" });
   const selectedOwnerId = useWatch({ control, name: "ownerId" });
   const watchedResidents = useWatch({ control, name: "residents" }) ?? [];
+  const { errors: formErrors } = useFormState({ control });
 
   const isVacant = watchedStatus === HouseStatus.VACANT;
   const ownerResidentIndex = watchedResidents.findIndex(
@@ -175,12 +163,6 @@ export function HouseFormFields({
     } else {
       if (ownerResidentIndex !== -1) remove(ownerResidentIndex);
     }
-  };
-
-  const handleRoleChange = (index: number, value: ResidentRole) => {
-    update(index, { ...watchedResidents[index], residentRole: value });
-    if (value === ResidentRole.MAIN_RESIDENT)
-      enforceMainResidentConstraint(index);
   };
 
   return (
@@ -271,299 +253,248 @@ export function HouseFormFields({
         </FieldGroup>
       </section>
 
-      {/* ── Pemilik Properti ─────────────────────────────────────────────── */}
-      <section className="p-4 space-y-4 border bg-muted/40 rounded-xl border-border">
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10">
-              <UserIcon className="size-4 text-primary" />
+      {/* ── Pemilik + Penghuni inline ──────────────────────────────────────── */}
+      <div className="flex flex-col gap-4 md:flex-row">
+        {/* ── Pemilik Properti ─────────────────────────────────────────────── */}
+        <section className="p-4 space-y-4 border flex-6 bg-muted/40 rounded-xl border-border">
+          <header className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10">
+                <UserIcon className="size-4 text-primary" />
+              </div>
+              <h4 className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
+                Pemilik Properti
+              </h4>
             </div>
-            <h4 className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
-              Pemilik Properti
-            </h4>
-          </div>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="inline-flex">
-                <Toggle
-                  type="button"
-                  variant="outline"
-                  pressed={ownerAsResident}
-                  disabled={
-                    isVacant || !selectedOwnerId || ownerAlreadyResident
-                  }
-                  onPressedChange={handleOwnerToggle}
-                  className="group/toggle aria-pressed:bg-primary/10 aria-pressed:border-primary aria-pressed:text-primary disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <div className="flex items-center gap-2">
-                    <CheckCircleIcon size={16} /> Penghuni
-                  </div>
-                </Toggle>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              {ownerAlreadyResident
-                ? "Sudah terdaftar di rumah lain"
-                : isVacant
-                  ? "Rumah kosong"
-                  : "Jadikan penghuni utama"}
-            </TooltipContent>
-          </Tooltip>
-        </header>
-
-        <Controller
-          name="ownerId"
-          control={control}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={fieldState.invalid} className="gap-2">
-              <FieldLabel>Cari Pemilik *</FieldLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="inline-flex">
+                  <Toggle
+                    type="button"
                     variant="outline"
-                    className={cn(
-                      "w-full justify-between",
-                      !field.value && "text-muted-foreground",
-                    )}
+                    pressed={ownerAsResident}
+                    disabled={
+                      isVacant || !selectedOwnerId || ownerAlreadyResident
+                    }
+                    onPressedChange={handleOwnerToggle}
+                    className="group/toggle aria-pressed:bg-primary/10 aria-pressed:border-primary aria-pressed:text-primary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {selectedOwner?.label ?? "Pilih Pemilik Rumah"}
-                    <ChevronsUpDownIcon className="opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="p-0 w-full min-w-(--radix-popover-trigger-width)"
-                  align="start"
-                >
-                  <Command shouldFilter={false}>
-                    <CommandInput
-                      placeholder="Ketik nama pemilik..."
-                      value={ownerSearch}
-                      onValueChange={onOwnerSearchChange}
-                    />
-                    <CommandList>
-                      {isLoadingOwners && (
-                        <div className="p-4 text-sm text-center">
-                          <Loader2Icon className="inline mr-2 animate-spin size-4" />
-                          Loading...
-                        </div>
-                      )}
-                      {!isLoadingOwners && owners.length === 0 && (
-                        <CommandEmpty>
-                          Tidak ada pengguna ditemukan.
-                        </CommandEmpty>
-                      )}
-                      <CommandGroup>
-                        {owners.map(({ label, value }) => (
-                          <CommandItem
-                            key={value}
-                            value={value}
-                            onSelect={() => {
-                              setValue("ownerId", value, {
-                                shouldValidate: true,
-                              });
-                            }}
-                          >
-                            {label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-      </section>
+                    <div className="flex items-center gap-2">
+                      <CheckCircleIcon size={16} /> Penghuni
+                    </div>
+                  </Toggle>
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                {ownerAlreadyResident
+                  ? "Sudah terdaftar di rumah lain"
+                  : isVacant
+                    ? "Rumah kosong"
+                    : "Jadikan penghuni utama"}
+              </TooltipContent>
+            </Tooltip>
+          </header>
 
-      {/* ── Daftar Penghuni ──────────────────────────────────────────────── */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Controller
+            name="ownerId"
+            control={control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid} className="gap-2">
+                <FieldLabel>Cari Pemilik *</FieldLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground",
+                      )}
+                    >
+                      {selectedOwner?.label ?? "Pilih Pemilik Rumah"}
+                      <ChevronsUpDownIcon className="opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="p-0 w-full min-w-(--radix-popover-trigger-width)"
+                    align="start"
+                  >
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Ketik nama pemilik..."
+                        value={ownerSearch}
+                        onValueChange={onOwnerSearchChange}
+                      />
+                      <CommandList>
+                        {isLoadingOwners && (
+                          <div className="p-4 text-sm text-center">
+                            <Loader2Icon className="inline mr-2 animate-spin size-4" />
+                            Loading...
+                          </div>
+                        )}
+                        {!isLoadingOwners && owners.length === 0 && (
+                          <CommandEmpty>
+                            Tidak ada pengguna ditemukan.
+                          </CommandEmpty>
+                        )}
+                        <CommandGroup>
+                          {owners.map(({ label, value }) => (
+                            <CommandItem
+                              key={value}
+                              value={value}
+                              onSelect={() => {
+                                setValue("ownerId", value, {
+                                  shouldValidate: true,
+                                });
+                              }}
+                            >
+                              {label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </section>
+
+        {/* ── Penghuni ──────────────────────────────────────────────────────── */}
+        <section className="p-4 space-y-4 border flex-4 bg-muted/40 rounded-xl border-border">
+          <header className="flex items-center gap-2">
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10">
               <UsersIcon className="size-4 text-primary" />
             </div>
             <h4 className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
-              Daftar Penghuni
+              Penghuni
             </h4>
-          </div>
+          </header>
 
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                disabled={isVacant}
-              >
-                <PlusIcon className="size-4" /> Tambah Penghuni
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 w-72" align="start">
-              <Command shouldFilter={false}>
-                <CommandInput
-                  placeholder="Ketik nama penghuni..."
-                  value={residentSearch}
-                  onValueChange={onResidentSearchChange}
-                />
-                <CommandList>
-                  {isLoadingResidents && (
-                    <div className="p-4 text-sm text-center">
-                      <Loader2Icon className="inline mr-2 animate-spin size-4" />
-                      Loading...
-                    </div>
-                  )}
-                  {!isLoadingResidents && residentOptions.length === 0 && (
-                    <CommandEmpty>
-                      Tidak ada pengguna ditemukan.
-                    </CommandEmpty>
-                  )}
-                  <CommandGroup>
-                    {residentOptions.map(({ label, value }) => (
-                      <CommandItem
-                        key={value}
-                        value={value}
-                        onSelect={() => {
-                          const alreadyAdded = watchedResidents.some(
-                            (r) => r.userId === value,
-                          );
-                          if (!alreadyAdded) {
-                            append({
-                              userId: value,
-                              residentRole: hasMainResident
-                                ? ResidentRole.FAMILY_MEMBER
-                                : ResidentRole.MAIN_RESIDENT,
-                              relationship: RelationshipType.SELF,
-                            });
-                          }
-                        }}
-                      >
-                        {label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {fields.length === 0 && (
-          <p className="py-4 text-sm text-center border border-dashed text-muted-foreground rounded-xl">
-            Belum ada penghuni.
-          </p>
-        )}
-
-        <ScrollArea className={cn("h-40", fields.length === 0 && "hidden")}>
-          <div className="space-y-3">
-            {fields.map((fieldItem, index) => {
-              const isThisMainResident =
-                watchedResidents[index]?.residentRole ===
-                ResidentRole.MAIN_RESIDENT;
-              const roleSelectDisabled =
-                isVacant || (hasMainResident && !isThisMainResident);
-              const isOwnerToggleEntry =
-                watchedResidents[index]?.isOwnerToggle === true;
-
-              const residentUserId = watchedResidents[index]?.userId ?? "";
-              const residentName =
-                residentUserNameMap[residentUserId] ??
-                "Pengguna tidak ditemukan";
-
-              return (
-                <div
-                  key={fieldItem.id}
-                  className="grid items-start gap-3 p-4 border md:grid-cols-4 bg-muted/20 rounded-xl"
+          {fields.length === 0 ? (
+            isVacant ? (
+              <p className="py-4 text-sm text-center border border-dashed text-muted-foreground rounded-xl">
+                Belum ada penghuni.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() =>
+                    setValue("status", HouseStatus.VACANT, {
+                      shouldValidate: true,
+                    })
+                  }
                 >
-                  {/* User name */}
-                  <div className="flex items-center self-center gap-2 md:col-span-1">
-                    <UserIcon className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="text-sm font-medium truncate">
-                      {residentName}
-                    </span>
-                  </div>
-
-                  <Controller
-                    name={`residents.${index}.residentRole`}
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel>Peran</FieldLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={(val) =>
-                            handleRoleChange(index, val as ResidentRole)
-                          }
-                          disabled={roleSelectDisabled}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent position="popper" align="start">
-                            {RESIDENT_ROLE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
+                  Setel Rumah Kosong
+                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button type="button" disabled={ownerAsResident}>
+                      <PlusIcon className="size-4" /> Tambah Penghuni
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-0 w-72" align="start">
+                    <Command shouldFilter={false}>
+                      <CommandInput
+                        placeholder="Ketik nama penghuni..."
+                        value={residentSearch}
+                        onValueChange={onResidentSearchChange}
+                      />
+                      <CommandList>
+                        {isLoadingResidents && (
+                          <div className="p-4 text-sm text-center">
+                            <Loader2Icon className="inline mr-2 animate-spin size-4" />
+                            Loading...
+                          </div>
                         )}
-                      </Field>
-                    )}
-                  />
+                        {!isLoadingResidents &&
+                          residentOptions.length === 0 && (
+                            <CommandEmpty>
+                              Tidak ada pengguna ditemukan.
+                            </CommandEmpty>
+                          )}
+                        <CommandGroup>
+                          {residentOptions.map(({ label, value }) => (
+                            <CommandItem
+                              key={value}
+                              value={value}
+                              onSelect={() => {
+                                const alreadyAdded = watchedResidents.some(
+                                  (r) => r.userId === value,
+                                );
+                                if (!alreadyAdded) {
+                                  append({
+                                    userId: value,
+                                    residentRole: hasMainResident
+                                      ? ResidentRole.FAMILY_MEMBER
+                                      : ResidentRole.MAIN_RESIDENT,
+                                    relationship: RelationshipType.SELF,
+                                  });
+                                }
+                              }}
+                            >
+                              {label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {formErrors.residents && (
+                  <p className="text-sm text-destructive">
+                    {formErrors.residents.message}
+                  </p>
+                )}
+              </div>
+            )
+          ) : (
+            <ScrollArea className="max-h-40">
+              <div className="space-y-3">
+                {fields.map((fieldItem, index) => {
+                  const isOwnerToggleEntry =
+                    watchedResidents[index]?.isOwnerToggle === true;
 
-                  <Controller
-                    name={`residents.${index}.relationship`}
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <Field
-                        data-invalid={fieldState.invalid}
-                      >
-                        <FieldLabel>Hubungan</FieldLabel>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
+                  const residentUserId = watchedResidents[index]?.userId ?? "";
+                  const residentName =
+                    residentUserNameMap[residentUserId] ??
+                    "Pengguna tidak ditemukan";
+
+                  return (
+                    <div
+                      key={fieldItem.id}
+                      className="flex items-center justify-between gap-3 p-4 border bg-muted/20 rounded-xl"
+                    >
+                      <div className="flex items-center min-w-0 gap-2">
+                        <UserIcon className="size-4 shrink-0 text-muted-foreground" />
+                        <span className="text-sm font-medium truncate">
+                          {residentName}
+                        </span>
+                      </div>
+                      {!isOwnerToggleEntry && (
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => remove(index)}
                         >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent position="popper" align="start">
-                            {RELATIONSHIP_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )}
-                  />
-
-                  <div className="flex items-end">
-                    {!isOwnerToggleEntry && (
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        onClick={() => remove(index)}
-                      >
-                        <Trash2Icon className="size-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </ScrollArea>
-      </section>
+                          <Trash2Icon className="size-4" />
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
