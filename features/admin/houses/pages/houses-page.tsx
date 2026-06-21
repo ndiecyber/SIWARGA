@@ -32,7 +32,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 import { columns } from "../components/columns";
@@ -114,9 +120,9 @@ interface Props {
 export default function HousesPage({ houses }: Props) {
   const isMobile = useIsMobile();
 
-  const [selectedHouse, setSelectedHouse] = useState<HouseWithOwner | null>(
-    null,
-  );
+  const [selectedHouse, setSelectedHouse] = useState<
+    (HouseWithOwner & HouseWithResidentsWithUser) | null
+  >(null);
   const [editTarget, setEditTarget] = useState<
     (HouseWithOwner & HouseWithResidentsWithUser) | null
   >(null);
@@ -126,7 +132,8 @@ export default function HousesPage({ houses }: Props) {
     {
       label: "Detail",
       icon: <EyeIcon size={16} />,
-      onClick: (row) => setSelectedHouse(row as HouseWithOwner),
+      onClick: (row) =>
+        setSelectedHouse(row as HouseWithOwner & HouseWithResidentsWithUser),
     },
     {
       label: "Edit",
@@ -185,7 +192,11 @@ export default function HousesPage({ houses }: Props) {
             filterCategories={filterCategories}
             sortOptions={sortOptions}
             batchActions={batchActions}
-            onRowClick={(row) => setSelectedHouse(row as HouseWithOwner)}
+            onRowClick={(row) =>
+              setSelectedHouse(
+                row as HouseWithOwner & HouseWithResidentsWithUser,
+              )
+            }
           />
         </div>
       </ScrollArea>
@@ -207,20 +218,33 @@ export default function HousesPage({ houses }: Props) {
         >
           <SheetContent
             side="right"
-            className="w-full p-0"
+            className="w-full p-0 bg-transparent shadow-none"
             showCloseButton={false}
           >
-            <div className="flex items-center p-3 border-b">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedHouse(null)}
-              >
-                <ArrowLeft size={16} />
-                Kembali
-              </Button>
-            </div>
-            {selectedHouse && <HouseDetailPane house={selectedHouse} />}
+            <SheetHeader className="rounded-bl-lg bg-sidebar">
+              <main className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedHouse(null)}
+                >
+                  <ArrowLeft size={16} />
+                </Button>
+                <div>
+                  <SheetTitle>Kembali</SheetTitle>
+                  <SheetDescription>
+                    Data Rumah{" "}
+                    <span className="font-bold leading-tight uppercase">
+                      {selectedHouse?.block}
+                      {selectedHouse?.houseNumber}
+                    </span>
+                  </SheetDescription>
+                </div>
+              </main>
+            </SheetHeader>
+            <ScrollArea className="bg-transparent h-[calc(100vh-5rem)] pb-4">
+              {selectedHouse && <HouseDetailPane house={selectedHouse} />}
+            </ScrollArea>
           </SheetContent>
         </Sheet>
       </div>

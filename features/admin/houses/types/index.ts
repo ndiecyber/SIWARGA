@@ -5,5 +5,5 @@ export type HouseWithResidents = HouseGetPayload<{
   include: { residents: true };
 }>;
 export type HouseWithResidentsWithUser = HouseGetPayload<{
-  include: { residents: { include: { user: { select: { id: true; name: true } } } } };
+  include: { residents: { include: { user: true } } };
 }>;

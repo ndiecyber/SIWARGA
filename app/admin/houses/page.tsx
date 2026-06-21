@@ -21,7 +21,7 @@ async function Page() {
       owner: true,
       residents: {
         include: {
-          user: { select: { id: true, name: true } },
+          user: true,
         },
       },
     },

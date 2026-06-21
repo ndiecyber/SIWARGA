@@ -8,11 +8,11 @@ import { ColumnDef } from "@tanstack/react-table";
 import { HouseStatus } from "@/generated/prisma/browser";
 import DetailUserDialog from "@/features/admin/users/components/detail-user-dialog";
 
-import { HouseWithOwner, HouseWithResidents } from "../types";
+import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 
 // ─── Column Definitions ───────────────────────────────────────────────────────
 
-export const columns: ColumnDef<HouseWithOwner & HouseWithResidents>[] = [
+export const columns: ColumnDef<HouseWithOwner & HouseWithResidentsWithUser>[] = [
   // ── House Number (block + number merged) ────────────────────────────────────
   {
     id: "houseNumber",
