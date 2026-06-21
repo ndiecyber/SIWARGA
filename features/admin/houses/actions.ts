@@ -133,3 +133,31 @@ export async function getOwnersLookupAction(
     };
   }
 }
+
+export async function getResidentsLookupAction(
+  search: string = "",
+  excludeHouseId?: string,
+): Promise<ActionResponse<{ id: string; name: string }[]>> {
+  const sanitizedSearch = search.trim();
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        name: { contains: sanitizedSearch, mode: "insensitive" },
+        OR: [
+          { residentProfile: null },
+          ...(excludeHouseId ? [{ residentProfile: { houseId: excludeHouseId } }] : []),
+        ],
+      },
+      select: { id: true, name: true },
+      take: 10,
+      orderBy: { name: "asc" },
+    });
+    return { success: true, message: "Data pengguna berhasil diambil", data: users };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Gagal mengambil data pengguna",
+      globalError: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}

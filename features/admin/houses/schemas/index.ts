@@ -13,7 +13,7 @@ export const formSchema = z.object({
   houseNumber: z.string().min(1, "Nomor rumah wajib diisi"),
   residents: z.array(
     z.object({
-      userId: z.string().optional(),
+      userId: z.string().min(1, "Penghuni wajib dipilih"),
       residentRole: z.enum([
         ResidentRole.MAIN_RESIDENT,
         ResidentRole.FAMILY_MEMBER,
@@ -28,7 +28,15 @@ export const formSchema = z.object({
       ]),
       isOwnerToggle: z.boolean().optional(),
     }),
-  ),
+  ).default([]),
+}).superRefine((data, ctx) => {
+  if (data.status === HouseStatus.OCCUPIED && data.residents.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Minimal satu penghuni wajib diisi",
+      path: ["residents"],
+    });
+  }
 });
 
 export const createFormSchema = formSchema.transform(

@@ -34,7 +34,7 @@ import {
 
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
-import { HouseWithOwner, HouseWithResidents } from "../types";
+import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
 import { HouseCreateForm } from "../components/create-form";
@@ -107,7 +107,7 @@ const batchActions: ActionOption<HouseWithOwner>[] = [
 ];
 
 interface Props {
-  houses: (HouseWithOwner & HouseWithResidents)[];
+  houses: (HouseWithOwner & HouseWithResidentsWithUser)[];
   // houses: HouseWithOwner[];
 }
 
@@ -118,7 +118,7 @@ export default function HousesPage({ houses }: Props) {
     null,
   );
   const [editTarget, setEditTarget] = useState<
-    (HouseWithOwner & HouseWithResidents) | null
+    (HouseWithOwner & HouseWithResidentsWithUser) | null
   >(null);
   const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
 
@@ -132,7 +132,7 @@ export default function HousesPage({ houses }: Props) {
       label: "Edit",
       icon: <PencilIcon size={16} />,
       onClick: (row) =>
-        setEditTarget(row as HouseWithOwner & HouseWithResidents),
+        setEditTarget(row as HouseWithOwner & HouseWithResidentsWithUser),
     },
     {
       label: "Delete",

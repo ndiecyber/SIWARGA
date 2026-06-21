@@ -15,11 +15,11 @@ import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 
 import { HouseFormFields } from "./form-fields";
 import { formSchema, InputFormSchema } from "../schemas";
-import { HouseWithOwner, HouseWithResidents } from "../types";
-import { getOwnersLookupAction, updateHouseAction } from "../actions";
+import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
+import { getOwnersLookupAction, getResidentsLookupAction, updateHouseAction } from "../actions";
 
 interface HouseEditFormProps {
-  house: HouseWithOwner & HouseWithResidents;
+  house: HouseWithOwner & HouseWithResidentsWithUser;
   className?: string;
   onSuccess: () => void;
 }
@@ -40,12 +40,14 @@ export function HouseEditForm({
       block: house.block,
       houseNumber: house.houseNumber,
       ownerId: house.ownerId ?? "",
-      residents: (house.residents ?? []).map((resident) => ({
-        userId: resident.userId ?? undefined,
-        residentRole: resident.residentRole,
-        relationship: resident.relationship,
-        isOwnerToggle: false,
-      })),
+      residents: (house.residents ?? [])
+        .filter((r) => r.userId !== null)
+        .map((resident) => ({
+          userId: resident.userId!,
+          residentRole: resident.residentRole,
+          relationship: resident.relationship,
+          isOwnerToggle: false,
+        })),
     },
   });
 
@@ -58,6 +60,32 @@ export function HouseEditForm({
       return response;
     },
   });
+
+  const [residentSearch, setResidentSearch] = useState("");
+  const debouncedResidentSearch = useDebounce(residentSearch, 500);
+
+  const existingResidentsNames = Object.fromEntries(
+    house.residents
+      .filter((r): r is typeof r & { user: NonNullable<typeof r.user> } => r.user !== null)
+      .map((r) => [r.user.id, r.user.name]),
+  );
+
+  const { data: residentOptions = [], isLoading: isLoadingResidents } = useQuery({
+    queryKey: ["users-resident-search", debouncedResidentSearch],
+    queryFn: async () => {
+      const response = await getResidentsLookupAction(debouncedResidentSearch, house.id);
+      if (!response.success) throw new Error(response.globalError || response.message);
+      return response.data.map((user) => ({ value: user.id, label: user.name }));
+    },
+    initialData: !debouncedResidentSearch
+      ? Object.entries(existingResidentsNames).map(([value, label]) => ({ value, label }))
+      : undefined,
+  });
+
+  const residentUserNameMap = {
+    ...existingResidentsNames,
+    ...Object.fromEntries(residentOptions.map(opt => [opt.value, opt.label])),
+  };
 
   const { data: owners = [], isLoading: isLoadingOwners } = useQuery({
     queryKey: ["users-search", debouncedSearch],
@@ -129,6 +157,11 @@ export function HouseEditForm({
         onOwnerSearchChange={setSearch}
         owners={owners}
         isLoadingOwners={isLoadingOwners}
+        residentSearch={residentSearch}
+        onResidentSearchChange={setResidentSearch}
+        residentOptions={residentOptions}
+        isLoadingResidents={isLoadingResidents}
+        residentUserNameMap={residentUserNameMap}
       />
 
       <div className="flex items-center justify-end w-full gap-2 mt-6">

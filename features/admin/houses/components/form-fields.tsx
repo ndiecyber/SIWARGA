@@ -103,6 +103,12 @@ interface HouseFormFieldsProps {
   onOwnerSearchChange: (value: string) => void;
   owners: OwnerOption[];
   isLoadingOwners: boolean;
+  /** Resident search props */
+  residentSearch: string;
+  onResidentSearchChange: (value: string) => void;
+  residentOptions: { value: string; label: string }[];
+  isLoadingResidents: boolean;
+  residentUserNameMap: Record<string, string>;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -114,6 +120,11 @@ export function HouseFormFields({
   onOwnerSearchChange,
   owners,
   isLoadingOwners,
+  residentSearch,
+  onResidentSearchChange,
+  residentOptions,
+  isLoadingResidents,
+  residentUserNameMap,
 }: HouseFormFieldsProps) {
   const { fields, append, remove, update, replace } = useFieldArray({
     control,
@@ -348,9 +359,6 @@ export function HouseFormFields({
                             key={value}
                             value={value}
                             onSelect={() => {
-                              // If owner was toggled as resident, remove that entry first
-                              if (ownerAsResident && ownerResidentIndex !== -1)
-                                remove(ownerResidentIndex);
                               setValue("ownerId", value, {
                                 shouldValidate: true,
                               });
@@ -381,22 +389,65 @@ export function HouseFormFields({
               Daftar Penghuni
             </h4>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={isVacant}
-            onClick={() =>
-              append({
-                residentRole: hasMainResident
-                  ? ResidentRole.FAMILY_MEMBER
-                  : ResidentRole.MAIN_RESIDENT,
-                relationship: RelationshipType.SELF,
-              })
-            }
-          >
-            <PlusIcon className="size-4" /> Tambah Penghuni
-          </Button>
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={isVacant}
+              >
+                <PlusIcon className="size-4" /> Tambah Penghuni
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0 w-72" align="start">
+              <Command shouldFilter={false}>
+                <CommandInput
+                  placeholder="Ketik nama penghuni..."
+                  value={residentSearch}
+                  onValueChange={onResidentSearchChange}
+                />
+                <CommandList>
+                  {isLoadingResidents && (
+                    <div className="p-4 text-sm text-center">
+                      <Loader2Icon className="inline mr-2 animate-spin size-4" />
+                      Loading...
+                    </div>
+                  )}
+                  {!isLoadingResidents && residentOptions.length === 0 && (
+                    <CommandEmpty>
+                      Tidak ada pengguna ditemukan.
+                    </CommandEmpty>
+                  )}
+                  <CommandGroup>
+                    {residentOptions.map(({ label, value }) => (
+                      <CommandItem
+                        key={value}
+                        value={value}
+                        onSelect={() => {
+                          const alreadyAdded = watchedResidents.some(
+                            (r) => r.userId === value,
+                          );
+                          if (!alreadyAdded) {
+                            append({
+                              userId: value,
+                              residentRole: hasMainResident
+                                ? ResidentRole.FAMILY_MEMBER
+                                : ResidentRole.MAIN_RESIDENT,
+                              relationship: RelationshipType.SELF,
+                            });
+                          }
+                        }}
+                      >
+                        {label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
 
         {fields.length === 0 && (
@@ -405,7 +456,7 @@ export function HouseFormFields({
           </p>
         )}
 
-        <ScrollArea className={cn("h-32", fields.length === 0 && "hidden")}>
+        <ScrollArea className={cn("h-40", fields.length === 0 && "hidden")}>
           <div className="space-y-3">
             {fields.map((fieldItem, index) => {
               const isThisMainResident =
@@ -413,12 +464,27 @@ export function HouseFormFields({
                 ResidentRole.MAIN_RESIDENT;
               const roleSelectDisabled =
                 isVacant || (hasMainResident && !isThisMainResident);
+              const isOwnerToggleEntry =
+                watchedResidents[index]?.isOwnerToggle === true;
+
+              const residentUserId = watchedResidents[index]?.userId ?? "";
+              const residentName =
+                residentUserNameMap[residentUserId] ??
+                "Pengguna tidak ditemukan";
 
               return (
                 <div
                   key={fieldItem.id}
-                  className="grid items-start gap-3 p-4 border md:grid-cols-3 bg-muted/20 rounded-xl"
+                  className="grid items-start gap-3 p-4 border md:grid-cols-4 bg-muted/20 rounded-xl"
                 >
+                  {/* User name */}
+                  <div className="flex items-center self-center gap-2 md:col-span-1">
+                    <UserIcon className="size-4 shrink-0 text-muted-foreground" />
+                    <span className="text-sm font-medium truncate">
+                      {residentName}
+                    </span>
+                  </div>
+
                   <Controller
                     name={`residents.${index}.residentRole`}
                     control={control}
@@ -450,45 +516,47 @@ export function HouseFormFields({
                     )}
                   />
 
-                  <div className="flex items-end gap-2 md:col-span-2">
-                    <Controller
-                      name={`residents.${index}.relationship`}
-                      control={control}
-                      render={({ field, fieldState }) => (
-                        <Field
-                          data-invalid={fieldState.invalid}
-                          className="flex-1"
+                  <Controller
+                    name={`residents.${index}.relationship`}
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Field
+                        data-invalid={fieldState.invalid}
+                      >
+                        <FieldLabel>Hubungan</FieldLabel>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
                         >
-                          <FieldLabel>Hubungan</FieldLabel>
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent position="popper" align="start">
-                              {RELATIONSHIP_OPTIONS.map((opt) => (
-                                <SelectItem key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                          )}
-                        </Field>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash2Icon className="size-4" />
-                    </Button>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent position="popper" align="start">
+                            {RELATIONSHIP_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
+
+                  <div className="flex items-end">
+                    {!isOwnerToggleEntry && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash2Icon className="size-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               );

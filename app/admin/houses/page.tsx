@@ -19,7 +19,11 @@ async function Page() {
     },
     include: {
       owner: true,
-      residents: true,
+      residents: {
+        include: {
+          user: { select: { id: true, name: true } },
+        },
+      },
     },
   });
 
