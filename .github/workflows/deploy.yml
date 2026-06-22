@@ -79,29 +79,29 @@ jobs:
           CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
           ENVEOF
 
-      # 9. Run Prisma migrations against Neon DB from within the CI runner.
+      # 9. Generate Prisma Client from your schema before the Next.js compiler
+      #     runs, so it is bundled into the standalone output.
+      - name: Generate Prisma Client
+        run: pnpm exec prisma generate
+
+      # 10. Run Prisma migrations against Neon DB from within the CI runner.
       #    `migrate deploy` only applies pending migrations — never resets data.
       - name: Run Prisma migrations
         run: pnpm exec prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # 10. Seed admin accounts (upsert-safe — safe to re-run on every deploy)
+      # 11. Seed admin accounts (upsert-safe — safe to re-run on every deploy)
       - name: Seed admin users
         run: pnpm run seed:admin
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      # 11. Seed regular users (upsert-safe)
+      # 12. Seed regular users (upsert-safe)
       - name: Seed regular users
         run: pnpm run seed:users
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      # 12. Generate Prisma Client from your schema before the Next.js compiler
-      #     runs, so it is bundled into the standalone output.
-      - name: Generate Prisma Client
-        run: pnpm exec prisma generate
 
       # 13. Compile the Next.js standalone bundle.
       #     Requires `output: 'standalone'` in next.config.ts/js (see note below).
