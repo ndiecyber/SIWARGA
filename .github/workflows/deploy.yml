@@ -77,6 +77,11 @@ jobs:
           CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          DEV_EMAIL=${{ secrets.DEV_EMAIL }}
+          DEV_NAME=${{ secrets.DEV_NAME }}
+          DEV_USERNAME=${{ secrets.DEV_USERNAME }}
+          DEV_PASSWORD=${{ secrets.DEV_PASSWORD }}
+          DEV_PHONE_NUMBER=${{ secrets.DEV_PHONE_NUMBER }}
           ENVEOF
 
       # 9. Generate Prisma Client from your schema before the Next.js compiler
