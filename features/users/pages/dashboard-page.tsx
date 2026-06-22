@@ -10,6 +10,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   Ban,
+  ClockAlert,
+  Receipt,
+  Info,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -47,6 +50,14 @@ interface DashboardPageProps {
   }>;
   totalResidents: number;
   recentAnnouncementCount: number;
+  overdueDues: Array<{
+    id: string;
+    month: number;
+    year: number;
+    amount: number;
+    label: string;
+    dueDate: string;
+  }>;
 }
 
 export default function DashboardPage({
@@ -57,6 +68,7 @@ export default function DashboardPage({
   announcements,
   totalResidents,
   recentAnnouncementCount,
+  overdueDues,
 }: DashboardPageProps) {
   const iuranStatus =
     currentMonthDue === null
@@ -76,14 +88,14 @@ export default function DashboardPage({
         <WelcomeCard name={userName} />
 
         {/* Highlight banner */}
-        <HighlightBanner
-          monthName={currentMonthName}
-          due={currentMonthDue}
-        />
+        <HighlightBanner monthName={currentMonthName} due={currentMonthDue} />
+
+        {/* Overdue Alert */}
+        {overdueDues.length > 0 && <OverdueAlert dues={overdueDues} />}
 
         {/* Summary grid */}
         <section className="overflow-x-auto pb-1 scrollbar-hide">
-          <div className="flex snap-x gap-3">
+          <div className="flex snap-x justify-evenly gap-4">
             <SummaryCard
               icon={<Wallet size={18} />}
               label={`Iuran ${currentMonthName}`}
@@ -133,9 +145,7 @@ export default function DashboardPage({
                 className="rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="truncate text-sm font-semibold">
-                    {a.title}
-                  </h3>
+                  <h3 className="truncate text-sm font-semibold">{a.title}</h3>
                   <span className="shrink-0 text-[11px] text-muted-foreground">
                     {a.date}
                   </span>
@@ -154,10 +164,7 @@ export default function DashboardPage({
 
           <ul className="mt-3 divide-y divide-border rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
             {piket.map((p) => (
-              <li
-                key={p.hari}
-                className="flex items-center gap-3 px-4 py-3"
-              >
+              <li key={p.hari} className="flex items-center gap-3 px-4 py-3">
                 <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                   <CalendarDays size={18} />
                 </div>
@@ -221,14 +228,97 @@ function SummaryCard({
 
   return (
     <div className="min-w-38 snap-start rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
-      <div
-        className={`grid size-8 place-items-center rounded-lg ${toneClass}`}
-      >
+      <div className={`grid size-8 place-items-center rounded-lg ${toneClass}`}>
         {icon}
       </div>
       <div className="mt-0.5">
         <p className="text-xs font-medium text-muted-foreground">{label}</p>
         <p className="text-sm font-bold text-foreground">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Overdue Alert ───────────────────────────────────────────────────────────
+function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
+  const totalOverdue = dues.reduce((sum, d) => sum + d.amount, 0);
+  return (
+    <div className="space-y-2">
+      {/* Info Banner */}
+      <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-amber-100">
+          <Info size={15} className="text-amber-600" />
+        </div>
+        <div>
+          <p className="text-[13px] font-medium text-amber-900">
+            Info Pembayaran
+          </p>
+          <p className="mt-0.5 text-[12.5px] leading-relaxed text-amber-700">
+            Pastikan Anda membayar sebelum tanggal jatuh tempo demi
+            kesejahteraan Bersama.
+          </p>
+        </div>
+      </div>
+
+      {/* Overdue Card */}
+      <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+        <div className="relative space-y-3">
+          <div className="inline-flex items-center gap-1.5 rounded-sm bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
+            <ClockAlert size={12} />
+            Tagihan Tertunggak
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-amber-900">
+              Kamu memiliki <strong>{dues.length} bulan</strong> tagihan yang
+              belum dibayar
+            </p>
+            <p className="text-2xl font-extrabold tabular-nums text-amber-800">
+              {new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+              }).format(totalOverdue)}
+            </p>
+          </div>
+          <ul className="space-y-1.5">
+            {dues.map((d) => (
+              <li
+                key={d.id}
+                className="flex flex-col rounded-lg bg-white/70 px-3 py-2 text-sm"
+              >
+                <div className="flex items-center gap-2 justify-between">
+                  <div className="flex items-center gap-2">
+                    <Receipt size={14} className="text-amber-500" />
+                    <span className="font-medium text-amber-900">
+                      {d.label}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span className="font-semibold text-amber-800">
+                      {new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        minimumFractionDigits: 0,
+                      }).format(d.amount)}
+                    </span>
+                    <span className="text-xs text-amber-600">
+                      Jatuh tempo {d.dueDate}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <Button
+            asChild
+            size="sm"
+            className="w-full bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700"
+          >
+            <Link href="/iuran">
+              Bayar Tagihan Tertunggak <ChevronRight size={14} />
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -283,14 +373,8 @@ function HighlightBanner({
               : "bg-primary-foreground/15 text-primary-foreground"
           }`}
         >
-          {isLunas ? (
-            <CheckCircle2 size={12} />
-          ) : (
-            <AlertTriangle size={12} />
-          )}
-          {isLunas
-            ? `Iuran ${monthName} — Lunas`
-            : `Status ${monthName}`}
+          {isLunas ? <CheckCircle2 size={12} /> : <AlertTriangle size={12} />}
+          {isLunas ? `Iuran ${monthName} — Lunas` : `Status ${monthName}`}
         </div>
 
         <p className="mt-3 text-2xl font-extrabold tabular-nums">
@@ -317,10 +401,7 @@ function HighlightBanner({
 
         {!isLunas && due.status !== "BELUM_DIBUAT" && (
           <Button asChild variant="outline" size="sm" className="mt-0.5">
-            <Link
-              href="/iuran"
-              className="text-xs text-muted-foreground"
-            >
+            <Link href="/iuran" className="text-xs text-muted-foreground">
               Bayar Sekarang <ChevronRight size={14} />
             </Link>
           </Button>
