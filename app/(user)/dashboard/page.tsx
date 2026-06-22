@@ -19,6 +19,47 @@ async function Page({ user }: LayoutWithAuthUserProps) {
     month: "long",
   }).format(now);
 
+  const SIMULATE_OVERDUE = false; // ← comment to disable
+
+  // ── Fast-path: pure simulation, no DB queries ───────────────────────
+  if (SIMULATE_OVERDUE) {
+    const months = [1, 2, 3, 4, 5, 6].filter((m) => m <= currentMonth);
+    const paidMap: Record<number, boolean> = { 3: true, 5: true };
+
+    return (
+      <DashboardPage
+        userName={user.name}
+        currentMonthName={monthName}
+        currentMonthDue={{
+          status: "TERTUNDA",
+          amount: 25000,
+          dueDate: "30 Juni",
+        }}
+        yearlyStats={{
+          paidMonths: months.filter((m) => paidMap[m]).length,
+          totalMonths: months.length,
+        }}
+        overdueDues={months
+          .filter((m) => !paidMap[m] && m < currentMonth)
+          .map((m) => ({
+            id: `sim-${m}`,
+            month: m,
+            year: currentYear,
+            amount: 25000,
+            label: new Intl.DateTimeFormat("id-ID", {
+              month: "long",
+              year: "numeric",
+            }).format(new Date(currentYear, m - 1)),
+            dueDate: `${new Date(currentYear, m, 0).getDate()} ${new Intl.DateTimeFormat("id-ID", { month: "long" }).format(new Date(currentYear, m - 1))}`,
+          }))}
+        announcements={[]}
+        totalResidents={0}
+        recentAnnouncementCount={0}
+      />
+    );
+  }
+
+  // ── Real data path ─────────────────────────────────────────────────
   const resident = await prisma.resident.findFirst({
     where: { userId: user.id },
     include: {
@@ -55,57 +96,12 @@ async function Page({ user }: LayoutWithAuthUserProps) {
 
   const paidMonths = yearlyDues.filter((d) => d.status === "PAID").length;
 
-  const SIMULATE_OVERDUE = false; // ← comment this line to disable overdue simulation
-
-  const overdueDues = occupiedHouse
-    ? await prisma.monthlyDues.findMany({
-        where: {
-          houseId: occupiedHouse.id,
-          status: "UNPAID",
-          OR: [
-            { year: { lt: currentYear } },
-            { year: currentYear, month: { lt: currentMonth } },
-          ],
-        },
-        select: {
-          id: true,
-          month: true,
-          year: true,
-          amount: true,
-          dueDate: true,
-        },
-        orderBy: [{ year: "desc" }, { month: "desc" }],
-      })
-    : [];
-
-  const simulatedOverdue = SIMULATE_OVERDUE
-    ? [
-        {
-          id: "sim-jan",
-          month: 1,
-          year: currentYear,
-          amount: 25000,
-          dueDate: new Date(currentYear, 0, 31, 12),
-        },
-        {
-          id: "sim-feb",
-          month: 2,
-          year: currentYear,
-          amount: 25000,
-          dueDate: new Date(currentYear, 1, 28, 12),
-        },
-        {
-          id: "sim-mar",
-          month: 3,
-          year: currentYear,
-          amount: 25000,
-          dueDate: new Date(currentYear, 2, 31, 12),
-        },
-      ]
-    : [];
-
-  const allOverdueDues =
-    overdueDues.length > 0 ? overdueDues : simulatedOverdue;
+  const overdueDues = yearlyDues.filter(
+    (d) =>
+      d.status === "UNPAID" &&
+      (d.year < currentYear ||
+        (d.year === currentYear && d.month < currentMonth)),
+  );
 
   const announcements = await prisma.announcement.findMany({
     orderBy: { createdAt: "desc" },
@@ -140,7 +136,7 @@ async function Page({ user }: LayoutWithAuthUserProps) {
         paidMonths,
         totalMonths: yearlyDues.length,
       }}
-      overdueDues={allOverdueDues.map((d) => ({
+      overdueDues={overdueDues.map((d) => ({
         id: d.id,
         month: d.month,
         year: d.year,
