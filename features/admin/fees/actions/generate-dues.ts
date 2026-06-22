@@ -76,7 +76,7 @@ export async function generateDuesAction(input: GenerateDuesInput) {
           amount: DUES_AMOUNT,
           month,
           year,
-          dueDate: new Date(year, month, 10),
+          dueDate: new Date(year, month - 1, new Date(year, month, 0).getDate(), 12),
           status: MonthlyDuesStatus.UNPAID,
         },
       });
