@@ -1,96 +1,176 @@
-name: Deploy Next.js
+# .github/workflows/deploy.yml
+name: Build & Deploy — Siwarga
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+
+env:
+  NODE_VERSION: "22.13.0"
+  DEPLOY_PATH: /var/www/SIWARGA
 
 jobs:
-  build-and-deploy:
+  # ────────────────────────────────────────────────────────────
+  # JOB 1 — CI: migrate DB + build standalone bundle
+  # ────────────────────────────────────────────────────────────
+  build-and-migrate:
+    name: Build & Migrate
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # 2. Node.js runtime
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22.13.0"
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Setup pnpm
+      # 3. pnpm package manager
+      - name: Set up pnpm
         uses: pnpm/action-setup@v4
+        # version is read from packageManager field in package.json
 
-      - name: Get pnpm store directory
+      # 4. Resolve pnpm store path once and expose it as env var
+      - name: Resolve pnpm store path
         shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
+      # 5. Cache pnpm content-addressable store
+      #    Key includes OS + lock file hash so a lock-file change busts the cache.
+      - name: Cache pnpm store
+        uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-pnpm-
 
+      # 6. Cache Next.js compiler output
+      #    Keyed on branch + content of all source files so incremental builds work.
+      - name: Cache Next.js build output
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ github.ref_name }}-${{ hashFiles('**.[jt]s', '**.[jt]sx', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ github.ref_name }}-
+            ${{ runner.os }}-nextjs-
+
+      # 7. Install dependencies (frozen lockfile — never auto-updates in CI)
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
+      # 8. Write the production .env file from GitHub Secrets.
+      #    Every variable your Next.js app needs must be stored as a Secret.
+      #    Add / remove lines here as your schema grows.
+      - name: Write production .env
+        run: |
+          cat > .env <<'ENVEOF'
+          NODE_ENV=production
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
+          NEXT_PUBLIC_APP_URL=${{ secrets.NEXT_PUBLIC_APP_URL }}
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          ENVEOF
+
+      # 9. Run Prisma migrations against Neon DB from within the CI runner.
+      #    `migrate deploy` only applies pending migrations — never resets data.
+      - name: Run Prisma migrations
+        run: pnpm exec prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 10. Seed admin accounts (upsert-safe — safe to re-run on every deploy)
+      - name: Seed admin users
+        run: pnpm run seed:admin
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 11. Seed regular users (upsert-safe)
+      - name: Seed regular users
+        run: pnpm run seed:users
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      # 12. Generate Prisma Client from your schema before the Next.js compiler
+      #     runs, so it is bundled into the standalone output.
       - name: Generate Prisma Client
-        run: pnpm dlx prisma generate
+        run: pnpm exec prisma generate
 
-      - name: Build project
+      # 13. Compile the Next.js standalone bundle.
+      #     Requires `output: 'standalone'` in next.config.ts/js (see note below).
+      - name: Build Next.js (standalone)
         run: pnpm run build
+        env:
+          NODE_ENV: production
+          # Expose any NEXT_PUBLIC_ vars at build time
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
 
-      - name: Prepare standalone assets
+      # 14. Copy static assets into the standalone tree so the server can serve them.
+      - name: Assemble standalone package
         run: |
           cp -r .next/static .next/standalone/.next/static
-          if [ -d public ]; then
-            cp -r public .next/standalone/public
-          fi
+          if [ -d public ]; then cp -r public .next/standalone/public; fi
 
-      - name: Compress build folder
-        run: |
-          # Compress hanya standalone (lebih ringan & pasti lengkap)
-          tar -czf next-build.tar.gz .next/standalone
+      # 15. Place the production .env INSIDE the standalone folder so server.js
+      #     picks it up at runtime on the VPS without needing a separate copy step.
+      - name: Inject .env into standalone package
+        run: cp .env .next/standalone/.env
 
-      - name: Copy build to VPS
-        uses: appleboy/scp-action@master
+      # 16. Compress everything into a single tarball for fast transfer.
+      - name: Compress standalone bundle
+        run: tar -czf next-build.tar.gz .next/standalone
+
+      # ── DEPLOY PHASE ───────────────────────────────────────
+
+      # 17. Upload the tarball to the VPS via SCP.
+      - name: Upload build to VPS
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: "next-build.tar.gz"
-          target: "/var/www/SIWARGA"
+          source: next-build.tar.gz
+          target: ${{ env.DEPLOY_PATH }}
 
-      - name: Deploy on VPS
-        uses: appleboy/ssh-action@master
+      # 18. Extract, rotate, and restart on the VPS.
+      #     All database work is already done above — no Prisma on the VPS.
+      - name: Deploy & restart on VPS
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            set -e
-            cd /var/www/SIWARGA
+            set -euo pipefail
+            cd ${{ env.DEPLOY_PATH }}
 
-            # Backup & extract
-            rm -rf standalone_backup
-            tar -xzf next-build.tar.gz
-            rm next-build.tar.gz
-            cp .env .next/standalone/.env
+            # Atomic rotation: keep one previous release for quick rollback
+            rm -rf standalone_prev
+            if [ -d standalone ]; then mv standalone standalone_prev; fi
 
-            npx -y prisma@7.8.0 migrate deploy
+            # Extract new release
+            tar -xzf next-build.tar.gz          # produces ./standalone/
+            mv .next/standalone standalone        # flatten the path
+            rm -f next-build.tar.gz
 
-            npx prisma generate
+            # Ensure the ecosystem config is present (first-time setup)
+            # On subsequent deploys it is already there from Part 3.
+            if [ ! -f ecosystem.config.js ]; then
+              echo "ERROR: ecosystem.config.js not found in ${{ env.DEPLOY_PATH }}" >&2
+              exit 1
+            fi
 
-            npm run seed:admin
-            npm run seed:users
-
-            if pm2 describe siwarga-app >/dev/null 2>&1; then
-              pm2 restart siwarga-app
+            # Graceful restart or cold start
+            if pm2 describe siwarga-app > /dev/null 2>&1; then
+              pm2 reload siwarga-app --update-env
             else
               pm2 start ecosystem.config.js --only siwarga-app
             fi
-
             pm2 save
