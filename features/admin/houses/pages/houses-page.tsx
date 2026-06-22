@@ -6,17 +6,25 @@ import {
   ArrowLeft,
   DownloadIcon,
   EyeIcon,
+  HomeIcon,
   HousePlusIcon,
   PencilIcon,
   Trash2Icon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { fraunces } from "@/lib/fonts";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { FilterCategory } from "@/lib/types/filter";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   ActionOption,
   DataTable,
@@ -32,21 +40,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-
-import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
 import { HouseCreateForm } from "../components/create-form";
 import DeleteHouseDialog from "../components/delete-dialog";
 import HouseDetailPane from "../components/house-detail-pane";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -153,10 +152,19 @@ export default function HousesPage({ houses }: Props) {
     <main className="container flex h-[calc(100vh-5.1rem)] max-h-screen gap-6 mx-auto overflow-clip">
       {/* Left: Table */}
       <ScrollArea className="flex-1 min-w-0 max-h-[calc(100vh-5.1rem)]">
-        <header className="flex items-center justify-between py-4 md:py-6">
-          <h1 className={cn(fraunces.className, "text-3xl font-bold")}>
-            Houses
-          </h1>
+        <header className="flex flex-col justify-between gap-4 pb-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <div className="rounded-md bg-primary p-2.5">
+              <HomeIcon className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-medium">Data Perumahan</h2>
+              <p className="text-muted-foreground">
+                Kelola dan perbarui data perumahan RT 04 Perum Arjamukti Kencana
+                Raya.
+              </p>
+            </div>
+          </div>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="default">

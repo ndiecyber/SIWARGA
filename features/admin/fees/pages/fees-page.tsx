@@ -294,7 +294,7 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
         <MarkPaidDialog
           key="detail"
           monthlyDueId={detailTarget.monthlyDueId}
-          houseLabel={`${detailTarget.block}-${detailTarget.houseNumber} (${detailTarget.ownerName})`}
+          houseLabel={`${detailTarget.block}${detailTarget.houseNumber} (${detailTarget.ownerName})`}
           open={detailTarget !== null}
           onOpenChange={(open) => {
             if (!open) setDetailTarget(null);
