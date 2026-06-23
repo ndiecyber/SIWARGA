@@ -196,11 +196,6 @@ export function AnnouncementDashboard({ announcements }: Props) {
             filterCategories={filterCategories}
             sortOptions={SORT_OPTIONS}
             batchActions={batchActions}
-            totalCount={announcements.length}
-            pageCount={1}
-            page={0}
-            pageSize={10}
-            onPageChange={() => {}}
           />
         </div>
       </main>

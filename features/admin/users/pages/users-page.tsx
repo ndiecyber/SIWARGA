@@ -164,11 +164,6 @@ const UserPage = (props: Props) => {
           filterCategories={filterCategories}
           sortOptions={sortOptions}
           batchActions={batchActions}
-          totalCount={props.users.length}
-          pageCount={1}
-          page={0}
-          pageSize={10}
-          onPageChange={() => {}}
         />
       </div>
 

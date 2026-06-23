@@ -287,11 +287,6 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
           columns={feeColumns}
           filterCategories={filterCategories}
           sortOptions={sortOptions}
-          totalCount={houses.length}
-          pageCount={1}
-          page={0}
-          pageSize={10}
-          onPageChange={() => {}}
         />
       </div>
 

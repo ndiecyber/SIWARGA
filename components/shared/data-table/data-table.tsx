@@ -35,6 +35,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   useReactTable,
@@ -58,11 +59,12 @@ import {
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  totalCount: number;
-  pageCount: number;
-  page: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
+  /** Server-controlled pagination props. Omit for client-side pagination. */
+  totalCount?: number;
+  pageCount?: number;
+  page?: number;
+  pageSize?: number;
+  onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   onSortChange?: (sort: { field: string; dir: "asc" | "desc" }) => void;
   onFilterChange?: (filters: Record<string, unknown>) => void;
@@ -96,6 +98,8 @@ export function DataTable<TData, TValue>({
     useFilterState<TData>();
   const { activeSort, sorting, onSortChange } = useSortState<TData>();
 
+  const isServerPaginated = onPageChange !== undefined;
+
   const table = useReactTable({
     data,
     columns,
@@ -105,48 +109,57 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
       rowSelection,
+      ...(isServerPaginated ? {} : { pagination: { pageIndex: page ?? 0, pageSize: pageSize ?? 10 } }),
     },
+    ...(isServerPaginated
+      ? { manualPagination: true, pageCount }
+      : { getPaginationRowModel: getPaginationRowModel() }),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
-    manualPagination: true,
-    pageCount,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    ...(isServerPaginated
+      ? {}
+      : { initialState: { pagination: { pageSize: 10 } } }),
   });
 
-  const totalRows = totalCount;
+  // Derive pagination values from props (server) or table state (client)
+  const currentPage = isServerPaginated ? (page ?? 0) : table.getState().pagination.pageIndex;
+  const currentPageCount = isServerPaginated ? (pageCount ?? 1) : table.getPageCount();
+  const currentPageSize = isServerPaginated ? (pageSize ?? 10) : table.getState().pagination.pageSize;
+  const currentTotalRows = isServerPaginated ? (totalCount ?? data.length) : table.getRowCount();
 
-  const start = totalRows === 0 ? 0 : page * pageSize + 1;
-  const end = Math.min((page + 1) * pageSize, totalRows);
+  const start = currentTotalRows === 0 ? 0 : currentPage * currentPageSize + 1;
+  const end = Math.min((currentPage + 1) * currentPageSize, currentTotalRows);
 
   const getPages = () => {
     const pages: (number | "...")[] = [];
 
-    if (pageCount <= 7) {
-      return Array.from({ length: pageCount }, (_, i) => i);
+    if (currentPageCount <= 7) {
+      return Array.from({ length: currentPageCount }, (_, i) => i);
     }
 
     pages.push(0);
 
-    if (page > 2) {
+    if (currentPage > 2) {
       pages.push("...");
     }
 
-    const start = Math.max(1, page - 1);
-    const end = Math.min(pageCount - 2, page + 1);
+    const start = Math.max(1, currentPage - 1);
+    const end = Math.min(currentPageCount - 2, currentPage + 1);
 
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
 
-    if (page < pageCount - 3) {
+    if (currentPage < currentPageCount - 3) {
       pages.push("...");
     }
 
-    pages.push(pageCount - 1);
+    pages.push(currentPageCount - 1);
 
     return pages;
   };
@@ -295,8 +308,14 @@ export function DataTable<TData, TValue>({
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Select
-              value={String(pageSize)}
-              onValueChange={(val) => onPageSizeChange?.(Number(val))}
+              value={String(currentPageSize)}
+              onValueChange={(val) => {
+                if (onPageSizeChange) {
+                  onPageSizeChange(Number(val));
+                } else {
+                  table.setPageSize(Number(val));
+                }
+              }}
             >
               <SelectTrigger className="w-24 h-9">
                 <SelectValue />
@@ -313,7 +332,7 @@ export function DataTable<TData, TValue>({
           </div>
 
           <span className="text-sm text-muted-foreground">
-            Showing {start}-{end} of {totalRows} entries
+            Showing {start}-{end} of {currentTotalRows} entries
           </span>
         </div>
 
@@ -323,8 +342,8 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="icon"
             className="h-9 w-9"
-            disabled={page <= 0}
-            onClick={() => onPageChange(page - 1)}
+            disabled={currentPage <= 0}
+            onClick={() => (onPageChange ? onPageChange(currentPage - 1) : table.previousPage())}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -345,10 +364,10 @@ export function DataTable<TData, TValue>({
                 key={p}
                 variant="ghost"
                 size="icon"
-                onClick={() => onPageChange(p)}
+                onClick={() => (onPageChange ? onPageChange(p) : table.setPageIndex(p))}
                 className={cn(
                   "h-9 w-9",
-                  p === page &&
+                  p === currentPage &&
                     "bg-primary text-primary-foreground hover:bg-primary",
                 )}
               >
@@ -361,8 +380,8 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="icon"
             className="h-9 w-9"
-            disabled={page >= pageCount - 1}
-            onClick={() => onPageChange(page + 1)}
+            disabled={currentPage >= currentPageCount - 1}
+            onClick={() => (onPageChange ? onPageChange(currentPage + 1) : table.nextPage())}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
