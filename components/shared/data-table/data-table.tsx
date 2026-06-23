@@ -35,7 +35,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   useReactTable,
@@ -59,11 +58,17 @@ import {
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  totalCount: number;
+  pageCount: number;
+  page: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
+  onSortChange?: (sort: { field: string; dir: "asc" | "desc" }) => void;
+  onFilterChange?: (filters: Record<string, unknown>) => void;
   filterCategories?: FilterCategory<TData>[];
   sortOptions?: SortOption<TData>[];
-  /** Batch actions shown in the toolbar when one or more rows are selected */
   batchActions?: ActionOption<TData>[];
-  /** Optional row click handler — tr shifts to cursor-pointer when set */
   onRowClick?: (row: TData) => void;
 }
 
@@ -71,6 +76,12 @@ export interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
+  totalCount,
+  pageCount,
+  page,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
   filterCategories = [],
   sortOptions = [],
   batchActions = [],
@@ -99,24 +110,17 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
+    manualPagination: true,
+    pageCount,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: {
-      pagination: { pageSize: 10 },
-    },
   });
 
-  // Pagination
-  const pageIndex = table.getState().pagination.pageIndex;
-  const pageCount = table.getPageCount();
-  const pageSize = table.getState().pagination.pageSize;
+  const totalRows = totalCount;
 
-  const totalRows = table.getRowCount();
-
-  const start = totalRows === 0 ? 0 : pageIndex * pageSize + 1;
-  const end = Math.min((pageIndex + 1) * pageSize, totalRows);
+  const start = totalRows === 0 ? 0 : page * pageSize + 1;
+  const end = Math.min((page + 1) * pageSize, totalRows);
 
   const getPages = () => {
     const pages: (number | "...")[] = [];
@@ -127,18 +131,18 @@ export function DataTable<TData, TValue>({
 
     pages.push(0);
 
-    if (pageIndex > 2) {
+    if (page > 2) {
       pages.push("...");
     }
 
-    const start = Math.max(1, pageIndex - 1);
-    const end = Math.min(pageCount - 2, pageIndex + 1);
+    const start = Math.max(1, page - 1);
+    const end = Math.min(pageCount - 2, page + 1);
 
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
 
-    if (pageIndex < pageCount - 3) {
+    if (page < pageCount - 3) {
       pages.push("...");
     }
 
@@ -292,7 +296,7 @@ export function DataTable<TData, TValue>({
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Select
               value={String(pageSize)}
-              onValueChange={(val) => table.setPageSize(Number(val))}
+              onValueChange={(val) => onPageSizeChange?.(Number(val))}
             >
               <SelectTrigger className="w-24 h-9">
                 <SelectValue />
@@ -319,14 +323,14 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="icon"
             className="h-9 w-9"
-            disabled={!table.getCanPreviousPage()}
-            onClick={() => table.previousPage()}
+            disabled={page <= 0}
+            onClick={() => onPageChange(page - 1)}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
 
-          {getPages().map((page, index) =>
-            page === "..." ? (
+          {getPages().map((p, index) =>
+            p === "..." ? (
               <Button
                 key={`ellipsis-${index}`}
                 variant="ghost"
@@ -338,17 +342,17 @@ export function DataTable<TData, TValue>({
               </Button>
             ) : (
               <Button
-                key={page}
+                key={p}
                 variant="ghost"
                 size="icon"
-                onClick={() => table.setPageIndex(page)}
+                onClick={() => onPageChange(p)}
                 className={cn(
                   "h-9 w-9",
-                  page === pageIndex &&
+                  p === page &&
                     "bg-primary text-primary-foreground hover:bg-primary",
                 )}
               >
-                {page + 1}
+                {p + 1}
               </Button>
             ),
           )}
@@ -357,8 +361,8 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="icon"
             className="h-9 w-9"
-            disabled={!table.getCanNextPage()}
-            onClick={() => table.nextPage()}
+            disabled={page >= pageCount - 1}
+            onClick={() => onPageChange(page + 1)}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
