@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getSession } from "@/lib/auth";
 import prisma from "@/lib/db";
+import { aggregateDashboardStats } from "@/lib/repositories/dashboard";
+import { getRecentPayments } from "@/lib/repositories/payments";
 import {
   Card,
   CardContent,
@@ -65,55 +67,8 @@ async function Page() {
   const user = session!.user;
   await connection();
 
-  // Fetch live stats from DB
-  const totalResidents = await prisma.user.count();
-  const totalHouses = await prisma.house.count();
-  const occupiedHouses = await prisma.house.count({
-    where: { status: "OCCUPIED" },
-  });
-  const vacantHouses = await prisma.house.count({
-    where: { status: "VACANT" },
-  });
-  const totalAnnouncements = await prisma.announcement.count();
-
-  // Fetch dues/payment aggregates
-  const totalPaymentsSum = await prisma.payment.aggregate({
-    where: { status: "SUCCESS" },
-    _sum: { amountPaid: true },
-  });
-  const totalCollectedFunds = Number(totalPaymentsSum._sum.amountPaid || 0);
-
-  // Fetch current month dues
-  const today = new Date();
-  const currentMonth = today.getMonth() + 1;
-  const currentYear = today.getFullYear();
-
-  const paidDuesThisMonth = await prisma.monthlyDues.count({
-    where: { month: currentMonth, year: currentYear, status: "PAID" },
-  });
-
-  const unpaidDuesThisMonth = await prisma.monthlyDues.count({
-    where: { month: currentMonth, year: currentYear, status: "UNPAID" },
-  });
-
-  // Recent payments
-  const recentPayments = await prisma.payment.findMany({
-    take: 5,
-    orderBy: { paidAt: "desc" },
-    include: {
-      monthlyDues: {
-        include: {
-          house: {
-            include: {
-              owner: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  // Recent registered users
+  const stats = await aggregateDashboardStats();
+  const recentPayments = await getRecentPayments(5);
   const recentUsers = await prisma.user.findMany({
     take: 5,
     orderBy: { createdAt: "desc" },
@@ -125,15 +80,6 @@ async function Page() {
       },
     },
   });
-
-  // Calculating percentages
-  const occupancyPercentage =
-    totalHouses > 0 ? (occupiedHouses / totalHouses) * 100 : 0;
-  const totalDuesThisMonthCount = paidDuesThisMonth + unpaidDuesThisMonth;
-  const duesPaidPercentage =
-    totalDuesThisMonthCount > 0
-      ? (paidDuesThisMonth / totalDuesThisMonthCount) * 100
-      : 0;
 
   return (
     <div className="space-y-6">
@@ -172,7 +118,7 @@ async function Page() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalResidents}</div>
+            <div className="text-2xl font-bold">{stats.totalResidents}</div>
             <p className="mt-1 text-xs text-muted-foreground">
               warga terdaftar di portal
             </p>
@@ -191,13 +137,13 @@ async function Page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {occupiedHouses}{" "}
+              {stats.occupiedHouses}{" "}
               <span className="text-sm font-medium text-muted-foreground">
-                / {totalHouses}
+                / {stats.totalHouses}
               </span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
-              {occupancyPercentage.toFixed(0)}% rumah terisi
+              {stats.occupancyPercentage.toFixed(0)}% rumah terisi
             </p>
           </CardContent>
         </Card>
@@ -214,7 +160,7 @@ async function Page() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatRupiah(totalCollectedFunds)}
+              {formatRupiah(stats.totalCollectedFunds)}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               total pembayaran lunas
@@ -233,7 +179,7 @@ async function Page() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalAnnouncements}</div>
+            <div className="text-2xl font-bold">{stats.totalAnnouncements}</div>
             <p className="mt-1 text-xs text-muted-foreground">
               kegiatan & info lingkungan
             </p>
@@ -273,14 +219,14 @@ async function Page() {
                   fill="transparent"
                   strokeDasharray={2 * Math.PI * 55}
                   strokeDashoffset={
-                    2 * Math.PI * 55 * (1 - occupancyPercentage / 100)
+                    2 * Math.PI * 55 * (1 - stats.occupancyPercentage / 100)
                   }
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute text-center">
                 <span className="text-2xl font-bold tracking-tight">
-                  {occupancyPercentage.toFixed(0)}%
+                  {stats.occupancyPercentage.toFixed(0)}%
                 </span>
                 <span className="block text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
                   Terisi
@@ -293,7 +239,7 @@ async function Page() {
                   Terisi
                 </span>
                 <span className="text-lg font-bold text-foreground">
-                  {occupiedHouses} Unit
+                  {stats.occupiedHouses} Unit
                 </span>
               </div>
               <div>
@@ -301,7 +247,7 @@ async function Page() {
                   Kosong
                 </span>
                 <span className="text-lg font-bold text-muted-foreground">
-                  {vacantHouses} Unit
+                  {stats.vacantHouses} Unit
                 </span>
               </div>
             </div>
@@ -329,17 +275,17 @@ async function Page() {
                   Tingkat Kelunasan
                 </span>
                 <span className="font-bold text-emerald-600">
-                  {duesPaidPercentage.toFixed(0)}% Lunas
+                  {stats.duesPaidPercentage.toFixed(0)}% Lunas
                 </span>
               </div>
               <div className="flex w-full h-4 overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full transition-all duration-500 bg-emerald-500"
-                  style={{ width: `${duesPaidPercentage}%` }}
+                  style={{ width: `${stats.duesPaidPercentage}%` }}
                 />
                 <div
                   className="h-full transition-all duration-500 bg-amber-500"
-                  style={{ width: `${100 - duesPaidPercentage}%` }}
+                  style={{ width: `${100 - stats.duesPaidPercentage}%` }}
                 />
               </div>
 
@@ -348,7 +294,7 @@ async function Page() {
                   <div className="rounded-full size-2 bg-emerald-500" />
                   <div>
                     <span className="block text-sm font-bold">
-                      {paidDuesThisMonth} Rumah
+                      {stats.duesStats.paid} Rumah
                     </span>
                     <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">
                       Lunas
@@ -359,7 +305,7 @@ async function Page() {
                   <div className="rounded-full size-2 bg-amber-500" />
                   <div>
                     <span className="block text-sm font-bold">
-                      {unpaidDuesThisMonth} Rumah
+                      {stats.duesStats.unpaid} Rumah
                     </span>
                     <span className="text-[10px] uppercase font-semibold tracking-wider opacity-85">
                       Tertunda
@@ -375,7 +321,7 @@ async function Page() {
                 </div>
                 <div className="flex items-center justify-between mt-1 text-xs font-bold text-foreground">
                   <span>Total Potensi Kas Bulan Ini:</span>
-                  <span>{formatRupiah(totalHouses * 25000)}</span>
+                  <span>{formatRupiah(stats.totalHouses * 25000)}</span>
                 </div>
               </div>
             </div>
