@@ -197,6 +197,11 @@ export default function HousesPage({ houses }: Props) {
                 row as HouseWithOwner & HouseWithResidentsWithUser,
               )
             }
+            totalCount={houses.length}
+            pageCount={1}
+            page={0}
+            pageSize={10}
+            onPageChange={() => {}}
           />
         </div>
       </ScrollArea>
