@@ -1,15 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "./lib/auth";
-import { headers } from "next/headers";
+import { getSessionCookie } from "better-auth/cookies";
+
+const protectedRoutes = [
+  "/admin",
+  "/dashboard",
+  "/iuran",
+  "/pengumuman",
+  "/piket",
+];
 
 export async function proxy(request: NextRequest) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const sessionCookie = getSessionCookie(request);
 
-  // Redirect to login if user is not signed in
-  if (!session) {
+  const isProtected = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route),
+  );
+
+  if (isProtected && !sessionCookie) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
@@ -17,5 +25,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|manifest|robots|sitemap).*)",
+  ],
 };
