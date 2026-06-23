@@ -33,21 +33,25 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
       };
     }
 
-    const payment = await prisma.payment.create({
-      data: {
-        amountPaid,
-        paidAt: new Date(),
-        paymentMethod,
-        status: PaymentStatus.SUCCESS,
-      },
-    });
+    const payment = await prisma.$transaction(async (tx) => {
+      const p = await tx.payment.create({
+        data: {
+          amountPaid,
+          paidAt: new Date(),
+          paymentMethod,
+          status: PaymentStatus.SUCCESS,
+        },
+      });
 
-    await prisma.monthlyDues.update({
-      where: { id: monthlyDueId },
-      data: {
-        status: MonthlyDuesStatus.PAID,
-        paymentId: payment.id,
-      },
+      await tx.monthlyDues.update({
+        where: { id: monthlyDueId },
+        data: {
+          status: MonthlyDuesStatus.PAID,
+          paymentId: p.id,
+        },
+      });
+
+      return p;
     });
 
     revalidatePath("/admin/fees");
