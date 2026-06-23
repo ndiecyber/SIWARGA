@@ -3,6 +3,7 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { MonthlyDuesStatus, PaymentStatus } from "@/generated/prisma/enums";
+import { handleDbError } from "@/lib/repositories/error";
 
 interface MarkAsPaidInput {
   monthlyDueId: string;
@@ -57,12 +58,6 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
       data: { paymentId: payment.id },
     };
   } catch (error) {
-    return {
-      success: false as const,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Gagal mencatat pembayaran",
-    };
+    return handleDbError(error);
   }
 }

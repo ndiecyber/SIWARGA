@@ -2,6 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
+import {
+  createAnnouncement as repoCreateAnnouncement,
+  updateAnnouncement as repoUpdateAnnouncement,
+  deleteAnnouncement as repoDeleteAnnouncement,
+  deleteBatchAnnouncements,
+} from "@/lib/repositories/announcements";
+import { handleDbError } from "@/lib/repositories/error";
 
 export type AnnouncementFormData = {
   category: string;
@@ -22,14 +29,12 @@ export async function getAnnouncementById(id: number) {
 }
 
 export async function createAnnouncement(data: AnnouncementFormData) {
-  await prisma.announcement.create({
-    data: {
-      category: data.category,
-      title: data.title,
-      description: data.description,
-      eventDate: data.eventDate ? new Date(data.eventDate) : null,
-      status: data.status,
-    },
+  await repoCreateAnnouncement({
+    category: data.category,
+    title: data.title,
+    description: data.description,
+    eventDate: data.eventDate ? new Date(data.eventDate) : null,
+    status: data.status,
   });
   revalidatePath("/admin/announcment");
 }
@@ -38,25 +43,23 @@ export async function updateAnnouncement(
   id: number,
   data: AnnouncementFormData
 ) {
-  await prisma.announcement.update({
-    where: { id },
-    data: {
-      category: data.category,
-      title: data.title,
-      description: data.description,
-      eventDate: data.eventDate ? new Date(data.eventDate) : null,
-      status: data.status,
-    },
+  await repoUpdateAnnouncement(id, {
+    category: data.category,
+    title: data.title,
+    description: data.description,
+    eventDate: data.eventDate ? new Date(data.eventDate) : null,
+    status: data.status,
   });
   revalidatePath("/admin/announcment");
 }
 
 export async function deleteAnnouncement(id: number) {
-  await prisma.announcement.delete({ where: { id } });
+  const result = await repoDeleteAnnouncement(id);
   revalidatePath("/admin/announcment");
+  return result;
 }
 
 export async function deleteBatchAnnouncementsAction(ids: number[]) {
-  await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
+  await deleteBatchAnnouncements(ids);
   revalidatePath("/admin/announcment");
 }
