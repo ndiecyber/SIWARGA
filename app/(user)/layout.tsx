@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser, {
-  LayoutWithAuthUserProps,
-} from "@/components/layouts/auth/layout-with-auth-user";
+import { requireUser } from "@/lib/auth";
 import BottomNavigation from "@/features/users/components/bottom-navigation";
 import { ReactNode } from "react";
 
@@ -23,9 +21,8 @@ export const metadata: Metadata = {
   },
 };
 
-function Layout({
-  children,
-}: LayoutWithAuthUserProps & { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
+  await requireUser();
   return (
     <div className="relative mx-auto flex min-h-dvh w-full max-w-2xl flex-col bg-background shadow-[0_0_40px_-10px_oklch(0.4_0.05_270_/_0.08)]">
       <main className="flex-1 pb-2">{children}</main>
@@ -33,5 +30,3 @@ function Layout({
     </div>
   );
 }
-
-export default layoutWithAuthUser(Layout);

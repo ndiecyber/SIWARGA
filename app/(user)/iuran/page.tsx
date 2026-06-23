@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser from "@/components/layouts/auth/layout-with-auth-user";
 import DuesPage from "@/features/users/pages/dues-page";
 
 export const metadata: Metadata = {
@@ -8,8 +7,6 @@ export const metadata: Metadata = {
     "Pantau status pembayaran dan riwayat iuran warga melalui portal SIWARGA.",
 };
 
-function Iuran() {
+export default function Iuran() {
   return <DuesPage />;
 }
-
-export default layoutWithAuthUser(Iuran);

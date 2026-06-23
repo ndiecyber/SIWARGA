@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser from "@/components/layouts/auth/layout-with-auth-user";
 import PatrolPage from "@/features/users/pages/announcement-page copy";
 
 export const metadata: Metadata = {
@@ -8,8 +7,6 @@ export const metadata: Metadata = {
     "Akses jadwal piket dan agenda gotong royong warga dari portal SIWARGA.",
 };
 
-function Page() {
+export default function Page() {
   return <PatrolPage />;
 }
-
-export default layoutWithAuthUser(Page);
