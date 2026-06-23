@@ -109,11 +109,11 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
       rowSelection,
-      ...(isServerPaginated ? {} : { pagination: { pageIndex: page ?? 0, pageSize: pageSize ?? 10 } }),
+      ...(isServerPaginated ? { pagination: { pageIndex: page ?? 0, pageSize: pageSize ?? 10 } } : {}),
     },
     ...(isServerPaginated
       ? { manualPagination: true, pageCount }
-      : { getPaginationRowModel: getPaginationRowModel() }),
+      : { getPaginationRowModel: getPaginationRowModel(), initialState: { pagination: { pageSize: 10 } } }),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
@@ -121,9 +121,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    ...(isServerPaginated
-      ? {}
-      : { initialState: { pagination: { pageSize: 10 } } }),
   });
 
   // Derive pagination values from props (server) or table state (client)
