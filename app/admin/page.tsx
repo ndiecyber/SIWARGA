@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+import { getSession } from "@/lib/auth";
 import prisma from "@/lib/db";
 import {
   Card,
@@ -60,7 +60,9 @@ const formatDateTime = (date: Date) => {
   }).format(date);
 };
 
-async function Page({ user }: { user: { name: string; email?: string } }) {
+async function Page() {
+  const session = await getSession();
+  const user = session!.user;
   await connection();
 
   // Fetch live stats from DB
@@ -603,4 +605,4 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
   );
 }
 
-export default layoutWithAuthAdmin(Page);
+export default Page;
