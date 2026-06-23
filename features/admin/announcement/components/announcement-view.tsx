@@ -19,6 +19,8 @@ import { Announcement, column } from "./columns";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { AnnouncementFormDialog } from "./announcement-form-dialog";
 import { AnnouncementDetailDialog } from "./announcement-detail-dialog";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
+import { deleteBatchAnnouncementsAction } from "@/app/admin/announcement/actions";
 import {
   ActionOption,
   DataTable,
@@ -44,20 +46,6 @@ const STATUS_FILTER: FilterCategory<Announcement> = {
     { label: "Selesai", value: "done" },
   ],
 };
-
-const batchActions: ActionOption<Announcement>[] = [
-  {
-    label: "Export",
-    icon: <DownloadIcon size={16} />,
-    onClick: () => {},
-  },
-  {
-    label: "Delete",
-    icon: <Trash2Icon size={16} />,
-    onClick: () => {},
-    destructive: true,
-  },
-];
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
@@ -123,6 +111,18 @@ export function AnnouncementDashboard({ announcements }: Props) {
   const [editTarget, setEditTarget] = useState<Announcement | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Announcement | null>(null);
   const [detailTarget, setDetailTarget] = useState<Announcement | null>(null);
+  const [batchDeleteTarget, setBatchDeleteTarget] = useState<
+    Announcement[] | null
+  >(null);
+
+  const batchActions: ActionOption<Announcement>[] = [
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (rows) => setBatchDeleteTarget(rows as Announcement[]),
+      destructive: true,
+    },
+  ];
 
   const filterCategories: FilterCategory<Announcement>[] = useMemo(
     () => [
@@ -159,7 +159,7 @@ export function AnnouncementDashboard({ announcements }: Props) {
     <>
       <main className="container mx-auto">
         {/* Header */}
-        <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center space-y-4">
+        <header className="flex flex-col justify-between gap-4 space-y-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-10 h-10 shadow-sm rounded-xl bg-primary text-primary-foreground">
               <div className="rounded-md bg-primary p-2.5">
@@ -240,6 +240,21 @@ export function AnnouncementDashboard({ announcements }: Props) {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
+        />
+      )}
+
+      {batchDeleteTarget && (
+        <BatchDeleteDialog
+          items={batchDeleteTarget.map((a) => ({
+            id: a.id,
+            label: a.title,
+          }))}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setBatchDeleteTarget(null);
+          }}
+          onDelete={deleteBatchAnnouncementsAction}
+          entityLabel="pengumuman"
         />
       )}
     </>

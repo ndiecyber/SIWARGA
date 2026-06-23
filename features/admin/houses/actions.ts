@@ -87,6 +87,11 @@ export async function deleteHouseAction(
   }
 }
 
+export async function deleteBatchHousesAction(ids: string[]) {
+  await prisma.house.deleteMany({ where: { id: { in: ids } } });
+  revalidatePath("/admin/houses");
+}
+
 export async function getOwnersLookupAction(
   search: string = "",
 ): Promise<

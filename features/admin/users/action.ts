@@ -114,3 +114,8 @@ export async function deleteUserAction(id: string) {
 
   revalidatePath("/admin/users");
 }
+
+export async function deleteBatchUsersAction(ids: string[]) {
+  await prisma.user.deleteMany({ where: { id: { in: ids } } });
+  revalidatePath("/admin/users");
+}

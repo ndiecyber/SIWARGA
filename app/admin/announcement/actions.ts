@@ -55,3 +55,8 @@ export async function deleteAnnouncement(id: number) {
   await prisma.announcement.delete({ where: { id } });
   revalidatePath("/admin/announcment");
 }
+
+export async function deleteBatchAnnouncementsAction(ids: number[]) {
+  await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
+  revalidatePath("/admin/announcment");
+}
