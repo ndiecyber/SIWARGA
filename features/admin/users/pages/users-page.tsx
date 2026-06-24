@@ -28,6 +28,8 @@ import DetailUserDialog from "../components/detail-user-dialog";
 import { CreateUserDialog } from "../components/create-user-dialog";
 import { UpdateUserDialog } from "../components/update-user-dialog";
 import { DeleteUserDialog } from "../components/delete-user-dialog";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
+import { deleteBatchUsersAction } from "../action";
 
 type User = UserGetPayload<{
   include: {
@@ -79,20 +81,6 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const batchActions: ActionOption<User>[] = [
-  {
-    label: "Export",
-    icon: <Download size={16} />,
-    onClick: () => {},
-  },
-  {
-    label: "Delete",
-    icon: <Trash2Icon size={16} />,
-    onClick: () => {},
-    destructive: true,
-  },
-];
-
 export type Props = {
   users: User[];
 };
@@ -101,6 +89,18 @@ const UserPage = (props: Props) => {
   const [detailTarget, setDetailTarget] = useState<UserBase | null>(null);
   const [editTarget, setEditTarget] = useState<UserBase | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserBase | null>(null);
+  const [batchDeleteTarget, setBatchDeleteTarget] = useState<User[] | null>(
+    null,
+  );
+
+  const batchActions: ActionOption<User>[] = [
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (rows) => setBatchDeleteTarget(rows as User[]),
+      destructive: true,
+    },
+  ];
 
   const usersColumns = withActionColumn(withSelectColumn(columns), [
     {
@@ -194,6 +194,18 @@ const UserPage = (props: Props) => {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
+        />
+      )}
+
+      {batchDeleteTarget && (
+        <BatchDeleteDialog
+          items={batchDeleteTarget.map((u) => ({ id: u.id, label: u.name }))}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setBatchDeleteTarget(null);
+          }}
+          onDelete={deleteBatchUsersAction}
+          entityLabel="warga"
         />
       )}
     </section>
