@@ -26,8 +26,18 @@ import { toast } from "sonner";
 import { generateDuesAction } from "../actions/generate-dues";
 
 const MONTHS = [
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember",
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 ];
 
 const currentYear = new Date().getFullYear();
@@ -60,9 +70,7 @@ export function GenerateFeesDialog() {
     if (result.success) {
       toast.success(result.message, { id: toastId });
       setOpen(false);
-      router.push(
-        `/admin/fees?month=${selectedMonth}&year=${selectedYear}`,
-      );
+      router.push(`/admin/fees?month=${selectedMonth}&year=${selectedYear}`);
     } else {
       toast.error(result.message, { id: toastId });
     }
@@ -91,7 +99,7 @@ export function GenerateFeesDialog() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Bulan</label>
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -106,7 +114,7 @@ export function GenerateFeesDialog() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Tahun</label>
               <Select value={selectedYear} onValueChange={setSelectedYear}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -127,11 +135,11 @@ export function GenerateFeesDialog() {
               <span className="text-muted-foreground">Tarif Iuran</span>
               <span className="font-medium">Rp 25.000 / rumah</span>
             </div>
-            <div className="flex justify-between border-t pt-2">
-              <span className="font-medium">Catatan</span>
-              <span className="text-muted-foreground">
+            <div className="border-t pt-2 text-xs">
+              <p className="font-medium">Catatan</p>
+              <p className="text-muted-foreground">
                 Rumah dengan tagihan yang sudah ada akan dilewatkan
-              </span>
+              </p>
             </div>
           </div>
 

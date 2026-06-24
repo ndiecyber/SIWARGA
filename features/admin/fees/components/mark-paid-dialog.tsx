@@ -82,7 +82,8 @@ export function MarkPaidDialog({
         <DialogHeader>
           <DialogTitle>Catat Pembayaran</DialogTitle>
           <DialogDescription>
-            Catat pembayaran iuran untuk {houseLabel}
+            Catat pembayaran iuran untuk{" "}
+            <span className="capitalize">{houseLabel}</span>
           </DialogDescription>
         </DialogHeader>
 
