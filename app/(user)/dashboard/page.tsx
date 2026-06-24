@@ -174,5 +174,3 @@ async function Page({ user }: LayoutWithAuthUserProps) {
     />
   );
 }
-
-export default layoutWithAuthUser(Page);

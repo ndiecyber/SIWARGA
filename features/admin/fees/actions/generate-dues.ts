@@ -1,8 +1,7 @@
 "use server";
 
-import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { HouseStatus, MonthlyDuesStatus } from "@/generated/prisma/enums";
+import { generateDuesForMonth } from "@/lib/repositories/monthly-dues";
 
 const DUES_AMOUNT = 25000;
 

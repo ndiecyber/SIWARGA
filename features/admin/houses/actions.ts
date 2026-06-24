@@ -4,9 +4,10 @@ import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { ActionResponse } from "@/lib/types";
 import { House } from "@/generated/prisma/browser";
-import { HouseStatus } from "@/generated/prisma/enums";
 
 import { createFormSchema, InputFormSchema, updateFormSchema } from "./schemas";
+import { createHouse, updateHouse, deleteHouse, deleteBatchHouses } from "@/lib/repositories/houses";
+import { handleDbError } from "@/lib/repositories/error";
 
 export async function createHouseAction(
   data: InputFormSchema,
@@ -14,14 +15,22 @@ export async function createHouseAction(
   try {
     const parsedData = createFormSchema.parse(data);
 
-    const result = await prisma.house.create({ data: parsedData });
+    const repoResult = await createHouse(parsedData);
+
+    if (!repoResult.success) {
+      return {
+        success: false,
+        message: "Data rumah gagal ditambahkan",
+        globalError: repoResult.message,
+      };
+    }
 
     revalidatePath("/admin/houses");
 
     return {
       success: true,
       message: "Data rumah berhasil ditambahkan",
-      data: result,
+      data: repoResult.data,
     };
   } catch (error) {
     return {
@@ -40,17 +49,22 @@ export async function updateHouseAction(
   try {
     const parsedData = updateFormSchema.parse(data);
 
-    const result = await prisma.house.update({
-      where: { id },
-      data: parsedData,
-    });
+    const repoResult = await updateHouse(id, parsedData);
+
+    if (!repoResult.success) {
+      return {
+        success: false,
+        message: "Data rumah gagal diperbarui",
+        globalError: repoResult.message,
+      };
+    }
 
     revalidatePath("/admin/houses");
 
     return {
       success: true,
       message: "Data rumah berhasil diperbarui",
-      data: result,
+      data: repoResult.data,
     };
   } catch (error) {
     return {
@@ -65,26 +79,28 @@ export async function updateHouseAction(
 export async function deleteHouseAction(
   id: string,
 ): Promise<ActionResponse<string>> {
-  try {
-    await prisma.house.delete({ where: { id } });
+  const repoResult = await deleteHouse(id);
 
-    revalidatePath("/admin/houses");
-
-    return {
-      success: true,
-      message: "Data rumah berhasil dihapus",
-      data: "",
-    };
-  } catch (error) {
-    console.error("DELETE_HOUSE_ERROR: ", error);
-
+  if (!repoResult.success) {
     return {
       success: false,
       message: "Data rumah gagal dihapus",
-      globalError:
-        error instanceof Error ? error.message : "Unknown error occurred",
+      globalError: repoResult.message,
     };
   }
+
+  revalidatePath("/admin/houses");
+
+  return {
+    success: true,
+    message: "Data rumah berhasil dihapus",
+    data: "",
+  };
+}
+
+export async function deleteBatchHousesAction(ids: string[]) {
+  await deleteBatchHouses(ids);
+  revalidatePath("/admin/houses");
 }
 
 export async function getOwnersLookupAction(

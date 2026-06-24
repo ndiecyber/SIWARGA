@@ -121,7 +121,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     form.reset({
       name: dataUser.name ?? "",
       phoneNumber: dataUser.phoneNumber ?? "",
-      role: dataUser.role ?? "user",
+      role: (dataUser.role as "user" | "admin" | undefined) ?? "user",
       // familyCount: dataUser.familyCount ? dataUser.familyCount : undefined,
       identificationNumber: dataUser.identificationNumber
         ? dataUser.identificationNumber

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+
 import UserPage from "@/features/admin/users/pages/users-page";
 import prisma from "@/lib/db";
 import { connection } from "next/server";
@@ -29,4 +29,4 @@ async function Page() {
   return <UserPage users={users} />;
 }
 
-export default layoutWithAuthAdmin(Page);
+export default Page;
