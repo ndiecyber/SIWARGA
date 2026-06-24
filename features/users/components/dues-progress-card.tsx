@@ -13,11 +13,15 @@ import { cn } from "@/lib/utils";
 type DuesProgressCardProps = {
   paidMonths: number;
   totalMonths: number;
+  monthlyAmount: number;
   className?: string;
 };
 
 export default function DuesProgressCard({
-  paidMonths, totalMonths, className,
+  paidMonths,
+  totalMonths,
+  monthlyAmount,
+  className,
 }: DuesProgressCardProps) {
   const safePaidMonths = Math.min(Math.max(paidMonths, 0), totalMonths);
   const remainingMonths = totalMonths - safePaidMonths;
@@ -30,6 +34,12 @@ export default function DuesProgressCard({
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+  const formattedAmount = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(monthlyAmount);
 
   return (
     <section

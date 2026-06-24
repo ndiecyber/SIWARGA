@@ -36,7 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type CreateUserInput = z.input<typeof createUserSchema>;
 type CreateUserValues = z.output<typeof createUserSchema>;
@@ -126,277 +125,268 @@ export function CreateUserDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-32rem)] md:h-fit gap-0">
-        <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b">
-          <main className="px-6">
-            <DialogTitle className="text-2xl font-semibold tracking-tight text-primary ">
-              Tambah warga baru
-            </DialogTitle>
-            <DialogDescription>
-              Isi data lengkap warga beserta dokumen KK dan KTP.
-            </DialogDescription>
-          </main>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg md:max-w-5xl">
+        <DialogHeader>
+          <DialogTitle>Tambah warga baru</DialogTitle>
+          <DialogDescription>
+            Isi data lengkap warga beserta dokumen KK dan KTP.
+          </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
-            <FieldGroup>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* Nama */}
-                <Controller
-                  name="name"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-name">
-                        Nama lengkap
-                      </FieldLabel>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="py-2">
+          <FieldGroup>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Nama */}
+              <Controller
+                name="name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-name">
+                      Nama lengkap
+                    </FieldLabel>
 
-                      <Input
-                        {...field}
-                        id="create-user-name"
-                        placeholder="Budi Santoso"
+                    <Input
+                      {...field}
+                      id="create-user-name"
+                      placeholder="Budi Santoso"
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="name"
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* Nomor Telepon */}
+              <Controller
+                name="phoneNumber"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-phone">
+                      Nomor telepon
+                    </FieldLabel>
+
+                    <Input
+                      {...field}
+                      id="create-user-phone"
+                      placeholder="Format: 08xxxxxx"
+                      type="tel"
+                      inputMode="tel"
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="tel"
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* NIK */}
+              <Controller
+                name="identificationNumber"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-nik">
+                      Nomor Induk Penduduk
+                    </FieldLabel>
+
+                    <Input
+                      id="create-user-nik"
+                      value={field.value ?? ""}
+                      placeholder="Masukkan 16 digit NIK"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={16}
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      onChange={(event) => {
+                        const onlyNumber = event.target.value.replace(
+                          /\D/g,
+                          "",
+                        );
+                        field.onChange(onlyNumber.slice(0, 16));
+                      }}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* Jumlah Anggota Keluarga */}
+              {/* <Controller
+                name="familyCount"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-family-count">
+                      Jumlah anggota keluarga
+                    </FieldLabel>
+
+                    <Input
+                      id="create-user-family-count"
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      value={field.value ?? ""}
+                      aria-invalid={fieldState.invalid}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      onChange={(event) => {
+                        const value = event.target.value;
+
+                        field.onChange(
+                          value === "" ? undefined : Number(value),
+                        );
+                      }}
+                    />
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              /> */}
+
+              {/* Role */}
+              <Controller
+                name="role"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="create-user-role">Role</FieldLabel>
+
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        id="create-user-role"
                         aria-invalid={fieldState.invalid}
-                        autoComplete="name"
-                      />
-
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
-                {/* Nomor Telepon */}
-                <Controller
-                  name="phoneNumber"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-phone">
-                        Nomor telepon
-                      </FieldLabel>
-
-                      <Input
-                        {...field}
-                        id="create-user-phone"
-                        placeholder="Format: 08xxxxxx"
-                        type="tel"
-                        inputMode="tel"
-                        aria-invalid={fieldState.invalid}
-                        autoComplete="tel"
-                      />
-
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
-                {/* NIK */}
-                <Controller
-                  name="identificationNumber"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-nik">
-                        Nomor Induk Penduduk
-                      </FieldLabel>
-
-                      <Input
-                        id="create-user-nik"
-                        value={field.value ?? ""}
-                        placeholder="Masukkan 16 digit NIK"
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={16}
-                        aria-invalid={fieldState.invalid}
-                        autoComplete="off"
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        onChange={(event) => {
-                          const onlyNumber = event.target.value.replace(
-                            /\D/g,
-                            "",
-                          );
-                          field.onChange(onlyNumber.slice(0, 16));
-                        }}
-                      />
-
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-
-                {/* Jumlah Anggota Keluarga */}
-                {/* <Controller
-                  name="familyCount"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-family-count">
-                        Jumlah anggota keluarga
-                      </FieldLabel>
-
-                      <Input
-                        id="create-user-family-count"
-                        type="number"
-                        min={0}
-                        placeholder="0"
-                        value={field.value ?? ""}
-                        aria-invalid={fieldState.invalid}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        onChange={(event) => {
-                          const value = event.target.value;
-
-                          field.onChange(
-                            value === "" ? undefined : Number(value),
-                          );
-                        }}
-                      />
-
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                /> */}
-
-                {/* Role */}
-                <Controller
-                  name="role"
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor="create-user-role">Role</FieldLabel>
-
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
                       >
-                        <SelectTrigger
-                          id="create-user-role"
-                          aria-invalid={fieldState.invalid}
-                        >
-                          <SelectValue placeholder="Pilih role..." />
-                        </SelectTrigger>
+                        <SelectValue placeholder="Pilih role..." />
+                      </SelectTrigger>
 
-                        <SelectContent
-                          position="popper"
-                          side="bottom"
-                          align="start"
-                          // sideOffset={4}
-                        >
-                          <SelectItem value="admin">Pengurus</SelectItem>
-                          <SelectItem value="user">Warga</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <SelectContent
+                        position="popper"
+                        side="bottom"
+                        align="start"
+                        // sideOffset={4}
+                      >
+                        <SelectItem value="admin">Pengurus</SelectItem>
+                        <SelectItem value="user">Warga</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+            {/* Dokumen */}
+            <FieldSet className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-border" />
+                <FieldLegend className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
+                  Dokumen
+                </FieldLegend>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+
+              {/* KK */}
+              <Controller
+                name="kkFile"
+                control={form.control}
+                render={({ field, fieldState }) => {
+                  const fileValue =
+                    field.value instanceof File ? field.value : undefined;
+
+                  return (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="create-user-kk-file">
+                        Kartu Keluarga (KK)
+                      </FieldLabel>
+
+                      <FileUploadField
+                        id="create-user-kk-file"
+                        label="Unggah file KK"
+                        description="JPG, PNG, atau PDF · maks. 5 MB"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        value={fileValue}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                      />
 
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
                     </Field>
-                  )}
-                />
-              </div>
-              {/* Dokumen */}
-              <FieldSet className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-px bg-border" />
-                  <FieldLegend className="text-xs font-medium tracking-wider uppercase text-muted-foreground">
-                    Dokumen
-                  </FieldLegend>
-                  <div className="flex-1 h-px bg-border" />
-                </div>
+                  );
+                }}
+              />
 
-                {/* KK */}
-                <Controller
-                  name="kkFile"
-                  control={form.control}
-                  render={({ field, fieldState }) => {
-                    const fileValue =
-                      field.value instanceof File ? field.value : undefined;
+              {/* KTP */}
+              <Controller
+                name="ktpFile"
+                control={form.control}
+                render={({ field, fieldState }) => {
+                  const fileValue =
+                    field.value instanceof File ? field.value : undefined;
 
-                    return (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="create-user-kk-file">
-                          Kartu Keluarga (KK)
-                        </FieldLabel>
+                  return (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="create-user-ktp-file">
+                        KTP
+                      </FieldLabel>
 
-                        <FileUploadField
-                          id="create-user-kk-file"
-                          label="Unggah file KK"
-                          description="JPG, PNG, atau PDF · maks. 5 MB"
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          value={fileValue}
-                          onChange={field.onChange}
-                          error={fieldState.error?.message}
-                        />
+                      <FileUploadField
+                        id="create-user-ktp-file"
+                        label="Unggah file KTP"
+                        description="JPG, PNG, atau PDF · maks. 5 MB"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        value={fileValue}
+                        onChange={field.onChange}
+                        error={fieldState.error?.message}
+                      />
 
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+            </FieldSet>
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                disabled={isSubmitting}
+              >
+                Batal
+              </Button>
 
-                {/* KTP */}
-                <Controller
-                  name="ktpFile"
-                  control={form.control}
-                  render={({ field, fieldState }) => {
-                    const fileValue =
-                      field.value instanceof File ? field.value : undefined;
-
-                    return (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="create-user-ktp-file">
-                          KTP
-                        </FieldLabel>
-
-                        <FileUploadField
-                          id="create-user-ktp-file"
-                          label="Unggah file KTP"
-                          description="JPG, PNG, atau PDF · maks. 5 MB"
-                          accept=".jpg,.jpeg,.png,.pdf"
-                          value={fileValue}
-                          onChange={field.onChange}
-                          error={fieldState.error?.message}
-                        />
-
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                />
-              </FieldSet>
-              <DialogFooter className="pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setOpen(false)}
-                  disabled={isSubmitting}
-                >
-                  Batal
-                </Button>
-
-                <Button type="submit" disabled={isSubmitting} className="gap-2">
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {isSubmitting ? "Menyimpan..." : "Simpan"}
-                </Button>
-              </DialogFooter>
-            </FieldGroup>
-          </form>
-        </ScrollArea>
+              <Button type="submit" disabled={isSubmitting} className="gap-2">
+                {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isSubmitting ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </DialogFooter>
+          </FieldGroup>
+        </form>
       </DialogContent>
     </Dialog>
   );
