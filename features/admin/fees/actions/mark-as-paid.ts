@@ -3,6 +3,7 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { MonthlyDuesStatus, PaymentStatus } from "@/generated/prisma/enums";
+import { handleDbError } from "@/lib/repositories/error";
 
 interface MarkAsPaidInput {
   monthlyDueId: string;
@@ -32,21 +33,25 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
       };
     }
 
-    const payment = await prisma.payment.create({
-      data: {
-        amountPaid,
-        paidAt: new Date(),
-        paymentMethod,
-        status: PaymentStatus.SUCCESS,
-      },
-    });
+    const payment = await prisma.$transaction(async (tx) => {
+      const p = await tx.payment.create({
+        data: {
+          amountPaid,
+          paidAt: new Date(),
+          paymentMethod,
+          status: PaymentStatus.SUCCESS,
+        },
+      });
 
-    await prisma.monthlyDues.update({
-      where: { id: monthlyDueId },
-      data: {
-        status: MonthlyDuesStatus.PAID,
-        paymentId: payment.id,
-      },
+      await tx.monthlyDues.update({
+        where: { id: monthlyDueId },
+        data: {
+          status: MonthlyDuesStatus.PAID,
+          paymentId: p.id,
+        },
+      });
+
+      return p;
     });
 
     revalidatePath("/admin/fees");
@@ -57,12 +62,6 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
       data: { paymentId: payment.id },
     };
   } catch (error) {
-    return {
-      success: false as const,
-      message:
-        error instanceof Error
-          ? error.message
-          : "Gagal mencatat pembayaran",
-    };
+    return handleDbError(error);
   }
 }

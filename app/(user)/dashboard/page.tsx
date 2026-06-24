@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser from "@/components/layouts/auth/layout-with-auth-user";
 import DashboardPage from "@/features/users/pages/dashboard-page";
 
 export const metadata: Metadata = {
@@ -8,8 +7,6 @@ export const metadata: Metadata = {
     "Pantau ringkasan iuran, pengumuman, dan kegiatan warga dari dashboard SIWARGA.",
 };
 
-function Page() {
+export default function Page() {
   return <DashboardPage />;
 }
-
-export default layoutWithAuthUser(Page);
