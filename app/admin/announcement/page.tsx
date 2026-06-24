@@ -1,7 +1,7 @@
 import { connection } from "next/server";
 import { getAnnouncements } from "./actions";
 import AnnouncmentPage from "@/features/admin/announcement/pages/announcments-page";
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,4 +16,4 @@ async function Page() {
   return <AnnouncmentPage announcements={announcements} />;
 }
 
-export default layoutWithAuthAdmin(Page);
+export default Page;

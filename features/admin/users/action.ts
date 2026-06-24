@@ -1,11 +1,11 @@
 // features/admin/users/action.ts
 "use server";
 
-import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { CreateUserSchema, UpdateUserSchema } from "./schema";
-import { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
+import { findUserByPhone, updateUser, deleteUser, deleteBatchUsers } from "@/lib/repositories/users";
+import { handleDbError } from "@/lib/repositories/error";
 
 export async function createUserAction(values: CreateUserSchema) {
   console.log({ values });
@@ -13,9 +13,7 @@ export async function createUserAction(values: CreateUserSchema) {
   const newEmail = `user-${Date.now()}@gmail.com`;
 
   try {
-    const existing = await prisma.user.findUnique({
-      where: { phoneNumber: values.phoneNumber },
-    });
+    const existing = await findUserByPhone(values.phoneNumber);
 
     if (existing) {
       throw new Error("Nomor telepon sudah terdaftar. Gunakan nomor lain.");
@@ -46,41 +44,21 @@ export async function createUserAction(values: CreateUserSchema) {
       message: "Data warga berhasil ditambahkan",
     };
   } catch (error) {
-    console.error("CREATE_USER_ERROR: ", error);
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return {
-          success: false,
-          message: "Nomor telepon sudah terdaftar. Gunakan nomor lain.",
-        };
-      }
-    }
-
-    if (error instanceof Error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
-
-    return {
-      success: false,
-      message: "Terjadi kesalahan saat menambahkan data warga.",
-    };
+    return handleDbError(error);
   }
 }
 
 export async function updateUserAction(values: UpdateUserSchema, id: string) {
   try {
-    await prisma.user.update({
-      where: { id },
-      data: {
-        ...values,
-        ktpUrl: "",
-        kkUrl: "",
-      },
+    const result = await updateUser(id, {
+      ...values,
+      ktpUrl: "",
+      kkUrl: "",
     });
+
+    if (!result.success) {
+      return result;
+    }
 
     revalidatePath("/admin/users");
 
@@ -89,28 +67,17 @@ export async function updateUserAction(values: UpdateUserSchema, id: string) {
       message: "Data warga berhasil dirubah",
     };
   } catch (error) {
-    console.error("UPDATE_USER_ERROR: ", error);
-
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return {
-          success: false,
-          message: "Nomor telepon sudah terdaftar. Gunakan nomor lain.",
-        };
-      }
-    }
-
-    return {
-      success: false,
-      message: "Terjadi kesalahan saat merubah data warga.",
-    };
+    return handleDbError(error);
   }
 }
 
 export async function deleteUserAction(id: string) {
-  await prisma.user.delete({
-    where: { id },
-  });
+  const result = await deleteUser(id);
+  revalidatePath("/admin/users");
+  return result;
+}
 
+export async function deleteBatchUsersAction(ids: string[]) {
+  await deleteBatchUsers(ids);
   revalidatePath("/admin/users");
 }

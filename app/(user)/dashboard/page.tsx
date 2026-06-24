@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser, {
-  LayoutWithAuthUserProps,
-} from "@/components/layouts/auth/layout-with-auth-user";
 import DashboardPage from "@/features/users/pages/dashboard-page";
 import prisma from "@/lib/db";
 
@@ -11,7 +8,7 @@ export const metadata: Metadata = {
     "Pantau ringkasan iuran, pengumuman, dan kegiatan warga dari dashboard SIWARGA.",
 };
 
-async function Page({ user }: LayoutWithAuthUserProps) {
+async function Page() {
   const now = new Date();
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
@@ -174,5 +171,3 @@ async function Page({ user }: LayoutWithAuthUserProps) {
     />
   );
 }
-
-export default layoutWithAuthUser(Page);

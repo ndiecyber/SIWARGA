@@ -46,6 +46,8 @@ import { HouseCreateForm } from "../components/create-form";
 import DeleteHouseDialog from "../components/delete-dialog";
 import HouseDetailPane from "../components/house-detail-pane";
 import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
+import { deleteBatchHousesAction } from "../actions";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -97,20 +99,6 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const batchActions: ActionOption<HouseWithOwner>[] = [
-  {
-    label: "Export",
-    icon: <DownloadIcon size={16} />,
-    onClick: (rows) => console.log("edit", rows),
-  },
-  {
-    label: "Delete",
-    icon: <Trash2Icon size={16} />,
-    onClick: (rows) => console.log("delete", rows),
-    destructive: true,
-  },
-];
-
 interface Props {
   houses: (HouseWithOwner & HouseWithResidentsWithUser)[];
   // houses: HouseWithOwner[];
@@ -126,6 +114,18 @@ export default function HousesPage({ houses }: Props) {
     (HouseWithOwner & HouseWithResidentsWithUser) | null
   >(null);
   const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
+  const [batchDeleteTarget, setBatchDeleteTarget] = useState<
+    HouseWithOwner[] | null
+  >(null);
+
+  const batchActions: ActionOption<HouseWithOwner>[] = [
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (rows) => setBatchDeleteTarget(rows as HouseWithOwner[]),
+      destructive: true,
+    },
+  ];
 
   const houseColumns = withActionColumn(withSelectColumn(columns), [
     {
@@ -296,6 +296,21 @@ export default function HousesPage({ houses }: Props) {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
+        />
+      )}
+
+      {batchDeleteTarget && (
+        <BatchDeleteDialog
+          items={batchDeleteTarget.map((h) => ({
+            id: h.id,
+            label: `${h.block}${h.houseNumber}`,
+          }))}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setBatchDeleteTarget(null);
+          }}
+          onDelete={deleteBatchHousesAction}
+          entityLabel="rumah"
         />
       )}
     </main>

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import AdministrationLayout from "@/components/layouts/administration-layout";
-import layoutWithAuthAdmin, {
-  LayoutWithAuthAdminProps,
-} from "@/components/layouts/auth/layout-with-auth-admin";
+import { requireAdmin } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -22,10 +20,11 @@ export const metadata: Metadata = {
   },
 };
 
-function Layout({
+export default async function Layout({
   children,
-}: LayoutWithAuthAdminProps & { children: React.ReactNode }) {
+}: {
+  children: React.ReactNode;
+}) {
+  await requireAdmin();
   return <AdministrationLayout>{children}</AdministrationLayout>;
 }
-
-export default layoutWithAuthAdmin(Layout);

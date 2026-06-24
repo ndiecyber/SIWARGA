@@ -1,6 +1,4 @@
-import layoutWithAuthAdmin, {
-  LayoutWithAuthAdminProps,
-} from "@/components/layouts/auth/layout-with-auth-admin";
+
 import FeesPage from "@/features/admin/fees/pages/fees-page";
 import prisma from "@/lib/db";
 import { connection } from "next/server";
@@ -18,7 +16,7 @@ async function Page({
   searchParams,
 }: {
   searchParams: Promise<{ month?: string; year?: string }>;
-} & LayoutWithAuthAdminProps) {
+}) {
   await connection();
 
   const params = await searchParams;
@@ -171,4 +169,4 @@ async function Page({
   );
 }
 
-export default layoutWithAuthAdmin(Page);
+export default Page;
