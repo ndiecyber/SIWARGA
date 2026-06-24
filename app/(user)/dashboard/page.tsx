@@ -125,10 +125,7 @@ async function Page({ user }: LayoutWithAuthUserProps) {
           ? {
               status: currentDue.status === "PAID" ? "LUNAS" : "TERTUNDA",
               amount: Number(currentDue.amount),
-              dueDate: new Intl.DateTimeFormat("id-ID", {
-                day: "numeric",
-                month: "long",
-              }).format(currentDue.dueDate),
+              dueDate: `${new Date(currentDue.year, currentDue.month, 0).getDate()} ${new Intl.DateTimeFormat("id-ID", { month: "long" }).format(new Date(currentDue.year, currentDue.month - 1))}`,
             }
           : null
       }
@@ -145,11 +142,7 @@ async function Page({ user }: LayoutWithAuthUserProps) {
           month: "long",
           year: "numeric",
         }).format(new Date(d.year, d.month - 1)),
-        dueDate: new Intl.DateTimeFormat("id-ID", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(d.dueDate),
+        dueDate: `${new Date(d.year, d.month, 0).getDate()} ${new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(new Date(d.year, d.month - 1))}`,
       }))}
       announcements={announcements.map((a) => ({
         id: a.id,
