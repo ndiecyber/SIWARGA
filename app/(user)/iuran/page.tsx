@@ -16,7 +16,7 @@ async function Page({ user }: LayoutWithAuthUserProps) {
   const currentMonth = now.getMonth() + 1;
   const currentYear = now.getFullYear();
 
-  const SIMULATE_OVERDUE = true; // ← comment to disable
+  const SIMULATE_OVERDUE = false; // ← comment to disable
 
   // ── Fast-path: pure simulation, no DB queries ───────────────────────
   if (SIMULATE_OVERDUE) {
@@ -33,7 +33,10 @@ async function Page({ user }: LayoutWithAuthUserProps) {
           totalTagihan: months.length,
         }}
         currentDue={{
-          status: months.includes(currentMonth) && paidMap[currentMonth] ? "LUNAS" : "TERTUNDA",
+          status:
+            months.includes(currentMonth) && paidMap[currentMonth]
+              ? "LUNAS"
+              : "TERTUNDA",
           amount: 25000,
           dueDate: `${new Date(currentYear, currentMonth, 0).getDate()} ${new Intl.DateTimeFormat("id-ID", { month: "long" }).format(now)}`,
         }}

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import layoutWithAuthUser from "@/components/layouts/auth/layout-with-auth-user";
+import layoutWithAuthUser, {
+  LayoutWithAuthUserProps,
+} from "@/components/layouts/auth/layout-with-auth-user";
 import AnnouncementPage from "@/features/users/pages/announcement-page";
+import prisma from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Pengumuman Warga",
@@ -8,8 +11,35 @@ export const metadata: Metadata = {
     "Lihat pengumuman terbaru dan informasi penting lingkungan melalui portal warga SIWARGA.",
 };
 
-function Page() {
-  return <AnnouncementPage />;
+async function Page({ user }: LayoutWithAuthUserProps) {
+  const announcements = await prisma.announcement.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return (
+    <AnnouncementPage
+      announcements={announcements.map((a) => ({
+        id: a.id,
+        category: a.category,
+        title: a.title,
+        description: a.description,
+        imageUrl: a.imageUrl,
+        eventDate: a.eventDate
+          ? new Intl.DateTimeFormat("id-ID", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            }).format(new Date(a.eventDate))
+          : null,
+        createdAt: new Intl.DateTimeFormat("id-ID", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }).format(new Date(a.createdAt)),
+        status: a.status,
+      }))}
+    />
+  );
 }
 
 export default layoutWithAuthUser(Page);

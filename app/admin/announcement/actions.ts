@@ -4,12 +4,27 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { announcementLogger } from "@/lib/logger";
 
+function calculateStatus(eventDate: string | null | undefined): string {
+  if (!eventDate) return "upcoming";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const event = new Date(eventDate);
+  event.setHours(0, 0, 0, 0);
+
+  if (event < today) return "done";
+  if (event.getTime() === today.getTime()) return "ongoing";
+  return "upcoming";
+}
+
 export type AnnouncementFormData = {
   category: string;
   title: string;
   description: string;
+  imageUrl?: string | null;
   eventDate?: string | null;
-  status: string;
+  status?: string;
 };
 
 export async function getAnnouncements() {
@@ -33,16 +48,18 @@ export async function createAnnouncement(data: AnnouncementFormData) {
         status: data.status,
       },
     });
-    announcementLogger.info({ title: data.title, category: data.category }, 'Pengumuman berhasil dibuat')
-    revalidatePath("/admin/announcment");
   } catch (error) {
-    announcementLogger.error({ err: error, title: data.title }, 'Gagal buat pengumuman')
+    announcementLogger.error(
+      { err: error, title: data.title },
+      "Gagal buat pengumuman",
+    );
   }
+  revalidatePath("/admin/announcment");
 }
 
 export async function updateAnnouncement(
   id: number,
-  data: AnnouncementFormData
+  data: AnnouncementFormData,
 ) {
   try {
     await prisma.announcement.update({
@@ -51,33 +68,48 @@ export async function updateAnnouncement(
         category: data.category,
         title: data.title,
         description: data.description,
+        imageUrl: data.imageUrl || null,
         eventDate: data.eventDate ? new Date(data.eventDate) : null,
-        status: data.status,
+        status: calculateStatus(data.eventDate),
       },
     });
-    announcementLogger.info({ announcementId: id, title: data.title }, 'Pengumuman berhasil diupdate')
-    revalidatePath("/admin/announcment");
   } catch (error) {
-    announcementLogger.error({ err: error, announcementId: id }, 'Gagal update pengumuman')
+    announcementLogger.error(
+      { err: error, announcementId: id },
+      "Gagal update pengumuman",
+    );
   }
+  revalidatePath("/admin/announcment");
 }
 
 export async function deleteAnnouncement(id: number) {
   try {
     await prisma.announcement.delete({ where: { id } });
-    announcementLogger.info({ announcementId: id }, 'Pengumuman berhasil dihapus')
+    announcementLogger.info(
+      { announcementId: id },
+      "Pengumuman berhasil dihapus",
+    );
     revalidatePath("/admin/announcment");
   } catch (error) {
-    announcementLogger.error({ err: error, announcementId: id }, 'Gagal hapus pengumuman')
+    announcementLogger.error(
+      { err: error, announcementId: id },
+      "Gagal hapus pengumuman",
+    );
   }
 }
 
 export async function deleteBatchAnnouncementsAction(ids: number[]) {
   try {
     await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
-    announcementLogger.info({ announcementIds: ids }, 'Batch pengumuman berhasil dihapus')
+    announcementLogger.info(
+      { announcementIds: ids },
+      "Batch pengumuman berhasil dihapus",
+    );
     revalidatePath("/admin/announcment");
   } catch (error) {
-    announcementLogger.error({ err: error, announcementIds: ids }, 'Gagal hapus batch pengumuman')
+    announcementLogger.error(
+      { err: error, announcementIds: ids },
+      "Gagal hapus batch pengumuman",
+    );
   }
 }
