@@ -1,13 +1,14 @@
 export function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { logger } = require('./lib/logger')
-    const levels = { log: 'info', warn: 'warn', error: 'error', debug: 'debug' } as const
-    for (const [method, level] of Object.entries(levels)) {
-      const original = (console as any)[method]
-      ;(console as any)[method] = (...args: any[]) => {
-        ;(logger as any)[level]({ source: 'console' }, ...args)
-      }
-    }
+    const log = require('./lib/logger').logger
+    const info = (...args: unknown[]) => log.info({ source: 'console' }, ...args)
+    const warn = (...args: unknown[]) => log.warn({ source: 'console' }, ...args)
+    const error = (...args: unknown[]) => log.error({ source: 'console' }, ...args)
+    const debug = (...args: unknown[]) => log.debug({ source: 'console' }, ...args)
+    console.log = info
+    console.warn = warn
+    console.error = error
+    console.debug = debug
   }
 }
