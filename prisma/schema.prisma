@@ -148,6 +148,7 @@ model House {
   block       String      @db.VarChar(10)
   status      HouseStatus @default(VACANT)
   ownerId     String
+  rondaDay    String?     @db.VarChar(20)
   createdAt   DateTime    @default(now()) @db.Timestamp(3)
   updatedAt   DateTime    @updatedAt @db.Timestamp(3)
 
@@ -223,6 +224,7 @@ model Announcement {
   category    String    @db.VarChar(50)
   title       String    @db.VarChar(255)
   description String    @db.Text
+  imageUrl    String?   @db.VarChar(500)
   eventDate   DateTime? @map("tanggal_acara") @db.Date
   status      String    @default("upcoming") @db.VarChar(20)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Date

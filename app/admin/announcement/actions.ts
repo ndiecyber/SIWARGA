@@ -7,6 +7,7 @@ export type AnnouncementFormData = {
   category: string;
   title: string;
   description: string;
+  imageUrl?: string | null;
   eventDate?: string | null;
   status: string;
 };
@@ -27,6 +28,7 @@ export async function createAnnouncement(data: AnnouncementFormData) {
       category: data.category,
       title: data.title,
       description: data.description,
+      imageUrl: data.imageUrl || null,
       eventDate: data.eventDate ? new Date(data.eventDate) : null,
       status: data.status,
     },
@@ -44,6 +46,7 @@ export async function updateAnnouncement(
       category: data.category,
       title: data.title,
       description: data.description,
+      imageUrl: data.imageUrl || null,
       eventDate: data.eventDate ? new Date(data.eventDate) : null,
       status: data.status,
     },
