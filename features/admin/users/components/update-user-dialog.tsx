@@ -101,7 +101,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
   });
 
   const form = useForm<UpdateUserInput, unknown, UpdateUserValues>({
-    resolver: zodResolver(createUserSchema),
+    resolver: zodResolver(createUserSchema as any),
     defaultValues: {
       name: "",
       phoneNumber: "",

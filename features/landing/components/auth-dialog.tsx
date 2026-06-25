@@ -55,7 +55,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
   const [activeTab, setActiveTab] = React.useState<"user" | "admin">("user");
 
   const userForm = useForm<UserLoginValues>({
-    resolver: zodResolver(userLoginSchema),
+    resolver: zodResolver(userLoginSchema as any),
     defaultValues: {
       phoneNumber: "",
     },
@@ -63,7 +63,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
   });
 
   const adminForm = useForm<AdminLoginValues>({
-    resolver: zodResolver(adminLoginSchema),
+    resolver: zodResolver(adminLoginSchema as any),
     defaultValues: {
       username: "",
       password: "",
