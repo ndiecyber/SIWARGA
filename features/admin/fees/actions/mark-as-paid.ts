@@ -3,6 +3,7 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { MonthlyDuesStatus, PaymentStatus } from "@/generated/prisma/enums";
+import { feesLogger } from "@/lib/logger";
 
 interface MarkAsPaidInput {
   monthlyDueId: string;
@@ -19,6 +20,7 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
     });
 
     if (!monthlyDue) {
+      feesLogger.warn({ monthlyDueId }, 'Tagihan tidak ditemukan saat mark as paid')
       return {
         success: false as const,
         message: "Data tagihan tidak ditemukan",
@@ -26,6 +28,7 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
     }
 
     if (monthlyDue.status === MonthlyDuesStatus.PAID) {
+      feesLogger.warn({ monthlyDueId }, 'Tagihan sudah lunas')
       return {
         success: false as const,
         message: "Tagihan ini sudah lunas",
@@ -57,6 +60,7 @@ export async function markAsPaidAction(input: MarkAsPaidInput) {
       data: { paymentId: payment.id },
     };
   } catch (error) {
+    feesLogger.error({ err: error, monthlyDueId: input.monthlyDueId }, 'Gagal mencatat pembayaran')
     return {
       success: false as const,
       message:

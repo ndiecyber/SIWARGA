@@ -2,13 +2,20 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { revalidatePath } from "next/cache";
-import { createUserSchema, updateUserSchema } from "./schema";
-import { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
+import { usersLogger } from "@/lib/logger";
+import { revalidatePath } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 
+import { createUserSchema, updateUserSchema } from "./schema";
+
 export async function createUserAction(formData: FormData) {
+  usersLogger.info(
+    { phoneNumber: formData.get("phoneNumber"), name: formData.get("name") },
+    "Membuat user baru",
+  );
+
   try {
     const kkFile = formData.get("kkFile") as File | null;
     const ktpFile = formData.get("ktpFile") as File | null;
@@ -85,7 +92,7 @@ export async function createUserAction(formData: FormData) {
       message: "Data warga berhasil ditambahkan",
     };
   } catch (error) {
-    console.error("CREATE_USER_ERROR: ", error);
+    usersLogger.error({ err: error }, "Gagal buat user");
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -168,7 +175,7 @@ export async function updateUserAction(formData: FormData, id: string) {
       message: "Data warga berhasil dirubah",
     };
   } catch (error) {
-    console.error("UPDATE_USER_ERROR: ", error);
+    usersLogger.error({ err: error, userId: id }, "Gagal update user");
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -194,14 +201,21 @@ export async function updateUserAction(formData: FormData, id: string) {
 }
 
 export async function deleteUserAction(id: string) {
-  await prisma.user.delete({
-    where: { id },
-  });
-
-  revalidatePath("/admin/users");
+  try {
+    await prisma.user.delete({
+      where: { id },
+    });
+    revalidatePath("/admin/users");
+  } catch (error) {
+    usersLogger.error({ err: error, userId: id }, "Gagal hapus user");
+  }
 }
 
 export async function deleteBatchUsersAction(ids: string[]) {
-  await prisma.user.deleteMany({ where: { id: { in: ids } } });
-  revalidatePath("/admin/users");
+  try {
+    await prisma.user.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath("/admin/users");
+  } catch (error) {
+    usersLogger.error({ err: error, userIds: ids }, "Gagal hapus batch user");
+  }
 }

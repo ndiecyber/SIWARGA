@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { updateUserAction } from "../action";
+import { usersLogger } from "@/lib/logger";
 import FileUploadField from "./file-upload-field";
 import {
   createUserSchema,
@@ -113,7 +114,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     mode: "onChange",
   });
 
-  console.log({ dataUser });
+  usersLogger.info({ userId: props.id, hasData: !!dataUser }, 'Memuat data user untuk edit');
 
   useEffect(() => {
     if (!dataUser) return;

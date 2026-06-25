@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "../ui/scroll-area";
+import { usersLogger } from "@/lib/logger";
 
 interface BatchDeleteDialogProps<TId extends string | number> {
   items: { id: TId; label: string }[];
@@ -40,7 +41,8 @@ export function BatchDeleteDialog<TId extends string | number>({
       await onDelete(items.map((item) => item.id));
       toast.success(`${items.length} ${entityLabel} berhasil dihapus`);
       onOpenChange(false);
-    } catch {
+    } catch (error) {
+      usersLogger.error({ err: error, entityLabel, itemCount: items.length }, 'Gagal hapus batch')
       toast.error(`Gagal menghapus ${entityLabel}. Silakan coba lagi.`);
     } finally {
       setIsDeleting(false);

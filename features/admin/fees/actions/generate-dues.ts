@@ -3,6 +3,7 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { HouseStatus, MonthlyDuesStatus } from "@/generated/prisma/enums";
+import { feesLogger } from "@/lib/logger";
 
 const DUES_AMOUNT = 25000;
 
@@ -19,8 +20,8 @@ function formatMonthYear(month: number, year: number): string {
 }
 
 export async function generateDuesAction(input: GenerateDuesInput) {
+  const { month, year } = input;
   try {
-    const { month, year } = input;
     const houses = await prisma.house.findMany({
       where: { status: HouseStatus.OCCUPIED },
       select: {
@@ -104,6 +105,7 @@ export async function generateDuesAction(input: GenerateDuesInput) {
       data: { created, skipped: skippedExisting + skippedNotYetResident },
     };
   } catch (error) {
+    feesLogger.error({ err: error, month, year }, 'Gagal generate iuran')
     return {
       success: false as const,
       message:

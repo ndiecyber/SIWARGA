@@ -29,6 +29,7 @@ import {
   updateAnnouncement,
   type AnnouncementFormData,
 } from "@/app/admin/announcement/actions";
+import { announcementLogger } from "@/lib/logger";
 
 type Announcement = {
   id: number;
@@ -151,6 +152,7 @@ export function AnnouncementFormDialog({
           eventDate: dateVal,
         };
 
+      try {
         if (isEdit && announcement) {
           await updateAnnouncement(announcement.id, data);
           toast.success("Pengumuman berhasil diperbarui!");
@@ -161,7 +163,7 @@ export function AnnouncementFormDialog({
         onOpenChange(false);
         setForm({ ...empty });
       } catch (error) {
-        console.error(error);
+        announcementLogger.error({ err: error, title: titleVal }, 'Gagal simpan pengumuman dari dialog')
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });
