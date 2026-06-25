@@ -152,7 +152,6 @@ export function AnnouncementFormDialog({
           eventDate: dateVal,
         };
 
-      try {
         if (isEdit && announcement) {
           await updateAnnouncement(announcement.id, data);
           toast.success("Pengumuman berhasil diperbarui!");
@@ -163,7 +162,10 @@ export function AnnouncementFormDialog({
         onOpenChange(false);
         setForm({ ...empty });
       } catch (error) {
-        announcementLogger.error({ err: error, title: titleVal }, 'Gagal simpan pengumuman dari dialog')
+        announcementLogger.error(
+          { err: error, title: titleVal },
+          "Gagal simpan pengumuman dari dialog",
+        );
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });
@@ -314,8 +316,6 @@ export function AnnouncementFormDialog({
                 required
               />
             </div>
-
-
           </form>
 
           <DialogFooter className="gap-2 px-6 pb-4">
