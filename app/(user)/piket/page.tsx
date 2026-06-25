@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import layoutWithAuthUser from "@/components/layouts/auth/layout-with-auth-user";
-import PatrolPage from "@/features/users/pages/announcement-page copy";
 
 export const metadata: Metadata = {
   title: "Jadwal Piket",
@@ -9,7 +8,11 @@ export const metadata: Metadata = {
 };
 
 function Page() {
-  return <PatrolPage />;
+  return (
+    <>
+      <div>Coming Soon</div>
+    </>
+  );
 }
 
 export default layoutWithAuthUser(Page);
