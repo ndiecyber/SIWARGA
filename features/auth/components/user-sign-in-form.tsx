@@ -58,7 +58,7 @@ function UserSignInForm({ onSuccess }: Props) {
   });
 
   async function onSubmit(data: UserSignInValues) {
-    authLogger.info({ phoneNumber: data.phoneNumber }, 'User sign-in form submitted');
+    authLogger.info({ username: data.username }, 'User sign-in form submitted');
 
     const mutationPromise = mutateAsync(form.getValues());
 
