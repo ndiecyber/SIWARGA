@@ -3,16 +3,33 @@
 
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { CreateUserSchema, UpdateUserSchema } from "./schema";
+import { createUserSchema, updateUserSchema } from "./schema";
 import { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
-export async function createUserAction(values: CreateUserSchema) {
-  console.log({ values });
-
-  const newEmail = `user-${Date.now()}@gmail.com`;
-
+export async function createUserAction(formData: FormData) {
   try {
+    const kkFile = formData.get("kkFile") as File | null;
+    const ktpFile = formData.get("ktpFile") as File | null;
+
+    const rawValues = {
+      name: formData.get("name") as string,
+      phoneNumber: formData.get("phoneNumber") as string,
+      identificationNumber: formData.get("identificationNumber") as string,
+      role: formData.get("role") as "admin" | "user",
+      kkFile: kkFile && kkFile.size > 0 ? kkFile : undefined,
+      ktpFile: ktpFile && ktpFile.size > 0 ? ktpFile : undefined,
+    };
+
+    const parsed = createUserSchema.safeParse(rawValues);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.issues.map((e) => e.message).join(", ");
+      throw new Error(errorMsg);
+    }
+
+    const values = parsed.data;
+
     const existing = await prisma.user.findUnique({
       where: { phoneNumber: values.phoneNumber },
     });
@@ -20,6 +37,20 @@ export async function createUserAction(values: CreateUserSchema) {
     if (existing) {
       throw new Error("Nomor telepon sudah terdaftar. Gunakan nomor lain.");
     }
+
+    // Upload files to Cloudinary if provided
+    let kkUrl = "";
+    let ktpUrl = "";
+
+    if (rawValues.kkFile) {
+      kkUrl = await uploadToCloudinary(rawValues.kkFile, "siwarga/kk");
+    }
+
+    if (rawValues.ktpFile) {
+      ktpUrl = await uploadToCloudinary(rawValues.ktpFile, "siwarga/ktp");
+    }
+
+    const newEmail = `user-${Date.now()}@gmail.com`;
 
     const newUser = await auth.api.signUpEmail({
       body: {
@@ -30,14 +61,22 @@ export async function createUserAction(values: CreateUserSchema) {
         displayUsername: values.name,
         phoneNumber: values.phoneNumber,
         identificationNumber: values.identificationNumber,
-        kkUrl: "",
-        ktpUrl: "",
+        kkUrl,
+        ktpUrl,
       },
     });
 
     if (!newUser?.user?.id) {
       throw new Error("Gagal dalam membuat user.");
     }
+
+    // Update the role in DB (Better Auth defaults new users to basic user type/role depending on schema, we ensure role is set)
+    await prisma.user.update({
+      where: { id: newUser.user.id },
+      data: {
+        role: values.role,
+      },
+    });
 
     revalidatePath("/admin/users");
 
@@ -71,14 +110,54 @@ export async function createUserAction(values: CreateUserSchema) {
   }
 }
 
-export async function updateUserAction(values: UpdateUserSchema, id: string) {
+export async function updateUserAction(formData: FormData, id: string) {
   try {
+    const kkFile = formData.get("kkFile") as File | null;
+    const ktpFile = formData.get("ktpFile") as File | null;
+
+    const rawValues = {
+      name: formData.get("name") as string,
+      phoneNumber: formData.get("phoneNumber") as string,
+      identificationNumber: formData.get("identificationNumber") as string,
+      role: formData.get("role") as "admin" | "user",
+      kkFile: kkFile && kkFile.size > 0 ? kkFile : undefined,
+      ktpFile: ktpFile && ktpFile.size > 0 ? ktpFile : undefined,
+    };
+
+    const parsed = updateUserSchema.safeParse(rawValues);
+    if (!parsed.success) {
+      const errorMsg = parsed.error.issues.map((e) => e.message).join(", ");
+      throw new Error(errorMsg);
+    }
+
+    const values = parsed.data;
+
+    // Get current user to retain old Cloudinary URLs if new files are not uploaded
+    const currentUser = await prisma.user.findUnique({
+      where: { id },
+      select: { kkUrl: true, ktpUrl: true },
+    });
+
+    let kkUrl = currentUser?.kkUrl || "";
+    let ktpUrl = currentUser?.ktpUrl || "";
+
+    if (rawValues.kkFile) {
+      kkUrl = await uploadToCloudinary(rawValues.kkFile, "siwarga/kk");
+    }
+
+    if (rawValues.ktpFile) {
+      ktpUrl = await uploadToCloudinary(rawValues.ktpFile, "siwarga/ktp");
+    }
+
     await prisma.user.update({
       where: { id },
       data: {
-        ...values,
-        ktpUrl: "",
-        kkUrl: "",
+        name: values.name,
+        phoneNumber: values.phoneNumber,
+        identificationNumber: values.identificationNumber,
+        role: values.role,
+        kkUrl,
+        ktpUrl,
       },
     });
 
@@ -98,6 +177,13 @@ export async function updateUserAction(values: UpdateUserSchema, id: string) {
           message: "Nomor telepon sudah terdaftar. Gunakan nomor lain.",
         };
       }
+    }
+
+    if (error instanceof Error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
 
     return {

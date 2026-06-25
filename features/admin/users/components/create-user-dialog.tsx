@@ -64,7 +64,22 @@ export function CreateUserDialog() {
 
     mutationFn: async (values: CreateUserSchema) => {
       setIsSubmitting(true);
-      const result = await createUserAction(values);
+
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("identificationNumber", values.identificationNumber);
+      formData.append("role", values.role);
+
+      if (values.kkFile) {
+        formData.append("kkFile", values.kkFile);
+      }
+
+      if (values.ktpFile) {
+        formData.append("ktpFile", values.ktpFile);
+      }
+
+      const result = await createUserAction(formData);
 
       if (!result.success) {
         throw new Error(result.message);

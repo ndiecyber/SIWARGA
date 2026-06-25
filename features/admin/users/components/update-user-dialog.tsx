@@ -136,7 +136,22 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
 
     mutationFn: async (values: UpdateUserSchema) => {
       setIsSubmitting(true);
-      const result = await updateUserAction(values, props.id);
+
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("identificationNumber", values.identificationNumber);
+      formData.append("role", values.role);
+
+      if (values.kkFile) {
+        formData.append("kkFile", values.kkFile);
+      }
+
+      if (values.ktpFile) {
+        formData.append("ktpFile", values.ktpFile);
+      }
+
+      const result = await updateUserAction(formData, props.id);
 
       if (!result.success) {
         throw new Error(result.message);
