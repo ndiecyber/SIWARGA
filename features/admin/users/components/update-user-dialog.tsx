@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
-import { Loader2, Pencil, UserPlus } from "lucide-react";
+import { Loader2, Pencil } from "lucide-react";
 
 import { z } from "zod/v4";
 import { Input } from "@/components/ui/input";
@@ -71,7 +71,6 @@ type UpdateUserDialogProps = {
 
 export function UpdateUserDialog(props: UpdateUserDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isControlled = props.open !== undefined;
@@ -96,7 +95,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
 
       return result.data;
     },
-    enabled: open && !!props.id,
+    enabled: isOpen && !!props.id,
     staleTime: 1000 * 60,
   });
 
@@ -114,7 +113,10 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     mode: "onChange",
   });
 
-  usersLogger.info({ userId: props.id, hasData: !!dataUser }, 'Memuat data user untuk edit');
+  usersLogger.info(
+    { userId: props.id, hasData: !!dataUser },
+    "Memuat data user untuk edit",
+  );
 
   useEffect(() => {
     if (!dataUser) return;
@@ -191,7 +193,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
         ktpFile: undefined,
       });
 
-      setOpen(false);
+      handleOpenChange(false);
     },
 
     onSettled: () => {
@@ -426,6 +428,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                           value={fileValue}
                           onChange={field.onChange}
                           error={fieldState.error?.message}
+                          previewUrl={dataUser?.kkUrl}
                         />
 
                         {fieldState.invalid && (
@@ -458,6 +461,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                           value={fileValue}
                           onChange={field.onChange}
                           error={fieldState.error?.message}
+                          previewUrl={dataUser?.ktpUrl}
                         />
 
                         {fieldState.invalid && (
@@ -472,7 +476,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setOpen(false)}
+                  onClick={() => handleOpenChange(false)}
                   disabled={isSubmitting}
                 >
                   Batal
