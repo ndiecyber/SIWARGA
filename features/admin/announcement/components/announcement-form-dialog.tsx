@@ -57,18 +57,11 @@ const CATEGORIES = [
   "Lainnya",
 ];
 
-const STATUSES = [
-  { value: "upcoming", label: "Akan Datang" },
-  { value: "ongoing", label: "Berlangsung" },
-  { value: "done", label: "Selesai" },
-];
-
 type FormData = {
   category: string;
   title: string;
   description: string;
   eventDate: string;
-  status: string;
 };
 
 const empty: FormData = {
@@ -76,7 +69,6 @@ const empty: FormData = {
   title: "",
   description: "",
   eventDate: "",
-  status: "upcoming",
 };
 
 export function AnnouncementFormDialog({
@@ -113,7 +105,6 @@ export function AnnouncementFormDialog({
           eventDate: a.eventDate
             ? new Date(a.eventDate).toISOString().split("T")[0]
             : "",
-          status: a.status,
         }
       : { ...empty };
 
@@ -158,7 +149,6 @@ export function AnnouncementFormDialog({
           description: descVal ?? "",
           imageUrl: "", // dummy — file upload belum di-setup
           eventDate: dateVal,
-          status: form.status,
         };
 
         if (isEdit && announcement) {
@@ -323,27 +313,7 @@ export function AnnouncementFormDialog({
               />
             </div>
 
-            {/* Status */}
-            <div className="space-y-1.5">
-              <Label htmlFor="status">
-                Status <span className="text-destructive">*</span>
-              </Label>
-              <Select
-                value={form.status}
-                onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
-              >
-                <SelectTrigger id="status" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUSES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+
           </form>
 
           <DialogFooter className="gap-2 px-6 pb-4">

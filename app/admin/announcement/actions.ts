@@ -3,13 +3,27 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 
+function calculateStatus(eventDate: string | null | undefined): string {
+  if (!eventDate) return "upcoming";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const event = new Date(eventDate);
+  event.setHours(0, 0, 0, 0);
+
+  if (event < today) return "done";
+  if (event.getTime() === today.getTime()) return "ongoing";
+  return "upcoming";
+}
+
 export type AnnouncementFormData = {
   category: string;
   title: string;
   description: string;
   imageUrl?: string | null;
   eventDate?: string | null;
-  status: string;
+  status?: string;
 };
 
 export async function getAnnouncements() {
@@ -30,7 +44,7 @@ export async function createAnnouncement(data: AnnouncementFormData) {
       description: data.description,
       imageUrl: data.imageUrl || null,
       eventDate: data.eventDate ? new Date(data.eventDate) : null,
-      status: data.status,
+      status: calculateStatus(data.eventDate),
     },
   });
   revalidatePath("/admin/announcment");
@@ -48,7 +62,7 @@ export async function updateAnnouncement(
       description: data.description,
       imageUrl: data.imageUrl || null,
       eventDate: data.eventDate ? new Date(data.eventDate) : null,
-      status: data.status,
+      status: calculateStatus(data.eventDate),
     },
   });
   revalidatePath("/admin/announcment");
