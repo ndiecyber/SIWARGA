@@ -276,9 +276,8 @@ export default function RondaPage({
             return (
               <Card
                 key={day.value}
-                className={`flex flex-col h-[520px] w-[290px] sm:w-[320px] shrink-0 snap-start bg-card hover:shadow-md transition-all duration-200 ${
-                  isOver ? "border-primary ring-2 ring-primary/20 bg-primary/5 scale-[1.01]" : ""
-                }`}
+                className={`flex flex-col h-[520px] w-[290px] sm:w-[320px] shrink-0 snap-start bg-card hover:shadow-md transition-all duration-200 ${isOver ? "border-primary ring-2 ring-primary/20 bg-primary/5 scale-[1.01]" : ""
+                  }`}
                 onDragOver={(e) => handleDragOver(e, day.value)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, day.value)}
