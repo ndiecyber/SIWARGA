@@ -24,6 +24,8 @@ import {
   ArrowUpRight,
   TrendingUp,
   MapPin,
+  Shield,
+  Moon,
 } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -123,6 +125,24 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
       },
     },
   });
+
+  // Fetch today's ronda schedule
+  const dayOfWeekMap = [7, 1, 2, 3, 4, 5, 6];
+  const todayDayValue = dayOfWeekMap[new Date().getDay()];
+  const todayRonda = await prisma.ronda.findMany({
+    where: { dayOfWeek: todayDayValue },
+    include: {
+      user: {
+        select: {
+          name: true,
+          phoneNumber: true,
+        },
+      },
+    },
+  });
+
+  const dayNames = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+  const todayDayName = dayNames[todayDayValue];
 
   // Calculating percentages
   const occupancyPercentage =
@@ -455,7 +475,7 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
       </div>
 
       {/* Recent Activities Row */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Latest Registered Residents */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -594,6 +614,68 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Today's Ronda Schedule */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-sm font-semibold">
+                Jadwal Ronda Malam Ini
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Hari {todayDayName}, 22.00 - 04.00 WIB
+              </CardDescription>
+            </div>
+            <Link
+              href="/admin/ronda"
+              className="flex items-center text-xs font-semibold text-primary hover:underline"
+            >
+              Kelola <ArrowUpRight className="size-3.5 ml-0.5" />
+            </Link>
+          </CardHeader>
+          <CardContent className="py-2">
+            {todayRonda.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground text-center">
+                <div className="grid size-12 place-items-center rounded-full bg-muted/40 text-muted-foreground mb-3">
+                  <Shield className="size-6 stroke-muted-foreground/60" />
+                </div>
+                <span className="text-xs font-medium block">
+                  Belum ada petugas ronda terjadwal
+                </span>
+                <span className="text-[10px] text-muted-foreground mt-1">
+                  Gunakan tombol generate di halaman kelola
+                </span>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {todayRonda.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="grid text-xs font-bold rounded-full size-8 place-items-center bg-indigo-500/10 text-indigo-600">
+                        {item.user.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="block text-sm font-semibold truncate max-w-[120px]">
+                          {item.user.name}
+                        </span>
+                        <span className="block text-[11px] text-muted-foreground">
+                          {item.user.phoneNumber}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-indigo-500/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+                      <Moon className="size-3" />
+                      Petugas
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>

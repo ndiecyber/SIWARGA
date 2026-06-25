@@ -46,7 +46,7 @@ export function CreateUserDialog() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const form = useForm<CreateUserInput, unknown, CreateUserValues>({
-    resolver: zodResolver(createUserSchema),
+    resolver: zodResolver(createUserSchema as any),
     defaultValues: {
       name: "",
       phoneNumber: "",

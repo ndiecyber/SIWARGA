@@ -23,6 +23,7 @@ import {
   Megaphone,
   MonitorCog,
   HandCoinsIcon,
+  Shield,
 } from "lucide-react";
 
 import {
@@ -61,6 +62,7 @@ const NAV_SECTIONS = [
       { label: "Perumahan", icon: Home, href: "/admin/houses" },
       { label: "Pengumuman", icon: Megaphone, href: "/admin/announcement" },
       { label: "Iuran", icon: HandCoinsIcon, href: "/admin/fees" },
+      { label: "Ronda", icon: Shield, href: "/admin/ronda" },
     ],
   },
   {
