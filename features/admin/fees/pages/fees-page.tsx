@@ -19,7 +19,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  ActionOption,
   DataTable,
   withActionColumn,
   withSelectColumn,
@@ -32,7 +31,7 @@ import { GenerateFeesDialog } from "../components/generate-fees-dialog";
 import { MarkPaidDialog } from "../components/mark-paid-dialog";
 import { MonthYearPicker } from "../components/month-year-picker";
 import type { FeeRow, FeesPageProps } from "../types";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -72,14 +71,6 @@ const sortOptions: SortOption<FeeRow>[] = [
   { id: "status", label: "Status" },
 ];
 
-const batchActions: ActionOption<FeeRow>[] = [
-  {
-    label: "Export",
-    icon: <Download size={16} />,
-    onClick: () => {},
-  },
-];
-
 function formatRupiah(value: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -96,6 +87,17 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
   const [paidTarget, setPaidTarget] = useState<FeeRow | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const exportMonth = searchParams.get("month") ?? String(period.month);
+  const exportYear = searchParams.get("year") ?? String(period.year);
+
+  const handleExport = () => {
+    window.open(
+      `/admin/fees/export?month=${exportMonth}&year=${exportYear}`,
+      "_blank",
+    );
+  };
 
   const handleNavigatePeriod = (m: number, y: number) => {
     startTransition(() => {
@@ -152,7 +154,7 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="mr-2" />
             Export Laporan
           </Button>
@@ -285,7 +287,6 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
           columns={feeColumns}
           filterCategories={filterCategories}
           sortOptions={sortOptions}
-          batchActions={batchActions}
         />
       </div>
 
@@ -294,7 +295,7 @@ export default function FeesPage({ houses, stats, period }: FeesPageProps) {
         <MarkPaidDialog
           key="detail"
           monthlyDueId={detailTarget.monthlyDueId}
-          houseLabel={`${detailTarget.block}-${detailTarget.houseNumber} (${detailTarget.ownerName})`}
+          houseLabel={`${detailTarget.block}${detailTarget.houseNumber} (${detailTarget.ownerName})`}
           open={detailTarget !== null}
           onOpenChange={(open) => {
             if (!open) setDetailTarget(null);

@@ -6,17 +6,24 @@ import {
   ArrowLeft,
   DownloadIcon,
   EyeIcon,
+  HomeIcon,
   HousePlusIcon,
   PencilIcon,
   Trash2Icon,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { fraunces } from "@/lib/fonts";
 import { SortOption } from "@/lib/types/sort";
 import { Button } from "@/components/ui/button";
 import { FilterCategory } from "@/lib/types/filter";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   ActionOption,
   DataTable,
@@ -32,21 +39,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-
-import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 import { columns } from "../components/columns";
 import { HouseEditForm } from "../components/edit-form";
 import { HouseCreateForm } from "../components/create-form";
 import DeleteHouseDialog from "../components/delete-dialog";
 import HouseDetailPane from "../components/house-detail-pane";
+import { HouseWithOwner, HouseWithResidentsWithUser } from "../types";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
+import { deleteBatchHousesAction } from "../actions";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -98,20 +99,6 @@ const sortOptions: SortOption[] = [
   },
 ];
 
-const batchActions: ActionOption<HouseWithOwner>[] = [
-  {
-    label: "Export",
-    icon: <DownloadIcon size={16} />,
-    onClick: (rows) => console.log("edit", rows),
-  },
-  {
-    label: "Delete",
-    icon: <Trash2Icon size={16} />,
-    onClick: (rows) => console.log("delete", rows),
-    destructive: true,
-  },
-];
-
 interface Props {
   houses: (HouseWithOwner & HouseWithResidentsWithUser)[];
   // houses: HouseWithOwner[];
@@ -127,6 +114,18 @@ export default function HousesPage({ houses }: Props) {
     (HouseWithOwner & HouseWithResidentsWithUser) | null
   >(null);
   const [deleteTarget, setDeleteTarget] = useState<HouseWithOwner | null>(null);
+  const [batchDeleteTarget, setBatchDeleteTarget] = useState<
+    HouseWithOwner[] | null
+  >(null);
+
+  const batchActions: ActionOption<HouseWithOwner>[] = [
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (rows) => setBatchDeleteTarget(rows as HouseWithOwner[]),
+      destructive: true,
+    },
+  ];
 
   const houseColumns = withActionColumn(withSelectColumn(columns), [
     {
@@ -153,10 +152,19 @@ export default function HousesPage({ houses }: Props) {
     <main className="container flex h-[calc(100vh-5.1rem)] max-h-screen gap-6 mx-auto overflow-clip">
       {/* Left: Table */}
       <ScrollArea className="flex-1 min-w-0 max-h-[calc(100vh-5.1rem)]">
-        <header className="flex items-center justify-between py-4 md:py-6">
-          <h1 className={cn(fraunces.className, "text-3xl font-bold")}>
-            Houses
-          </h1>
+        <header className="flex flex-col justify-between gap-4 pb-4 sm:flex-row sm:items-center">
+          <div className="flex items-center gap-4">
+            <div className="rounded-md bg-primary p-2.5">
+              <HomeIcon className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-medium">Data Perumahan</h2>
+              <p className="text-muted-foreground">
+                Kelola dan perbarui data perumahan RT 04 Perum Arjamukti Kencana
+                Raya.
+              </p>
+            </div>
+          </div>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="default">
@@ -288,6 +296,21 @@ export default function HousesPage({ houses }: Props) {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
+        />
+      )}
+
+      {batchDeleteTarget && (
+        <BatchDeleteDialog
+          items={batchDeleteTarget.map((h) => ({
+            id: h.id,
+            label: `${h.block}${h.houseNumber}`,
+          }))}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setBatchDeleteTarget(null);
+          }}
+          onDelete={deleteBatchHousesAction}
+          entityLabel="rumah"
         />
       )}
     </main>
