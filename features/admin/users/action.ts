@@ -6,9 +6,10 @@ import { revalidatePath } from "next/cache";
 import { CreateUserSchema, UpdateUserSchema } from "./schema";
 import { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
+import { usersLogger } from "@/lib/logger";
 
 export async function createUserAction(values: CreateUserSchema) {
-  console.log({ values });
+  usersLogger.info({ phoneNumber: values.phoneNumber, name: values.name }, 'Membuat user baru')
 
   const newEmail = `user-${Date.now()}@gmail.com`;
 
@@ -46,7 +47,7 @@ export async function createUserAction(values: CreateUserSchema) {
       message: "Data warga berhasil ditambahkan",
     };
   } catch (error) {
-    console.error("CREATE_USER_ERROR: ", error);
+    usersLogger.error({ err: error }, 'Gagal buat user')
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -89,7 +90,7 @@ export async function updateUserAction(values: UpdateUserSchema, id: string) {
       message: "Data warga berhasil dirubah",
     };
   } catch (error) {
-    console.error("UPDATE_USER_ERROR: ", error);
+    usersLogger.error({ err: error, userId: id }, 'Gagal update user')
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       if (error.code === "P2002") {
@@ -108,14 +109,21 @@ export async function updateUserAction(values: UpdateUserSchema, id: string) {
 }
 
 export async function deleteUserAction(id: string) {
-  await prisma.user.delete({
-    where: { id },
-  });
-
-  revalidatePath("/admin/users");
+  try {
+    await prisma.user.delete({
+      where: { id },
+    });
+    revalidatePath("/admin/users");
+  } catch (error) {
+    usersLogger.error({ err: error, userId: id }, 'Gagal hapus user')
+  }
 }
 
 export async function deleteBatchUsersAction(ids: string[]) {
-  await prisma.user.deleteMany({ where: { id: { in: ids } } });
-  revalidatePath("/admin/users");
+  try {
+    await prisma.user.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath("/admin/users");
+  } catch (error) {
+    usersLogger.error({ err: error, userIds: ids }, 'Gagal hapus batch user')
+  }
 }

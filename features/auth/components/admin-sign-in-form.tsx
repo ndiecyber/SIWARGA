@@ -23,6 +23,7 @@ import {
 
 import { adminSignInSchema, AdminSignInValues } from "../schemas";
 import { useRouter } from "next/navigation";
+import { authLogger } from "@/lib/logger";
 
 interface Props {
   onSuccess?: () => void;
@@ -85,7 +86,7 @@ function AdminSignInForm({ onSuccess }: Props) {
     try {
       await mutationPromise;
     } catch (error) {
-      console.error(error);
+      authLogger.error({ err: error }, 'Gagal login pengurus');
     }
   }
 
