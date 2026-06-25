@@ -146,7 +146,7 @@ export default function RondaPage({
       </div>
 
       {/* Info Stats Bar */}
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Card size="sm" className="bg-card">
           <CardContent className="flex items-center gap-4 py-4">
             <div className="p-3 rounded-xl bg-primary/10 text-primary">
@@ -159,20 +159,6 @@ export default function RondaPage({
               <h3 className="text-xl font-bold">
                 {scheduledCount} <span className="text-sm font-normal text-muted-foreground">/ {totalWargaCount} Warga</span>
               </h3>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card size="sm" className="bg-card">
-          <CardContent className="flex items-center gap-4 py-4">
-            <div className="p-3 rounded-xl bg-amber-500/10 text-amber-600">
-              <CalendarDays className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Siklus Jadwal
-              </p>
-              <h3 className="text-xl font-bold text-amber-600">7 Hari Mingguan</h3>
             </div>
           </CardContent>
         </Card>
