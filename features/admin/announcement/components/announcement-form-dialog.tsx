@@ -26,6 +26,7 @@ import {
   createAnnouncement,
   updateAnnouncement,
 } from "@/app/admin/announcement/actions";
+import { announcementLogger } from "@/lib/logger";
 
 type Announcement = {
   id: number;
@@ -178,15 +179,15 @@ export function AnnouncementFormDialog({
     }
 
     startTransition(async () => {
-      try {
-        const data = {
-          category: categoryVal,
-          title: titleVal,
-          description: descVal,
-          eventDate: dateVal,
-          status: form.status,
-        };
+      const data = {
+        category: categoryVal,
+        title: titleVal,
+        description: descVal,
+        eventDate: dateVal,
+        status: form.status,
+      };
 
+      try {
         if (isEdit && announcement) {
           await updateAnnouncement(announcement.id, {
             category: data.category,
@@ -209,7 +210,7 @@ export function AnnouncementFormDialog({
         onOpenChange(false);
         setForm({ ...empty });
       } catch (error) {
-        console.error(error);
+        announcementLogger.error({ err: error, title: titleVal }, 'Gagal simpan pengumuman dari dialog')
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });

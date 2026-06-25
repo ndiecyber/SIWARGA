@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { deleteAnnouncement } from "@/app/admin/announcement/actions";
+import { announcementLogger } from "@/lib/logger";
 
 type Props = {
   open: boolean;
@@ -36,7 +37,7 @@ export function DeleteConfirmDialog({
         toast.success("Pengumuman berhasil dihapus!");
         onOpenChange(false);
       } catch (error) {
-        console.error(error);
+        announcementLogger.error({ err: error, announcementId }, 'Gagal hapus pengumuman dari dialog')
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });
