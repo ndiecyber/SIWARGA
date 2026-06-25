@@ -123,3 +123,41 @@ export async function removeRondaEntry(id: string) {
     return { success: false, message: error.message || "Gagal menghapus petugas ronda." };
   }
 }
+
+export async function updateRondaDay(id: string, newDayOfWeek: number) {
+  try {
+    const entry = await prisma.ronda.findUnique({
+      where: { id },
+    });
+
+    if (!entry) {
+      throw new Error("Jadwal tidak ditemukan.");
+    }
+
+    // Check if the user is already assigned to this new day
+    const existing = await prisma.ronda.findUnique({
+      where: {
+        dayOfWeek_userId: {
+          dayOfWeek: newDayOfWeek,
+          userId: entry.userId,
+        },
+      },
+    });
+
+    if (existing) {
+      throw new Error("Warga ini sudah terdaftar di hari tersebut.");
+    }
+
+    await prisma.ronda.update({
+      where: { id },
+      data: { dayOfWeek: newDayOfWeek },
+    });
+
+    revalidatePath("/admin/ronda");
+    revalidatePath("/admin");
+
+    return { success: true, message: "Petugas ronda berhasil dipindahkan." };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Gagal memindahkan petugas ronda." };
+  }
+}
