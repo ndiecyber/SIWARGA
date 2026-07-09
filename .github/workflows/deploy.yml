@@ -12,6 +12,13 @@ jobs:
   migrate-and-seed:
     name: Database Migration & Seeding
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    environment:
+      name: production
+      url: https://siwarga.arjamukti.com
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
