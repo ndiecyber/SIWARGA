@@ -46,11 +46,18 @@ jobs:
         run: pnpm run seed:admin
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
+          DEV_EMAIL: ${{ secrets.DEV_EMAIL }}
+          DEV_NAME: ${{ secrets.DEV_NAME }}
+          DEV_USERNAME: ${{ secrets.DEV_USERNAME }}
+          DEV_PASSWORD: ${{ secrets.DEV_PASSWORD }}
+          DEV_PHONE_NUMBER: ${{ secrets.DEV_PHONE_NUMBER }}
 
       - name: Seed regular users
         run: pnpm run seed:users
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
 
   build-and-deploy:
     name: Build, Push, & Deploy
