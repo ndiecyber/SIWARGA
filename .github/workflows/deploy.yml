@@ -177,7 +177,7 @@ jobs:
 
             echo "==> Creating release ${RELEASE_ID} (hardlink copy)"
             mkdir -p "${RELEASES_DIR}"
-            cp -rl "${STAGING_DIR}" "${RELEASE_DIR}"
+            cp -al "${STAGING_DIR}" "${RELEASE_DIR}"
 
             echo "==> Ensuring read permissions for container"
             chmod -R a+rX "${RELEASE_DIR}"
