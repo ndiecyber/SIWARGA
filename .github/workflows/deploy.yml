@@ -42,6 +42,8 @@ jobs:
           NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
           # Some build tasks might require DATABASE_URL for type generation or validation
           DATABASE_URL: "postgresql://dummy:dummy@localhost/dummy"
+          BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL || 'http://localhost:3000' }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'dummy_secret_for_build' }}
 
       - name: Assemble standalone package
         run: |
@@ -120,6 +122,7 @@ jobs:
         env:
           # Use local tunnel port 15432 to connect to VPS database
           DATABASE_URL: "postgresql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@localhost:15432/${{ secrets.DB_NAME }}"
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
           DEV_EMAIL: ${{ secrets.DEV_EMAIL }}
           DEV_NAME: ${{ secrets.DEV_NAME }}
@@ -129,7 +132,7 @@ jobs:
 
       - name: Rsync to staging
         run: |
-          rsync -az --delete \
+          rsync -az --no-o --no-g --delete \
             -e "ssh -i ~/.ssh/deploy_key" \
             deploy-pkg/ \
             ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }}:${{ env.STAGING_DIR }}/
