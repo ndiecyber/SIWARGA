@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
-import { Loader2, Pencil } from "lucide-react";
+import { Loader2, Pencil, UserPlus } from "lucide-react";
 
 import { z } from "zod/v4";
 import { Input } from "@/components/ui/input";

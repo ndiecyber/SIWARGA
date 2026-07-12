@@ -141,7 +141,16 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
     },
   });
 
-  const dayNames = ["", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+  const dayNames = [
+    "",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+    "Minggu",
+  ];
   const todayDayName = dayNames[todayDayValue];
 
   // Calculating percentages
