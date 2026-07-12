@@ -15,13 +15,13 @@ import HeaderProfile from "../components/header-profile";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -225,20 +225,17 @@ export default function AnnouncementPage({
         </section>
       </div>
 
-      {/* ── Detail Dialog ────────────────────────────────────────── */}
-      <Dialog
+      {/* ── Detail Drawer ───────────────────────────────────────── */}
+      <Drawer
         open={!!selected}
         onOpenChange={(open) => {
           if (!open) setSelected(null);
         }}
       >
-        <DialogContent
-          className="max-w-lg rounded-2xl sm:rounded-2xl"
-          showCloseButton={false}
-        >
+        <DrawerContent className="rounded-t-xl max-w-2xl mx-auto">
           {selected && <AnnouncementDetail item={selected} />}
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
@@ -465,8 +462,8 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <>
-      <DialogHeader>
+    <div className="px-4 pb-8">
+      <DrawerHeader className="px-0">
         <div className="flex items-center justify-between gap-2">
           <span
             className={cn(
@@ -485,26 +482,26 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
             {statusInfo.label}
           </span>
         </div>
-        <DialogTitle className="mt-3 text-base font-extrabold">
+        <DrawerTitle className="mt-3 text-base font-extrabold text-left">
           {item.title}
-        </DialogTitle>
+        </DrawerTitle>
         <div className="mt-1 space-y-0.5">
-          <DialogDescription className="flex items-center gap-1.5 text-xs">
+          <DrawerDescription className="flex items-center gap-1.5 text-xs">
             <CalendarDays className="size-3.5 shrink-0" />
             Dipublikasikan {item.createdAt}
-          </DialogDescription>
+          </DrawerDescription>
           {item.eventDate && (
-            <DialogDescription className="flex items-center gap-1.5 text-xs">
+            <DrawerDescription className="flex items-center gap-1.5 text-xs">
               <Clock className="size-3.5 shrink-0" />
               Tanggal Acara: {item.eventDate}
-            </DialogDescription>
+            </DrawerDescription>
           )}
         </div>
-      </DialogHeader>
+      </DrawerHeader>
 
-      {/* Image in dialog */}
+      {/* Image in drawer */}
       {item.imageUrl && !imgError && (
-        <div className="-mx-6 -mt-2 overflow-hidden">
+        <div className="-mx-4 overflow-hidden rounded-xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={item.imageUrl}
@@ -515,15 +512,15 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
         </div>
       )}
 
-      <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+      <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
         {item.description}
       </div>
 
-      <DialogClose asChild>
-        <Button variant="outline" className="mt-2 w-full rounded-xl">
+      <DrawerClose asChild>
+        <Button variant="outline" className="mt-6 w-full rounded-xl">
           Tutup
         </Button>
-      </DialogClose>
-    </>
+      </DrawerClose>
+    </div>
   );
 }

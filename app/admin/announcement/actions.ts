@@ -45,7 +45,7 @@ export async function createAnnouncement(data: AnnouncementFormData) {
         title: data.title,
         description: data.description,
         eventDate: data.eventDate ? new Date(data.eventDate) : null,
-        status: data.status,
+        status: calculateStatus(data.eventDate),
       },
     });
   } catch (error) {
