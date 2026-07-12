@@ -23,12 +23,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Loader2 } from "lucide-react";
+import { ImageIcon, Loader2, X } from "lucide-react";
 import {
   createAnnouncement,
   updateAnnouncement,
   type AnnouncementFormData,
 } from "@/app/admin/announcement/actions";
+import { uploadAnnouncementImage } from "@/features/admin/announcement/actions/upload-image";
 import { announcementLogger } from "@/lib/logger";
 
 type Announcement = {
@@ -110,6 +111,10 @@ export function AnnouncementFormDialog({
       : { ...empty };
 
   const [form, setForm] = useState<FormData>(() => initForm(announcement));
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    announcement?.imageUrl ?? null,
+  );
 
   function handleOpenChange(v: boolean) {
     if (v) {
@@ -117,6 +122,8 @@ export function AnnouncementFormDialog({
         announcement ? !categoriesList.includes(announcement.category) : false,
       );
       setForm(initForm(announcement));
+      setSelectedFile(null);
+      setPreviewUrl(announcement?.imageUrl ?? null);
     }
     onOpenChange(v);
   }
@@ -144,11 +151,17 @@ export function AnnouncementFormDialog({
 
     startTransition(async () => {
       try {
+        let imageUrl = previewUrl ?? "";
+
+        if (selectedFile) {
+          imageUrl = await uploadAnnouncementImage(selectedFile);
+        }
+
         const data: AnnouncementFormData = {
           category: categoryVal,
           title: titleVal,
           description: descVal ?? "",
-          imageUrl: "", // dummy — file upload belum di-setup
+          imageUrl,
           eventDate: dateVal,
         };
 
@@ -161,6 +174,8 @@ export function AnnouncementFormDialog({
         }
         onOpenChange(false);
         setForm({ ...empty });
+        setSelectedFile(null);
+        setPreviewUrl(null);
       } catch (error) {
         announcementLogger.error(
           { err: error, title: titleVal },
@@ -288,17 +303,60 @@ export function AnnouncementFormDialog({
                   (opsional)
                 </span>
               </Label>
+
+              {/* Drop zone / upload area */}
+              <div
+                className="relative flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 p-4 transition-colors hover:border-muted-foreground/40"
+                onClick={() => imageRef.current?.click()}
+              >
+                {previewUrl ? (
+                  <div className="relative w-full">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="max-h-48 w-full rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-2 top-2 rounded-full bg-background/80 p-1 text-foreground shadow-xs transition-colors hover:bg-background"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        setPreviewUrl(null);
+                        if (imageRef.current) imageRef.current.value = "";
+                      }}
+                    >
+                      <X className="size-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <ImageIcon className="size-8 text-muted-foreground/50" />
+                    <p className="text-xs text-muted-foreground">
+                      Klik untuk upload gambar
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/60">
+                      PNG, JPG atau WebP
+                    </p>
+                  </>
+                )}
+              </div>
+
               <Input
                 id="imageUrl"
                 type="file"
                 accept="image/*"
                 ref={imageRef}
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSelectedFile(file);
+                    setPreviewUrl(URL.createObjectURL(file));
+                  }
+                }}
               />
-              {isEdit && announcement?.imageUrl && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  File upload belum tersedia. Gunakan gambar yang sudah ada.
-                </p>
-              )}
             </div>
 
             {/* Tanggal Acara */}

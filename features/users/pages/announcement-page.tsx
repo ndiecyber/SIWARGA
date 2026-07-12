@@ -462,62 +462,67 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <div className="px-4 pb-8">
-      <DrawerHeader className="px-0">
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
-              getCategoryColor(item.category),
-            )}
-          >
-            {item.category}
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
-              statusInfo.color,
-            )}
-          >
-            {statusInfo.label}
-          </span>
-        </div>
-        <DrawerTitle className="mt-3 text-base font-extrabold text-left">
-          {item.title}
-        </DrawerTitle>
-        <div className="mt-1 space-y-0.5">
-          <DrawerDescription className="flex items-center gap-1.5 text-xs">
-            <CalendarDays className="size-3.5 shrink-0" />
-            Dipublikasikan {item.createdAt}
-          </DrawerDescription>
-          {item.eventDate && (
-            <DrawerDescription className="flex items-center gap-1.5 text-xs">
-              <Clock className="size-3.5 shrink-0" />
-              Tanggal Acara: {item.eventDate}
-            </DrawerDescription>
-          )}
-        </div>
-      </DrawerHeader>
-
-      {/* Image in drawer */}
+    <div className="flex max-h-[75vh] flex-col overflow-y-auto px-4 pb-8">
+      {/* Image at top — fills width, limited height */}
       {item.imageUrl && !imgError && (
-        <div className="-mx-4 overflow-hidden rounded-xl">
+        <div className="-mx-4 shrink-0 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={item.imageUrl}
             alt={item.title}
-            className="aspect-video w-full object-cover"
+            className="h-52 w-full object-cover"
             onError={() => setImgError(true)}
           />
         </div>
       )}
 
+      {/* Header: category + status badges */}
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span
+          className={cn(
+            "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
+            getCategoryColor(item.category),
+          )}
+        >
+          {item.category}
+        </span>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
+            statusInfo.color,
+          )}
+        >
+          {statusInfo.label}
+        </span>
+      </div>
+
+      {/* Title */}
+      <DrawerTitle className="mt-3 text-base font-extrabold text-left">
+        {item.title}
+      </DrawerTitle>
+
+      {/* Dates */}
+      <div className="mt-1 space-y-0.5">
+        <DrawerDescription className="flex items-center gap-1.5 text-xs">
+          <CalendarDays className="size-3.5 shrink-0" />
+          Dipublikasikan {item.createdAt}
+        </DrawerDescription>
+        {item.eventDate && (
+          <DrawerDescription className="flex items-center gap-1.5 text-xs">
+            <Clock className="size-3.5 shrink-0" />
+            Tanggal Acara: {item.eventDate}
+          </DrawerDescription>
+        )}
+      </div>
+
+      {/* Description */}
       <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
         {item.description}
       </div>
 
+      {/* Close button */}
       <DrawerClose asChild>
-        <Button variant="outline" className="mt-6 w-full rounded-xl">
+        <Button variant="outline" className="mt-6 w-full shrink-0 rounded-xl">
           Tutup
         </Button>
       </DrawerClose>
