@@ -88,6 +88,7 @@ model User {
   accounts        Account[]
   housesOwned     House[]   @relation("HouseOwner")
   residentProfile Resident?
+  rondaSchedules  Ronda[]
 
   @@map("users")
 }
@@ -223,10 +224,24 @@ model Announcement {
   category    String    @db.VarChar(50)
   title       String    @db.VarChar(255)
   description String    @db.Text
+  imageUrl    String?   @db.VarChar(500)
   eventDate   DateTime? @map("tanggal_acara") @db.Date
   status      String    @default("upcoming") @db.VarChar(20)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Date
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Date
 
   @@map("pengumuman")
+}
+
+model Ronda {
+  id        String   @id @default(uuid())
+  dayOfWeek Int      // 1 = Senin, 2 = Selasa, 3 = Rabu, 4 = Kamis, 5 = Jumat, 6 = Sabtu, 7 = Minggu
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  @@unique([dayOfWeek, userId])
+  @@index([userId])
+  @@map("ronda")
 }

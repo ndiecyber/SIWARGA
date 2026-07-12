@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useMemo } from "react";
+import { useState, useTransition, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,20 +18,25 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2 } from "lucide-react";
 import {
   createAnnouncement,
   updateAnnouncement,
+  type AnnouncementFormData,
 } from "@/app/admin/announcement/actions";
+import { announcementLogger } from "@/lib/logger";
 
 type Announcement = {
   id: number;
   category: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   eventDate: Date | null;
   status: string;
 };
@@ -53,18 +58,11 @@ const CATEGORIES = [
   "Lainnya",
 ];
 
-const STATUSES = [
-  { value: "upcoming", label: "Akan Datang" },
-  { value: "ongoing", label: "Berlangsung" },
-  { value: "done", label: "Selesai" },
-];
-
 type FormData = {
   category: string;
   title: string;
   description: string;
   eventDate: string;
-  status: string;
 };
 
 const empty: FormData = {
@@ -72,7 +70,6 @@ const empty: FormData = {
   title: "",
   description: "",
   eventDate: "",
-  status: "upcoming",
 };
 
 export function AnnouncementFormDialog({
@@ -83,6 +80,7 @@ export function AnnouncementFormDialog({
 }: Props) {
   const isEdit = !!announcement;
   const [isPending, startTransition] = useTransition();
+  const imageRef = useRef<HTMLInputElement>(null);
 
   const categoriesList = useMemo(() => {
     return Array.from(
@@ -99,59 +97,26 @@ export function AnnouncementFormDialog({
     announcement ? !categoriesList.includes(announcement.category) : false,
   );
 
-  const [form, setForm] = useState<FormData>(() =>
-    announcement
+  const initForm = (a?: Announcement | null): FormData =>
+    a
       ? {
-          category: announcement.category,
-          title: announcement.title,
-          description: announcement.description ?? "",
-          eventDate: announcement.eventDate
-            ? new Date(announcement.eventDate).toISOString().split("T")[0]
+          category: a.category,
+          title: a.title,
+          description: a.description ?? "",
+          eventDate: a.eventDate
+            ? new Date(a.eventDate).toISOString().split("T")[0]
             : "",
-          status: announcement.status,
         }
-      : { ...empty },
-  );
+      : { ...empty };
 
-  useEffect(() => {
-    if (open) {
-      setIsCustomCategory(
-        announcement ? !categoriesList.includes(announcement.category) : false,
-      );
-      setForm(
-        announcement
-          ? {
-              category: announcement.category,
-              title: announcement.title,
-              description: announcement.description ?? "",
-              eventDate: announcement.eventDate
-                ? new Date(announcement.eventDate).toISOString().split("T")[0]
-                : "",
-              status: announcement.status,
-            }
-          : { ...empty },
-      );
-    }
-  }, [open, announcement, categoriesList]);
+  const [form, setForm] = useState<FormData>(() => initForm(announcement));
 
   function handleOpenChange(v: boolean) {
     if (v) {
       setIsCustomCategory(
         announcement ? !categoriesList.includes(announcement.category) : false,
       );
-      setForm(
-        announcement
-          ? {
-              category: announcement.category,
-              title: announcement.title,
-              description: announcement.description ?? "",
-              eventDate: announcement.eventDate
-                ? new Date(announcement.eventDate).toISOString().split("T")[0]
-                : "",
-              status: announcement.status,
-            }
-          : { ...empty },
-      );
+      setForm(initForm(announcement));
     }
     onOpenChange(v);
   }
@@ -179,37 +144,28 @@ export function AnnouncementFormDialog({
 
     startTransition(async () => {
       try {
-        const data = {
+        const data: AnnouncementFormData = {
           category: categoryVal,
           title: titleVal,
-          description: descVal,
+          description: descVal ?? "",
+          imageUrl: "", // dummy — file upload belum di-setup
           eventDate: dateVal,
-          status: form.status,
         };
 
         if (isEdit && announcement) {
-          await updateAnnouncement(announcement.id, {
-            category: data.category,
-            title: data.title,
-            description: data.description ? data.description : "",
-            eventDate: data.eventDate,
-            status: data.status,
-          });
+          await updateAnnouncement(announcement.id, data);
           toast.success("Pengumuman berhasil diperbarui!");
         } else {
-          await createAnnouncement({
-            category: data.category,
-            title: data.title,
-            description: data.description ? data.description : "",
-            eventDate: data.eventDate,
-            status: data.status,
-          });
+          await createAnnouncement(data);
           toast.success("Pengumuman berhasil ditambahkan!");
         }
         onOpenChange(false);
         setForm({ ...empty });
       } catch (error) {
-        console.error(error);
+        announcementLogger.error(
+          { err: error, title: titleVal },
+          "Gagal simpan pengumuman dari dialog",
+        );
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });
@@ -217,153 +173,163 @@ export function AnnouncementFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            {isEdit ? "Edit Pengumuman" : "Tambah Pengumuman"}
-          </DialogTitle>
+      <DialogContent className="h-screen max-w-screen md:min-w-[calc(100%-32rem)] md:h-fit gap-0">
+        <DialogHeader className="sticky pb-4 -mx-6 space-y-4 border-b mb-4">
+          <main className="px-6">
+            <DialogTitle className="text-2xl font-semibold tracking-tight text-primary">
+              {isEdit ? "Edit Pengumuman" : "Tambah Pengumuman"}
+            </DialogTitle>
+            <DialogDescription>
+              {isEdit
+                ? "Ubah data pengumuman yang sudah ada."
+                : "Buat pengumuman baru untuk warga perumahan."}
+            </DialogDescription>
+          </main>
         </DialogHeader>
 
-        <form
-          id="announcement-form"
-          onSubmit={handleSubmit}
-          className="space-y-4 py-2"
-        >
-          {/* Kategori */}
-          <div className="space-y-1.5">
-            <Label htmlFor="category">
-              Kategori <span className="text-destructive">*</span>
-            </Label>
-            <Select
-              value={isCustomCategory ? "custom" : form.category}
-              onValueChange={(v) => {
-                if (v === "custom") {
-                  setIsCustomCategory(true);
-                  setForm((f) => ({ ...f, category: "" }));
-                } else {
-                  setIsCustomCategory(false);
-                  setForm((f) => ({ ...f, category: v }));
-                }
-              }}
-              required
-            >
-              <SelectTrigger id="category" className="w-full">
-                <SelectValue placeholder="Pilih kategori..." />
-              </SelectTrigger>
-              <SelectContent>
-                {categoriesList.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+        <ScrollArea className="max-h-[calc(100vh-12rem)] -mr-6 pr-6">
+          <form
+            id="announcement-form"
+            onSubmit={handleSubmit}
+            className="space-y-4 py-2 px-6"
+          >
+            {/* Kategori */}
+            <div className="space-y-1.5">
+              <Label htmlFor="category">
+                Kategori <span className="text-destructive">*</span>
+              </Label>
+              <Select
+                value={isCustomCategory ? "custom" : form.category}
+                onValueChange={(v) => {
+                  if (v === "custom") {
+                    setIsCustomCategory(true);
+                    setForm((f) => ({ ...f, category: "" }));
+                  } else {
+                    setIsCustomCategory(false);
+                    setForm((f) => ({ ...f, category: v }));
+                  }
+                }}
+                required
+              >
+                <SelectTrigger id="category" className="w-full">
+                  <SelectValue placeholder="Pilih kategori..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriesList.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom">
+                    Kustom (Input Manual)...
                   </SelectItem>
-                ))}
-                <SelectItem value="custom">Kustom (Input Manual)...</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Kategori Kustom */}
-          {isCustomCategory && (
-            <div className="space-y-1.5 animate-in fade-in duration-200">
-              <Label htmlFor="customCategory">
-                Nama Kategori Baru <span className="text-destructive">*</span>
+            {/* Kategori Kustom */}
+            {isCustomCategory && (
+              <div className="space-y-1.5 animate-in fade-in duration-200">
+                <Label htmlFor="customCategory">
+                  Nama Kategori Baru <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="customCategory"
+                  placeholder="Masukkan nama kategori baru..."
+                  value={form.category}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, category: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+            )}
+
+            {/* Judul */}
+            <div className="space-y-1.5">
+              <Label htmlFor="title">
+                Judul <span className="text-destructive">*</span>
               </Label>
               <Input
-                id="customCategory"
-                placeholder="Masukkan nama kategori baru..."
-                value={form.category}
+                id="title"
+                placeholder="Judul pengumuman..."
+                value={form.title}
                 onChange={(e) =>
-                  setForm((f) => ({ ...f, category: e.target.value }))
+                  setForm((f) => ({ ...f, title: e.target.value }))
                 }
                 required
               />
             </div>
-          )}
 
-          {/* Judul */}
-          <div className="space-y-1.5">
-            <Label htmlFor="title">
-              Judul <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="title"
-              placeholder="Judul pengumuman..."
-              value={form.title}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, title: e.target.value }))
-              }
-              required
-            />
-          </div>
+            {/* Deskripsi */}
+            <div className="space-y-1.5">
+              <Label htmlFor="description">
+                Deskripsi{" "}
+                <span className="text-muted-foreground text-xs font-normal">
+                  (opsional)
+                </span>
+              </Label>
+              <Textarea
+                id="description"
+                placeholder="Isi pengumuman..."
+                rows={4}
+                value={form.description}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
+              />
+            </div>
 
-          {/* Deskripsi */}
-          <div className="space-y-1.5">
-            <Label htmlFor="description">
-              Deskripsi{" "}
-              <span className="text-muted-foreground text-xs font-normal">
-                (opsional)
-              </span>
-            </Label>
-            <Textarea
-              id="description"
-              placeholder="Isi pengumuman..."
-              rows={4}
-              value={form.description}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, description: e.target.value }))
-              }
-            />
-          </div>
+            {/* Gambar */}
+            <div className="space-y-1.5">
+              <Label htmlFor="imageUrl">
+                Gambar{" "}
+                <span className="text-muted-foreground text-xs font-normal">
+                  (opsional)
+                </span>
+              </Label>
+              <Input
+                id="imageUrl"
+                type="file"
+                accept="image/*"
+                ref={imageRef}
+              />
+              {isEdit && announcement?.imageUrl && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  File upload belum tersedia. Gunakan gambar yang sudah ada.
+                </p>
+              )}
+            </div>
 
-          {/* Tanggal Acara */}
-          <div className="space-y-1.5">
-            <Label htmlFor="eventDate">
-              Tanggal Acara <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="eventDate"
-              type="date"
-              value={form.eventDate}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, eventDate: e.target.value }))
-              }
-              required
-            />
-          </div>
+            {/* Tanggal Acara */}
+            <div className="space-y-1.5">
+              <Label htmlFor="eventDate">
+                Tanggal Acara <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="eventDate"
+                type="date"
+                value={form.eventDate}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, eventDate: e.target.value }))
+                }
+                required
+              />
+            </div>
+          </form>
 
-          {/* Status */}
-          <div className="space-y-1.5">
-            <Label htmlFor="status">
-              Status <span className="text-destructive">*</span>
-            </Label>
-            <Select
-              value={form.status}
-              onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
-            >
-              <SelectTrigger id="status" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUSES.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </form>
-
-        <DialogFooter className="gap-2">
-          <DialogClose asChild>
-            <Button variant="outline" type="button" disabled={isPending}>
-              Batal
+          <DialogFooter className="gap-2 px-6 pb-4">
+            <DialogClose asChild>
+              <Button variant="outline" type="button" disabled={isPending}>
+                Batal
+              </Button>
+            </DialogClose>
+            <Button type="submit" form="announcement-form" disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {isEdit ? "Simpan Perubahan" : "Tambah"}
             </Button>
-          </DialogClose>
-          <Button type="submit" form="announcement-form" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-            {isEdit ? "Simpan Perubahan" : "Tambah"}
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

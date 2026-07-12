@@ -20,6 +20,7 @@ import {
 
 import { userSignInSchema, UserSignInValues } from "../schemas";
 import { useRouter } from "next/navigation";
+import { authLogger } from "@/lib/logger";
 
 interface Props {
   onSuccess?: () => void;
@@ -57,7 +58,7 @@ function UserSignInForm({ onSuccess }: Props) {
   });
 
   async function onSubmit(data: UserSignInValues) {
-    console.log(data);
+    authLogger.info({ username: data.username }, 'User sign-in form submitted');
 
     const mutationPromise = mutateAsync(form.getValues());
 
@@ -71,8 +72,6 @@ function UserSignInForm({ onSuccess }: Props) {
         return "Login warga berhasil";
       },
       error: (error) => {
-        console.log(error);
-
         if (error instanceof Error) {
           return error.message;
         } else {
@@ -84,7 +83,7 @@ function UserSignInForm({ onSuccess }: Props) {
     try {
       await mutationPromise;
     } catch (error) {
-      console.error(error);
+      authLogger.error({ err: error }, 'Gagal login warga');
     }
   }
 

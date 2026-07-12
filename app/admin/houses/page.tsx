@@ -19,6 +19,11 @@ async function Page() {
     },
     include: {
       owner: true,
+      residents: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 

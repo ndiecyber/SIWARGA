@@ -101,7 +101,7 @@ export function withActionColumn<TData>(
                 <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-fit cursor-pointer">
               {actions.map((action, i) => (
                 <DropdownMenuItem
                   key={i}

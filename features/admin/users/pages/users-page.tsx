@@ -1,6 +1,6 @@
 "use client";
 
-import type { UserGetPayload } from "@/generated/prisma/models";
+import { useState } from "react";
 
 import {
   AlertTriangle,
@@ -11,25 +11,32 @@ import {
   UsersRoundIcon,
 } from "lucide-react";
 
-import { FilterCategory } from "@/lib/types/filter";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-import { columns } from "../components/columns";
-import { CreateUserDialog } from "../components/create-user-dialog";
 import { SortOption } from "@/lib/types/sort";
-import { useState } from "react";
+import { FilterCategory } from "@/lib/types/filter";
+import { UserGetPayload } from "@/generated/prisma/models";
+import type { User as UserBase } from "@/generated/prisma/browser";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   ActionOption,
   DataTable,
   withActionColumn,
   withSelectColumn,
 } from "@/components/shared/data-table";
+
+import { columns } from "../components/columns";
 import DetailUserDialog from "../components/detail-user-dialog";
+import { CreateUserDialog } from "../components/create-user-dialog";
 import { UpdateUserDialog } from "../components/update-user-dialog";
 import { DeleteUserDialog } from "../components/delete-user-dialog";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
+import { deleteBatchUsersAction } from "../action";
 
-type UserWithResident = UserGetPayload<{
-  include: { residentProfile: { include: { familyMembers: true } } };
+type User = UserGetPayload<{
+  include: {
+    residentProfile: {
+      include: { house: true; familyMembers: true };
+    };
+  };
 }>;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -69,53 +76,47 @@ const sortOptions: SortOption[] = [
     label: "Nama",
   },
   {
-    id: "block",
-    label: "Block",
+    id: "houseNumber",
+    label: "Nomor Rumah",
   },
 ];
 
-const batchActions: ActionOption<UserWithResident>[] = [
-  {
-    label: "Export",
-    icon: <Download size={16} />,
-    onClick: () => {},
-  },
-  {
-    label: "Delete",
-    icon: <Trash2Icon size={16} />,
-    onClick: () => {},
-    destructive: true,
-  },
-];
-
-export type UserPageProps = {
-  users: UserWithResident[];
+export type Props = {
+  users: User[];
 };
 
-const UserPage = (props: UserPageProps) => {
-  const [detailTarget, setDetailTarget] = useState<UserWithResident | null>(
+const UserPage = (props: Props) => {
+  const [detailTarget, setDetailTarget] = useState<UserBase | null>(null);
+  const [editTarget, setEditTarget] = useState<UserBase | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserBase | null>(null);
+  const [batchDeleteTarget, setBatchDeleteTarget] = useState<User[] | null>(
     null,
   );
-  const [editTarget, setEditTarget] = useState<UserWithResident | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<UserWithResident | null>(
-    null,
-  );
+
+  const batchActions: ActionOption<User>[] = [
+    {
+      label: "Delete",
+      icon: <Trash2Icon size={16} />,
+      onClick: (rows) => setBatchDeleteTarget(rows as User[]),
+      destructive: true,
+    },
+  ];
 
   const usersColumns = withActionColumn(withSelectColumn(columns), [
     {
       label: "Detail",
       icon: <EyeIcon size={16} />,
-      onClick: (row) => setDetailTarget(row as UserWithResident),
+      onClick: (row) => setDetailTarget(row as UserBase),
     },
     {
       label: "Edit",
       icon: <PencilIcon size={16} />,
-      onClick: (row) => setEditTarget(row as UserWithResident),
+      onClick: (row) => setEditTarget(row as UserBase),
     },
     {
       label: "Delete",
       icon: <Trash2Icon size={16} />,
-      onClick: (row) => setDeleteTarget(row as UserWithResident),
+      onClick: (row) => setDeleteTarget(row as UserBase),
       destructive: true,
     },
   ]);
@@ -193,6 +194,18 @@ const UserPage = (props: UserPageProps) => {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
+        />
+      )}
+
+      {batchDeleteTarget && (
+        <BatchDeleteDialog
+          items={batchDeleteTarget.map((u) => ({ id: u.id, label: u.name }))}
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setBatchDeleteTarget(null);
+          }}
+          onDelete={deleteBatchUsersAction}
+          entityLabel="warga"
         />
       )}
     </section>

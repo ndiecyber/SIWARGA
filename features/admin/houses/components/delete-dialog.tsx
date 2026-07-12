@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { deleteHouseAction } from "../actions";
+import { housesLogger } from "@/lib/logger";
 
 type Props = {
   house: House;
@@ -57,7 +58,7 @@ function DeleteHouseDialog({ house, open, onOpenChange, trigger }: Props) {
     try {
       await deleteHouse;
     } catch (error) {
-      console.error("DELETE_HOUSE_ERROR: ", error);
+      housesLogger.error({ err: error, houseId: house.id }, 'Gagal hapus rumah dari dialog');
     } finally {
       setIsDeleting(false);
     }

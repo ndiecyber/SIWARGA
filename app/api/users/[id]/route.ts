@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { apiLogger } from "@/lib/logger";
 
 type Params = {
   params: Promise<{
@@ -8,9 +9,9 @@ type Params = {
 };
 
 export async function GET(request: NextRequest, { params }: Params) {
-  try {
-    const { id } = await params;
+  const { id } = await params;
 
+  try {
     const user = await prisma.user.findUnique({
       where: {
         id,
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest, { params }: Params) {
       },
     );
   } catch (error) {
-    console.error("GET_USER_BY_ID_ERROR:", error);
+    apiLogger.error({ err: error, userId: id }, 'Gagal ambil data user lewat API')
 
     return NextResponse.json(
       {

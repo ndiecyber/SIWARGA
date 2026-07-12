@@ -1,8 +1,10 @@
-import { connection } from "next/server";
-import { getAnnouncements } from "./actions";
-import AnnouncmentPage from "@/features/admin/announcement/pages/announcments-page";
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
 import { Metadata } from "next";
+
+import { connection } from "next/server";
+import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+import AnnouncementPage from "@/features/admin/announcement/pages/announcements-page";
+
+import { getAnnouncements } from "./actions";
 
 export const metadata: Metadata = {
   title: "Pengumuman | SIWARGA Admin",
@@ -13,7 +15,7 @@ async function Page() {
   await connection();
 
   const announcements = await getAnnouncements();
-  return <AnnouncmentPage announcements={announcements} />;
+  return <AnnouncementPage announcements={announcements} />;
 }
 
 export default layoutWithAuthAdmin(Page);

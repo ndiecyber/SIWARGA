@@ -25,6 +25,7 @@ import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
+import { authLogger } from "@/lib/logger";
 
 // Ganti import ini sesuai action login kamu
 // import { loginUserAction, loginAdminAction } from "../action";
@@ -54,7 +55,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
   const [activeTab, setActiveTab] = React.useState<"user" | "admin">("user");
 
   const userForm = useForm<UserLoginValues>({
-    resolver: zodResolver(userLoginSchema),
+    resolver: zodResolver(userLoginSchema as any),
     defaultValues: {
       phoneNumber: "",
     },
@@ -62,7 +63,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
   });
 
   const adminForm = useForm<AdminLoginValues>({
-    resolver: zodResolver(adminLoginSchema),
+    resolver: zodResolver(adminLoginSchema as any),
     defaultValues: {
       username: "",
       password: "",
@@ -88,7 +89,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
          * return result;
          */
 
-        console.log("Login user:", values);
+        authLogger.info({ phoneNumber: values.phoneNumber }, 'Login user dari landing page');
 
         return {
           success: true,
@@ -136,7 +137,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
          * return result;
          */
 
-        console.log("Login admin:", values);
+        authLogger.info({ username: values.username }, 'Login admin dari landing page');
 
         return {
           success: true,

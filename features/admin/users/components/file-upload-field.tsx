@@ -1,6 +1,7 @@
 // ─── File Upload Field ────────────────────────────────────────────────────────
 
 import { Upload } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 function FileUploadField({
@@ -11,6 +12,7 @@ function FileUploadField({
   value,
   onChange,
   error,
+  previewUrl,
 }: {
   id: string;
   label: string;
@@ -19,6 +21,7 @@ function FileUploadField({
   value?: File;
   onChange: (file: File) => void;
   error?: string;
+  previewUrl?: string;
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -30,7 +33,7 @@ function FileUploadField({
           ${
             error
               ? "border-destructive/60 bg-destructive/5 hover:bg-destructive/10"
-              : value
+              : value || previewUrl
                 ? "border-primary/40 bg-primary/5 hover:bg-primary/10"
                 : "border-border hover:border-muted-foreground/40 hover:bg-muted/50"
           }`}
@@ -56,12 +59,12 @@ function FileUploadField({
 
         <div
           className={`flex h-9 w-9 items-center justify-center rounded-full ${
-            value ? "bg-primary/10" : "bg-muted"
+            value || previewUrl ? "bg-primary/10" : "bg-muted"
           }`}
         >
           <Upload
             className={`h-4 w-4 ${
-              value ? "text-primary" : "text-muted-foreground"
+              value || previewUrl ? "text-primary" : "text-muted-foreground"
             }`}
           />
         </div>
@@ -71,6 +74,24 @@ function FileUploadField({
             <p className="text-sm font-medium text-primary">{value.name}</p>
             <p className="text-xs text-muted-foreground">
               {(value.size / 1024).toFixed(0)} KB · Klik untuk ganti
+            </p>
+          </div>
+        ) : previewUrl ? (
+          <div className="space-y-2">
+            <div className="relative w-full h-32 mx-auto">
+              <Image
+                src={previewUrl}
+                alt="Preview"
+                fill
+                className="rounded object-contain"
+                sizes="200px"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              File sebelumnya · Klik untuk ganti
             </p>
           </div>
         ) : (

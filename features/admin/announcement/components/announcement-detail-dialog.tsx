@@ -17,6 +17,7 @@ type Announcement = {
   category: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   eventDate: Date | null;
   status: string;
   createdAt: Date;
@@ -41,7 +42,22 @@ export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: P
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" showCloseButton={false}>
+        {/* Image at top if available */}
+        {announcement.imageUrl && (
+          <div className="-m-6 -mb-4 overflow-hidden rounded-t-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={announcement.imageUrl}
+              alt={announcement.title}
+              className="aspect-video w-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
+            />
+          </div>
+        )}
+
         <DialogHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
@@ -91,6 +107,12 @@ export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: P
             {announcement.description}
           </p>
         </div>
+
+        <DialogClose asChild>
+          <Button variant="outline" className="w-full rounded-xl">
+            Tutup
+          </Button>
+        </DialogClose>
       </DialogContent>
     </Dialog>
   );

@@ -6,8 +6,7 @@ import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Data Warga",
-  description:
-    "Kelola data warga RT 04 Arjamukti dari panel admin SIWARGA.",
+  description: "Kelola data warga RT 04 Arjamukti dari panel admin SIWARGA.",
 };
 
 async function Page() {
@@ -21,6 +20,7 @@ async function Page() {
       residentProfile: {
         include: {
           familyMembers: true,
+          house: true,
         },
       },
     },

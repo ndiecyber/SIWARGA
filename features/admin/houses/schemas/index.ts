@@ -1,24 +1,75 @@
 import z from "zod";
 
 import { HouseStatus } from "@/generated/prisma/enums";
-import { HouseCreateInput } from "@/generated/prisma/models";
+import { RelationshipType, ResidentRole } from "@/generated/prisma/enums";
+import { HouseCreateInput, HouseUpdateInput } from "@/generated/prisma/models";
 
-export const formSchema = z
-  .object({
-    ownerId: z.string().min(1, "Pemilik wajib diisi"),
-    block: z.string().min(1, "Blok wajib diisi"),
-    status: z
-      .enum([HouseStatus.OCCUPIED, HouseStatus.VACANT])
-      .default(HouseStatus.OCCUPIED),
-    houseNumber: z.string().min(1, "Nomor rumah wajib diisi"),
-  })
-  .transform((data) => ({
+export const formSchema = z.object({
+  ownerId: z.string().min(1, "Pemilik wajib diisi"),
+  block: z.string().min(1, "Blok wajib diisi"),
+  status: z
+    .enum([HouseStatus.OCCUPIED, HouseStatus.VACANT])
+    .default(HouseStatus.OCCUPIED),
+  houseNumber: z.string().min(1, "Nomor rumah wajib diisi"),
+  residents: z.array(
+    z.object({
+      userId: z.string().min(1, "Penghuni wajib dipilih"),
+      residentRole: z.enum([
+        ResidentRole.MAIN_RESIDENT,
+        ResidentRole.FAMILY_MEMBER,
+      ]),
+      relationship: z.enum([
+        RelationshipType.SELF,
+        RelationshipType.SPOUSE,
+        RelationshipType.CHILD,
+        RelationshipType.PARENT,
+        RelationshipType.SIBLING,
+        RelationshipType.OTHER,
+      ]),
+      isOwnerToggle: z.boolean().optional(),
+    }),
+  ).default([]),
+}).superRefine((data, ctx) => {
+  if (data.status === HouseStatus.OCCUPIED && data.residents.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Minimal satu penghuni wajib diisi",
+      path: ["residents"],
+    });
+  }
+});
+
+export const createFormSchema = formSchema.transform(
+  ({ ownerId, residents, ...data }) => ({
     ...data,
     owner: {
       connect: {
-        id: data.ownerId,
+        id: ownerId,
       },
     },
-  })) satisfies z.ZodType<HouseCreateInput>;
+    residents: {
+      createMany: {
+        data: residents,
+      },
+    },
+  }),
+) satisfies z.ZodType<HouseCreateInput>;
+
+export const updateFormSchema = formSchema.transform(
+  ({ ownerId, residents, ...data }) => ({
+    ...data,
+    owner: {
+      connect: {
+        id: ownerId,
+      },
+    },
+    residents: {
+      deleteMany: {},
+      createMany: {
+        data: residents,
+      },
+    },
+  }),
+) satisfies z.ZodType<HouseUpdateInput>;
 
 export type InputFormSchema = z.input<typeof formSchema>;

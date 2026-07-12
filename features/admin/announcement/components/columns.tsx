@@ -12,6 +12,7 @@ export type Announcement = {
   category: string;
   title: string;
   description: string;
+  imageUrl: string | null;
   eventDate: Date | null;
   status: string;
   createdAt: Date;
