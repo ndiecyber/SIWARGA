@@ -23,7 +23,13 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ImageIcon, Loader2, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ImageIcon, Loader2, X, CalendarIcon } from "lucide-react";
 import {
   createAnnouncement,
   updateAnnouncement,
@@ -361,18 +367,45 @@ export function AnnouncementFormDialog({
 
             {/* Tanggal Acara */}
             <div className="space-y-1.5">
-              <Label htmlFor="eventDate">
+              <Label>
                 Tanggal Acara <span className="text-destructive">*</span>
               </Label>
-              <Input
-                id="eventDate"
-                type="date"
-                value={form.eventDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, eventDate: e.target.value }))
-                }
-                required
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 size-4" />
+                    {form.eventDate
+                      ? new Date(form.eventDate + "T00:00:00").toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : "Pilih tanggal acara..."}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={
+                      form.eventDate
+                        ? new Date(form.eventDate + "T00:00:00")
+                        : undefined
+                    }
+                    onSelect={(date) =>
+                      setForm((f) => ({
+                        ...f,
+                        eventDate: date
+                          ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+                          : "",
+                      }))
+                    }
+
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </form>
 
