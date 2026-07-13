@@ -229,7 +229,7 @@ export function AnnouncementFormDialog({
                 <SelectTrigger id="category" className="w-full">
                   <SelectValue placeholder="Pilih kategori..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                   {categoriesList.map((cat) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}

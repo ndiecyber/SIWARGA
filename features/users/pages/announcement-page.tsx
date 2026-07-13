@@ -465,7 +465,7 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
     <div className="flex max-h-[75vh] flex-col overflow-y-auto px-4 pb-8">
       {/* Image at top — fills width, limited height */}
       {item.imageUrl && !imgError && (
-        <div className="-mx-4 shrink-0 overflow-hidden">
+        <div className="-mx-4 mt-2 shrink-0 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={item.imageUrl}
