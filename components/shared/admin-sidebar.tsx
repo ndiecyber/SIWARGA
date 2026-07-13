@@ -24,6 +24,7 @@ import {
   MonitorCog,
   HandCoinsIcon,
   Shield,
+  ArrowUpDown,
 } from "lucide-react";
 
 import {
@@ -62,6 +63,7 @@ const NAV_SECTIONS = [
       { label: "Perumahan", icon: Home, href: "/admin/houses" },
       { label: "Pengumuman", icon: Megaphone, href: "/admin/announcement" },
       { label: "Iuran", icon: HandCoinsIcon, href: "/admin/fees" },
+      { label: "Pengeluaran", icon: ArrowUpDown, href: "/admin/expenses" },
       { label: "Ronda", icon: Shield, href: "/admin/ronda" },
     ],
   },
