@@ -15,13 +15,13 @@ import HeaderProfile from "../components/header-profile";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -225,20 +225,17 @@ export default function AnnouncementPage({
         </section>
       </div>
 
-      {/* ── Detail Dialog ────────────────────────────────────────── */}
-      <Dialog
+      {/* ── Detail Drawer ───────────────────────────────────────── */}
+      <Drawer
         open={!!selected}
         onOpenChange={(open) => {
           if (!open) setSelected(null);
         }}
       >
-        <DialogContent
-          className="max-w-lg rounded-2xl sm:rounded-2xl"
-          showCloseButton={false}
-        >
+        <DrawerContent className="rounded-t-xl max-w-2xl mx-auto">
           {selected && <AnnouncementDetail item={selected} />}
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
@@ -465,65 +462,70 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
   const [imgError, setImgError] = useState(false);
 
   return (
-    <>
-      <DialogHeader>
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
-              getCategoryColor(item.category),
-            )}
-          >
-            {item.category}
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
-              statusInfo.color,
-            )}
-          >
-            {statusInfo.label}
-          </span>
-        </div>
-        <DialogTitle className="mt-3 text-base font-extrabold">
-          {item.title}
-        </DialogTitle>
-        <div className="mt-1 space-y-0.5">
-          <DialogDescription className="flex items-center gap-1.5 text-xs">
-            <CalendarDays className="size-3.5 shrink-0" />
-            Dipublikasikan {item.createdAt}
-          </DialogDescription>
-          {item.eventDate && (
-            <DialogDescription className="flex items-center gap-1.5 text-xs">
-              <Clock className="size-3.5 shrink-0" />
-              Tanggal Acara: {item.eventDate}
-            </DialogDescription>
-          )}
-        </div>
-      </DialogHeader>
-
-      {/* Image in dialog */}
+    <div className="flex max-h-[75vh] flex-col overflow-y-auto px-4 pb-8">
+      {/* Image at top — fills width, limited height */}
       {item.imageUrl && !imgError && (
-        <div className="-mx-6 -mt-2 overflow-hidden">
+        <div className="-mx-4 mt-2 shrink-0 overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={item.imageUrl}
             alt={item.title}
-            className="aspect-video w-full object-cover"
+            className="h-52 w-full object-cover"
             onError={() => setImgError(true)}
           />
         </div>
       )}
 
-      <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+      {/* Header: category + status badges */}
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span
+          className={cn(
+            "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
+            getCategoryColor(item.category),
+          )}
+        >
+          {item.category}
+        </span>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
+            statusInfo.color,
+          )}
+        >
+          {statusInfo.label}
+        </span>
+      </div>
+
+      {/* Title */}
+      <DrawerTitle className="mt-3 text-base font-extrabold text-left">
+        {item.title}
+      </DrawerTitle>
+
+      {/* Dates */}
+      <div className="mt-1 space-y-0.5">
+        <DrawerDescription className="flex items-center gap-1.5 text-xs">
+          <CalendarDays className="size-3.5 shrink-0" />
+          Dipublikasikan {item.createdAt}
+        </DrawerDescription>
+        {item.eventDate && (
+          <DrawerDescription className="flex items-center gap-1.5 text-xs">
+            <Clock className="size-3.5 shrink-0" />
+            Tanggal Acara: {item.eventDate}
+          </DrawerDescription>
+        )}
+      </div>
+
+      {/* Description */}
+      <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
         {item.description}
       </div>
 
-      <DialogClose asChild>
-        <Button variant="outline" className="mt-2 w-full rounded-xl">
+      {/* Close button */}
+      <DrawerClose asChild>
+        <Button variant="outline" className="mt-6 w-full shrink-0 rounded-xl">
           Tutup
         </Button>
-      </DialogClose>
-    </>
+      </DrawerClose>
+    </div>
   );
 }

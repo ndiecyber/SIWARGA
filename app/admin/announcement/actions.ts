@@ -3,20 +3,7 @@
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { announcementLogger } from "@/lib/logger";
-
-function calculateStatus(eventDate: string | null | undefined): string {
-  if (!eventDate) return "upcoming";
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const event = new Date(eventDate);
-  event.setHours(0, 0, 0, 0);
-
-  if (event < today) return "done";
-  if (event.getTime() === today.getTime()) return "ongoing";
-  return "upcoming";
-}
+import { calculateAnnouncementStatus } from "@/lib/announcement-status";
 
 export type AnnouncementFormData = {
   category: string;
@@ -28,13 +15,24 @@ export type AnnouncementFormData = {
 };
 
 export async function getAnnouncements() {
-  return await prisma.announcement.findMany({
+  const announcements = await prisma.announcement.findMany({
     orderBy: { createdAt: "desc" },
   });
+  return announcements.map((a) => ({
+    ...a,
+    status: calculateAnnouncementStatus(a.eventDate),
+  }));
 }
 
 export async function getAnnouncementById(id: number) {
-  return await prisma.announcement.findUnique({ where: { id } });
+  const announcement = await prisma.announcement.findUnique({
+    where: { id },
+  });
+  if (!announcement) return null;
+  return {
+    ...announcement,
+    status: calculateAnnouncementStatus(announcement.eventDate),
+  };
 }
 
 export async function createAnnouncement(data: AnnouncementFormData) {
@@ -44,8 +42,9 @@ export async function createAnnouncement(data: AnnouncementFormData) {
         category: data.category,
         title: data.title,
         description: data.description,
+        imageUrl: data.imageUrl || null,
         eventDate: data.eventDate ? new Date(data.eventDate) : null,
-        status: data.status,
+        status: calculateAnnouncementStatus(data.eventDate),
       },
     });
   } catch (error) {
@@ -70,7 +69,7 @@ export async function updateAnnouncement(
         description: data.description,
         imageUrl: data.imageUrl || null,
         eventDate: data.eventDate ? new Date(data.eventDate) : null,
-        status: calculateStatus(data.eventDate),
+        status: calculateAnnouncementStatus(data.eventDate),
       },
     });
   } catch (error) {

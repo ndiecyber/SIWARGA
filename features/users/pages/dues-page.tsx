@@ -9,11 +9,11 @@ import {
   ChevronRight,
   ArrowDownUp,
 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import HeaderProfile from "../components/header-profile";
+import { PaymentDrawer } from "../components/payment-drawer";
 import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -301,11 +301,11 @@ function CurrentMonthCard({
         </div>
 
         {due.status === "TERTUNDA" && (
-          <Button asChild size="sm" className="shrink-0">
-            <Link href="/bayar">
+          <PaymentDrawer amount={due.amount}>
+            <Button size="sm" className="shrink-0">
               Bayar <ChevronRight size={14} />
-            </Link>
-          </Button>
+            </Button>
+          </PaymentDrawer>
         )}
       </div>
     </div>
@@ -334,16 +334,15 @@ function OverdueSummary({
             {formatRupiah(total)}
           </p>
         </div>
-        <Button
-          asChild
-          size="sm"
-          variant="destructive"
-          className="shrink-0"
-        >
-          <Link href="/bayar">
+        <PaymentDrawer amount={total}>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="shrink-0"
+          >
             Bayar Semua <ChevronRight size={14} />
-          </Link>
-        </Button>
+          </Button>
+        </PaymentDrawer>
       </div>
     </div>
   );
