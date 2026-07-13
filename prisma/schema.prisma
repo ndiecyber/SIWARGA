@@ -89,6 +89,8 @@ model User {
   housesOwned     House[]   @relation("HouseOwner")
   residentProfile Resident?
   rondaSchedules  Ronda[]
+  expensesApproved Expense[] @relation("ApprovedExpenses")
+  expensesCreated  Expense[] @relation("CreatedExpenses")
 
   @@map("users")
 }
@@ -244,4 +246,35 @@ model Ronda {
   @@unique([dayOfWeek, userId])
   @@index([userId])
   @@map("ronda")
+}
+
+enum ExpenseStatus {
+  SUBMITTED
+  APPROVED
+}
+
+model Expense {
+  id          String        @id @default(uuid())
+  date        DateTime      @db.Date
+  description String        @db.VarChar(500)
+  category    String        @db.VarChar(100)
+  amount      Decimal       @db.Decimal(15, 2)
+  status      ExpenseStatus @default(SUBMITTED)
+  proofUrl    String?       @db.VarChar(500)
+  note        String?       @db.Text
+
+  approvedById String?
+  approvedBy   User?  @relation("ApprovedExpenses", fields: [approvedById], references: [id])
+  approvedAt   DateTime?
+
+  createdById String
+  createdBy   User   @relation("CreatedExpenses", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamp(3)
+  updatedAt DateTime @updatedAt @db.Timestamp(3)
+
+  @@index([status])
+  @@index([category])
+  @@index([date])
+  @@map("expenses")
 }
