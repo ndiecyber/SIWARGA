@@ -158,6 +158,7 @@ export async function deleteExpenseAction(
     await prisma.expense.delete({ where: { id } });
 
     revalidatePath("/admin/expenses");
+    revalidatePath("/admin");
 
     return {
       success: true,
@@ -175,13 +176,25 @@ export async function deleteExpenseAction(
   }
 }
 
-export async function deleteBatchExpensesAction(ids: string[]) {
+export async function deleteBatchExpensesAction(
+  ids: string[],
+): Promise<ActionResponse<{ count: number }>> {
   try {
-    await prisma.expense.deleteMany({
+    const result = await prisma.expense.deleteMany({
       where: { id: { in: ids }, status: ExpenseStatus.SUBMITTED },
     });
     revalidatePath("/admin/expenses");
+    return {
+      success: true,
+      message: `${result.count} pengeluaran berhasil dihapus`,
+      data: { count: result.count },
+    };
   } catch (error) {
     expensesLogger.error({ err: error, expenseIds: ids }, "Gagal hapus batch pengeluaran");
+    return {
+      success: false,
+      message: "Gagal menghapus pengeluaran",
+      globalError: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
