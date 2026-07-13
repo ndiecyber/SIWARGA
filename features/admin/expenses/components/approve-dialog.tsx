@@ -60,8 +60,11 @@ export function ApproveExpenseDialog({
     toast.promise(approveAction, {
       loading: "Menyetujui pengeluaran...",
       success: (response) => {
-        handleOpenChange(false);
-        return response.message || "Pengeluaran berhasil disetujui!";
+        if (response.success) {
+          handleOpenChange(false);
+          return response.message || "Pengeluaran berhasil disetujui!";
+        }
+        throw new Error(response.message || "Gagal menyetujui pengeluaran");
       },
       error: (error) => `Terjadi kesalahan: ${error}`,
     });

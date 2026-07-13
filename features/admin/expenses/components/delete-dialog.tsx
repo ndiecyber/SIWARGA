@@ -48,8 +48,11 @@ function DeleteExpenseDialog({ expense, open, onOpenChange, trigger }: Props) {
     toast.promise(deleteAction, {
       loading: "Menghapus pengeluaran...",
       success: (response) => {
-        handleOpenChange(false);
-        return response.message || "Pengeluaran berhasil dihapus!";
+        if (response.success) {
+          handleOpenChange(false);
+          return response.message || "Pengeluaran berhasil dihapus!";
+        }
+        throw new Error(response.message || "Gagal menghapus pengeluaran");
       },
       error: (error) => `Terjadi kesalahan: ${error}`,
     });
