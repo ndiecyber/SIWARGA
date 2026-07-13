@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: "Kelola data pengeluaran kas RT",
 };
 
-async function Page({ user }: { user: { name: string; email?: string } }) {
+async function Page(_props: { user: { name: string; email?: string } }) {
   await connection();
 
   const expenses = await prisma.expense.findMany({
