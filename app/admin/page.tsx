@@ -18,6 +18,7 @@ import {
   Calendar,
   ChevronRight,
   Activity,
+  ArrowUpDown,
   CheckCircle2,
   XCircle,
   Clock,
@@ -87,6 +88,33 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
+
+  // Expense aggregates
+  const expenseThisMonth = await prisma.expense.aggregate({
+    where: {
+      status: "APPROVED",
+      date: {
+        gte: new Date(currentYear, currentMonth - 1, 1),
+        lt: new Date(currentYear, currentMonth, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const expenseThisYear = await prisma.expense.aggregate({
+    where: {
+      status: "APPROVED",
+      date: {
+        gte: new Date(currentYear, 0, 1),
+        lt: new Date(currentYear + 1, 0, 1),
+      },
+    },
+    _sum: { amount: true },
+  });
+
+  const totalExpenseThisMonth = Number(expenseThisMonth._sum.amount || 0);
+  const totalExpenseThisYear = Number(expenseThisYear._sum.amount || 0);
+  const netCashFlow = totalCollectedFunds - totalExpenseThisYear;
 
   const paidDuesThisMonth = await prisma.monthlyDues.count({
     where: { month: currentMonth, year: currentYear, status: "PAID" },
@@ -187,7 +215,7 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Metric 1: Total Warga */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -249,6 +277,26 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
           </CardContent>
         </Card>
 
+        {/* Metric 4: Pengeluaran */}
+        <Card size="sm">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Pengeluaran (Bln Ini)
+            </CardTitle>
+            <div className="grid size-9 place-items-center rounded-xl bg-red-500/10 text-red-500">
+              <ArrowUpDown className="size-5" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {formatRupiah(totalExpenseThisMonth)}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {formatRupiah(totalExpenseThisYear)} tahun ini
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Metric 4: Pengumuman */}
         <Card size="sm">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -264,6 +312,44 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
             <p className="mt-1 text-xs text-muted-foreground">
               kegiatan & info lingkungan
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Expense Summary Row */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">
+              Kas Bersih
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Total pemasukan - pengeluaran (tahun ini)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className={`text-2xl font-bold ${netCashFlow >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+              {formatRupiah(Math.abs(netCashFlow))}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {netCashFlow >= 0 ? "Surplus" : "Defisit"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card size="sm">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold">
+              Pengeluaran Tahun Ini
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Total pengeluaran yang sudah disetujui
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {formatRupiah(totalExpenseThisYear)}
+            </div>
           </CardContent>
         </Card>
       </div>
