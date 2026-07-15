@@ -23,23 +23,24 @@ const navItems = [
     href: "#home",
   },
   {
-    title: "Profil",
-    items: [
-      { title: "Tentang Kami", href: "#tentang-kami" },
-      { title: "Pengurus RT", href: "#pengurus-rt" },
-    ],
-  },
-  {
-    title: "Fitur",
-    href: "#features",
+    title: "Layanan",
+    href: "#layanan",
   },
   {
     title: "Informasi",
-    items: [
-      { title: "Data & Laporan", href: "#data-laporan" },
-      { title: "Pengumuman RT", href: "#pengumuman" },
-      { title: "Galeri Kegiatan", href: "#galeri" },
-    ],
+    href: "#features",
+  },
+  {
+    title: "Pengumuman",
+    href: "#pengumuman",
+  },
+  {
+    title: "Agenda",
+    href: "#agenda",
+  },
+  {
+    title: "Tentang",
+    href: "#tentang-kami",
   },
 ];
 
@@ -101,7 +102,7 @@ function Navbar() {
     : "-translate-y-full";
 
   const navbarBackgroundClass = isScrolled
-    ? "bg-background/80 backdrop-blur-md shadow-sm border-b-border"
+    ? "bg-background/90 backdrop-blur-md shadow-sm border-b-border"
     : "bg-transparent border-transparent";
 
   return (
@@ -113,82 +114,69 @@ function Navbar() {
           ${navbarBackgroundClass}
         `}
       >
-        <div className="flex items-center justify-between w-full px-4 py-2 mx-auto max-w-275">
-          <Link href="/" className="flex items-center gap-2 pl-2 pr-4">
+        <div className="flex items-center justify-between w-full px-6 py-3.5 mx-auto max-w-275">
+          <Link href="/" className="flex items-center gap-2 pl-2">
             <Image
               src="/logo/logo-versi-1.png"
               alt="Logo"
-              width={128}
-              height={128}
+              width={140}
+              height={38}
               priority
+              className="h-auto w-36 object-contain"
             />
           </Link>
 
           <nav>
-            <ul className="flex items-center gap-2 lg:gap-3">
-              {navItems.map((item) => {
-                if ("items" in item) {
-                  return (
-                    <li key={item.title} className="group relative py-2">
-                      <Button
-                        variant="ghost"
-                        className="flex items-center gap-1 cursor-pointer select-none"
-                      >
-                        <span>{item.title}</span>
-                        <ChevronDown className="h-3.5 w-3.5 transition-transform duration-300 group-hover:rotate-180 text-muted-foreground" />
-                      </Button>
-
-                      {/* Dropdown Card */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 translate-y-2 pointer-events-none group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 z-50">
-                        <div className="bg-background/95 backdrop-blur-md border border-border shadow-xl rounded-2xl p-2 min-w-[200px] flex flex-col gap-0.5">
-                          {item.items?.map((subItem) => (
-                            <Link
-                              key={subItem.title}
-                              href={subItem.href}
-                              onClick={(event) =>
-                                handleSmoothScroll(event, subItem.href)
-                              }
-                              className="w-full text-left px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground hover:bg-muted"
-                            >
-                              {subItem.title}
-                            </Link>
-                          ))}
-                        </div>
-                      </div>
-                    </li>
-                  );
-                }
-
-                return (
-                  <li key={item.title}>
-                    <Button variant="ghost" asChild>
-                      <Link
-                        href={item.href}
-                        onClick={(event) =>
-                          handleSmoothScroll(event, item.href)
-                        }
-                      >
-                        {item.title}
-                      </Link>
-                    </Button>
-                  </li>
-                );
-              })}
+            <ul className="flex items-center gap-1 lg:gap-2">
+              {navItems.map((item) => (
+                <li key={item.title}>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    className="font-medium text-foreground/80 hover:text-primary hover:bg-primary/5 px-3 py-2 rounded-lg text-sm transition-all"
+                  >
+                    <Link
+                      href={item.href}
+                      onClick={(event) =>
+                        handleSmoothScroll(event, item.href)
+                      }
+                    >
+                      {item.title}
+                    </Link>
+                  </Button>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          <div className="grid">
+          <div className="flex items-center gap-2">
             {session ? (
               <Link
                 href={session.user.role === "admin" ? "/admin" : "/dashboard"}
               >
-                <Button variant="outline">
-                  <LucideLayoutDashboard />
+                <Button variant="outline" className="gap-2">
+                  <LucideLayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Button>
               </Link>
             ) : (
-              <SignIn />
+              <div className="flex items-center gap-2">
+                <SignIn>
+                  <Button
+                    variant="outline"
+                    className="border border-input hover:bg-muted font-medium text-sm px-4 py-2 rounded-lg"
+                  >
+                    Masuk
+                  </Button>
+                </SignIn>
+                <SignIn>
+                  <Button
+                    className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-4 py-2 rounded-lg"
+                  >
+                    Daftar
+                  </Button>
+                </SignIn>
+              </div>
             )}
           </div>
         </div>
@@ -210,8 +198,9 @@ function Navbar() {
               src="/logo/logo-versi-1.png"
               alt="Logo"
               width={102}
-              height={102}
+              height={28}
               priority
+              className="h-auto w-28 object-contain"
             />
           </Link>
         </div>
