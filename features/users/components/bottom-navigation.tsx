@@ -29,7 +29,7 @@ export default function BottomNavigation({
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 z-20 mt-auto overflow-visible border-t border-border bg-background/95 backdrop-blur">
+    <nav className="sticky bottom-0 z-20 mt-auto overflow-visible border-t border-[#F0F0F0] bg-white/95 backdrop-blur">
       <ul className="grid grid-cols-5 items-end px-1">
         {tabs.map(({ href, label, Icon, isMain }) => {
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
@@ -37,33 +37,31 @@ export default function BottomNavigation({
           const iconWrapperClass = cn(
             "grid place-items-center transition-all duration-200 ease-out",
             isMain
-              ? "-mt-5 size-11 rounded-full border-4 border-background bg-primary text-primary-foreground shadow-lg group-hover:-translate-y-0.5 group-hover:scale-105 group-hover:bg-primary/90 group-active:scale-95"
-              : "size-6 rounded-lg group-hover:bg-primary/10 group-hover:text-primary group-hover:scale-105",
-            !isMain && isActive && "bg-primary/10 text-primary",
-            !isMain && !isActive && "text-muted-foreground",
+              ? "-mt-5 size-11 rounded-full border-4 border-white bg-[#1B6B3A] text-white shadow-lg"
+              : "size-6 rounded-lg",
+            !isMain && isActive && "text-[#1B6B3A]",
+            !isMain && !isActive && "text-[#6B7280]",
           );
 
           const labelClass = cn(
-            "leading-none transition-colors duration-200 group-hover:text-primary",
-            isMain && "mt-0.5 font-semibold text-primary",
+            "leading-none transition-colors duration-200 text-center",
+            isMain && "mt-0.5 font-semibold",
+            isActive ? "text-[#1B6B3A]" : "text-[#6B7280]",
           );
 
           const content = (
             <>
               <span className={iconWrapperClass}>
-                <Icon size={isMain ? 20 : 16} strokeWidth={2.2} />
+                <Icon size={isMain ? 20 : 18} strokeWidth={isMain ? 2.5 : 2} />
               </span>
               <span className={labelClass}>{label}</span>
             </>
           );
 
-          // dipakai untuk <Link> — style normal
           const linkClass = cn(
-            "group relative flex w-full flex-col items-center justify-end gap-0.5 py-1.5 text-[10px] font-medium text-muted-foreground transition-colors duration-200 hover:text-primary active:scale-95",
-            isActive && "text-primary",
+            "group relative flex w-full flex-col items-center justify-end gap-0.5 py-1.5 text-[10px] font-medium transition-colors duration-200 active:scale-95",
           );
 
-          // dipakai untuk <button> trigger drawer — reset semua default browser button
           const buttonClass = cn(
             linkClass,
             "pt-0 appearance-none border-0 bg-transparent p-0 m-0 cursor-pointer outline-none focus-visible:ring-0",

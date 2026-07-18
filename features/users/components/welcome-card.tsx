@@ -1,44 +1,50 @@
-import { Button } from "@/components/ui/button";
-import { ChevronRight, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Button } from "@/components/ui/button"
+import { ChevronRight } from "lucide-react"
+import Link from "next/link"
 
 type WelcomeCardProps = {
-  name: string;
-};
+  name: string
+}
 
 export default function WelcomeCard(props: WelcomeCardProps) {
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
-      <div className="absolute -right-5 -top-5 size-24 rounded-full bg-primary/10" />
-      <div className="absolute -bottom-8 right-8 size-20 rounded-full bg-muted" />
+    <section className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#E8F5EC] to-[#F5FAF6] p-5 shadow-sm">
+      <div className="absolute -right-8 -top-8 size-32 rounded-full bg-white/40" />
+      <div className="absolute -bottom-12 -right-4 size-40 rounded-full bg-white/25" />
+      <div className="absolute -left-4 top-12 size-20 rounded-full bg-white/20" />
 
-      <div className="relative flex items-center justify-between">
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <p className="text-xs font-semibold text-primary">
-            Selamat datang kembali 👋
+      <div className="relative flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          <p className="text-xs font-semibold tracking-wide text-[#1B6B3A]/80">
+            Selamat Datang
           </p>
 
-          <h2 className="mt-1 text-base font-extrabold leading-tight text-foreground">
-            {props.name}
+          <h2 className="text-xl font-extrabold leading-tight text-[#1B6B3A]">
+            Halo, {props.name}!
           </h2>
 
-          <p className="mt-1 max-w-64 text-xs leading-4 text-muted-foreground">
+          <p className="max-w-64 text-[13px] leading-relaxed text-[#6B7280]">
             Pantau iuran, pengumuman, dan jadwal kegiatan RT dengan lebih mudah
             melalui SiWarga.
           </p>
 
-          <Button asChild size="sm">
-            <Link href="/pengumuman" className="text-xs">
+          <Button asChild size="sm" className="mt-1 rounded-xl bg-[#1B6B3A] text-white hover:bg-[#2E8B4F]">
+            <Link href="/pengumuman">
               Lihat Info RT
-              <ChevronRight size={12} />
+              <ChevronRight size={14} />
             </Link>
           </Button>
         </div>
 
-        <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
-          <Sparkles size={34} strokeWidth={2.3} />
+        <div className="mt-2 shrink-0">
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+            <rect x="10" y="30" width="60" height="45" rx="6" fill="#2E8B4F" opacity="0.15" />
+            <rect x="16" y="36" width="48" height="33" rx="4" fill="#2E8B4F" opacity="0.25" />
+            <path d="M40 12L12 36h8v33h16V52h8v17h16V36h8L40 12z" fill="#1B6B3A" opacity="0.35" />
+            <rect x="28" y="44" width="24" height="16" rx="3" fill="#1B6B3A" opacity="0.2" />
+          </svg>
         </div>
       </div>
     </section>
-  );
+  )
 }
