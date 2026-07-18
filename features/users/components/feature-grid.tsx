@@ -13,6 +13,7 @@ import {
 import type { LucideIcon } from "lucide-react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
 interface FeatureItem {
   label: string
@@ -30,7 +31,12 @@ const features: FeatureItem[] = [
   { label: "Lainnya", Icon: MoreHorizontal },
 ]
 
-export function FeatureGrid() {
+interface FeatureGridProps {
+  selected: string
+  onSelect: (label: string) => void
+}
+
+export function FeatureGrid({ selected, onSelect }: FeatureGridProps) {
   return (
     <Card className="shadow-md">
       <CardHeader className="border-b">
@@ -42,7 +48,11 @@ export function FeatureGrid() {
             <button
               key={label}
               type="button"
-              className="flex flex-col items-center gap-1.5 rounded-lg p-2 transition-colors hover:bg-muted"
+              onClick={() => onSelect(label)}
+              className={cn(
+                "flex flex-col items-center gap-1.5 rounded-lg p-2 transition-colors hover:bg-muted",
+                selected === label && "bg-muted"
+              )}
             >
               <div className="flex size-12 items-center justify-center rounded-full bg-green-50 text-green-600">
                 <Icon size={24} />
