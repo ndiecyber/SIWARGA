@@ -131,13 +131,13 @@ export default function WelcomeCard({
                 alt=""
                 className="absolute inset-0 size-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative flex items-end justify-between gap-4 p-5 pb-12">
-                <div className="min-w-0 flex-1 space-y-2">
-                  <h2 className="text-xl font-extrabold leading-tight text-white drop-shadow-sm">
+                <div className="min-w-0 flex-1 space-y-2 rounded-xl bg-black/10 p-3 backdrop-blur-[2px]">
+                  <h2 className="text-xl font-extrabold leading-tight text-white drop-shadow">
                     {slide.title}
                   </h2>
-                  <p className="max-w-64 text-[13px] leading-relaxed text-white/90 drop-shadow-sm">
+                  <p className="max-w-64 text-[13px] leading-relaxed text-white/95 drop-shadow">
                     {slide.description}
                   </p>
                 </div>
