@@ -27,13 +27,6 @@ export default function WelcomeCard(props: WelcomeCardProps) {
             Pantau iuran, pengumuman, dan jadwal kegiatan RT dengan lebih mudah
             melalui SiWarga.
           </p>
-
-          <Button asChild size="sm" className="mt-1 rounded-xl bg-[#1B6B3A] text-white hover:bg-[#2E8B4F]">
-            <Link href="/pengumuman">
-              Lihat Info RT
-              <ChevronRight size={14} />
-            </Link>
-          </Button>
         </div>
 
         <div className="mt-2 shrink-0">

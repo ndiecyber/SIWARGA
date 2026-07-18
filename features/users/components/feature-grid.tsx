@@ -1,83 +1,57 @@
 "use client"
 
 import {
+  Banknote,
   CalendarDays,
-  Home,
-  Image,
-  Info,
+  ClipboardList,
+  FilePenLine,
+  FileText,
   Megaphone,
-  ReceiptText,
-  User,
-  Wallet,
+  MoreHorizontal,
+  Users,
 } from "lucide-react"
-import Link from "next/link"
-import type { ReactNode } from "react"
-import { PaymentDrawer } from "./payment-drawer"
+import type { LucideIcon } from "lucide-react"
 
-interface FeatureLink {
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+interface FeatureItem {
   label: string
-  href: string
-  Icon: ReactNode
+  Icon: LucideIcon
 }
-
-interface FeaturePayment {
-  label: string
-  Icon: ReactNode
-  isPayment: true
-}
-
-type FeatureItem = FeatureLink | FeaturePayment
 
 const features: FeatureItem[] = [
-  { label: "Iuran", href: "/iuran", Icon: <ReceiptText size={22} strokeWidth={1.8} /> },
-  { label: "Pengumuman", href: "/pengumuman", Icon: <Megaphone size={22} strokeWidth={1.8} /> },
-  { label: "Piket", href: "/piket", Icon: <CalendarDays size={22} strokeWidth={1.8} /> },
-  { label: "Profil", href: "/profile", Icon: <User size={22} strokeWidth={1.8} /> },
-  { label: "Bayar", Icon: <Wallet size={22} strokeWidth={1.8} />, isPayment: true },
-  { label: "Info RT", href: "/pengumuman", Icon: <Info size={22} strokeWidth={1.8} /> },
-  { label: "Galeri", href: "/", Icon: <Image size={22} strokeWidth={1.8} /> },
-  { label: "Pengurus", href: "/", Icon: <Home size={22} strokeWidth={1.8} /> },
+  { label: "Iuran Warga", Icon: FilePenLine },
+  { label: "Pengumuman", Icon: Megaphone },
+  { label: "Surat Menyurat", Icon: FileText },
+  { label: "Layanan Warga", Icon: Users },
+  { label: "Kegiatan", Icon: CalendarDays },
+  { label: "Keuangan", Icon: Banknote },
+  { label: "Agenda", Icon: ClipboardList },
+  { label: "Lainnya", Icon: MoreHorizontal },
 ]
-
-const iconWrapper = (icon: ReactNode) => (
-  <div className="grid size-12 place-items-center rounded-2xl bg-[#E8F5EC] text-[#1B6B3A]">
-    {icon}
-  </div>
-)
 
 export function FeatureGrid() {
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {features.map((item) => {
-        if ("isPayment" in item) {
-          return (
-            <PaymentDrawer key={item.label}>
-              <button
-                type="button"
-                className="flex cursor-pointer flex-col items-center gap-1.5 border-0 bg-transparent p-0 outline-none"
-              >
-                {iconWrapper(item.Icon)}
-                <span className="text-center text-[11px] font-semibold leading-tight text-[#111827]">
-                  {item.label}
-                </span>
-              </button>
-            </PaymentDrawer>
-          )
-        }
-
-        return (
-          <Link
-            key={item.label}
-            href={item.href}
-            className="flex flex-col items-center gap-1.5 no-underline"
-          >
-            {iconWrapper(item.Icon)}
-            <span className="text-center text-[11px] font-semibold leading-tight text-[#111827]">
-              {item.label}
-            </span>
-          </Link>
-        )
-      })}
-    </div>
+    <Card className="shadow-md">
+      <CardHeader className="border-b">
+        <CardTitle>Fitur Utama</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-4 gap-4">
+          {features.map(({ label, Icon }) => (
+            <button
+              key={label}
+              type="button"
+              className="flex flex-col items-center gap-1.5 rounded-lg p-2 transition-colors hover:bg-muted"
+            >
+              <div className="flex size-12 items-center justify-center rounded-full bg-green-50 text-green-600">
+                <Icon size={24} />
+              </div>
+              <span className="text-xs text-gray-900">{label}</span>
+            </button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   )
 }

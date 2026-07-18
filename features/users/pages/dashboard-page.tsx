@@ -84,11 +84,11 @@ export default function DashboardPage({
       <div className="flex min-h-dvh flex-col gap-4 bg-muted/40 px-4 py-4">
         <WelcomeCard name={userName} />
 
+        <FeatureGrid />
+
         <HighlightBanner monthName={currentMonthName} due={currentMonthDue} />
 
         {overdueDues.length > 0 && <OverdueAlert dues={overdueDues} />}
-
-        <FeatureGrid />
 
         <section>
           <SectionHeader title="Pengumuman Terbaru" to="/pengumuman" />
