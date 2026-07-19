@@ -1,44 +1,166 @@
-import { Button } from "@/components/ui/button";
-import { ChevronRight, Sparkles } from "lucide-react";
-import Link from "next/link";
+"use client"
 
-type WelcomeCardProps = {
-  name: string;
-};
+import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  AlertTriangle,
+  CalendarClockIcon,
+  CheckCircle2,
+  ClockAlert,
+  Megaphone,
+  Users,
+} from "lucide-react"
 
-export default function WelcomeCard(props: WelcomeCardProps) {
+import { cn } from "@/lib/utils"
+
+interface CurrentMonthDue {
+  status: "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT"
+  amount: number
+  dueDate: string
+}
+
+interface OverdueDue {
+  id: string
+  amount: number
+  label: string
+}
+
+interface WelcomeCardProps {
+  name: string
+  currentMonthDue: CurrentMonthDue | null
+  overdueDues: OverdueDue[]
+  recentAnnouncementCount: number
+  totalResidents: number
+  currentMonthName: string
+}
+
+export default function WelcomeCard({
+  name,
+  currentMonthDue,
+  overdueDues,
+  recentAnnouncementCount,
+  totalResidents,
+  currentMonthName,
+}: WelcomeCardProps) {
+  const [current, setCurrent] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [paused, setPaused] = useState(false)
+
+  const totalOverdue = overdueDues.reduce((sum, d) => sum + d.amount, 0)
+  const isLunas = currentMonthDue?.status === "LUNAS"
+
+  const slides = [
+    {
+      title: `Halo, ${name}!`,
+      description:
+        "Pantau iuran, pengumuman, dan jadwal kegiatan RT dengan lebih mudah melalui SiWarga.",
+      bgImage: "/images/banner/welcome-banner.png",
+      icon: <></>,
+    },
+    {
+      title: currentMonthDue === null ? "Status Iuran" : `Iuran ${currentMonthName}`,
+      description:
+        currentMonthDue === null
+          ? "Kamu belum terdaftar di rumah manapun."
+          : `${isLunas ? "Lunas" : currentMonthDue.status === "TERTUNDA" ? "Tertunda" : "Belum Dibuat"} — Rp ${currentMonthDue.amount.toLocaleString("id-ID")} · Jatuh tempo ${currentMonthDue.dueDate}`,
+      bgImage: "/images/banner/iuran-banner.png",
+      icon: <></>,
+    },
+    {
+      title: overdueDues.length > 0 ? "Tagihan Tertunggak" : "Iuran Lancar",
+      description:
+        overdueDues.length > 0
+          ? `Kamu memiliki ${overdueDues.length} bulan tagihan yang belum dibayar — total ${new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(totalOverdue)}`
+          : "Semua iuran telah dibayar tepat waktu.",
+      bgImage: "/images/banner/tunggakan-banner.png",
+      icon: <></>,
+    },
+    {
+      title: "Warga Terdaftar",
+      description: `Total ${totalResidents} warga terdaftar di lingkungan RT.`,
+      bgImage: "/images/banner/warga-banner.png",
+      icon: <></>,
+    },
+    {
+      title: "Pengumuman",
+      description:
+        recentAnnouncementCount > 0
+          ? `${recentAnnouncementCount} pengumuman baru dalam 7 hari terakhir.`
+          : "Tidak ada pengumuman baru.",
+      bgImage: "/images/banner/pengumuman-banner.png",
+      icon: <></>,
+    },
+  ]
+
+  const startTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length)
+    }, 4000)
+  }, [slides.length])
+
+  useEffect(() => {
+    if (!paused) startTimer()
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [paused, startTimer])
+
+  function goTo(index: number) {
+    setCurrent(index)
+    startTimer()
+  }
+
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
-      <div className="absolute -right-5 -top-5 size-24 rounded-full bg-primary/10" />
-      <div className="absolute -bottom-8 right-8 size-20 rounded-full bg-muted" />
-
-      <div className="relative flex items-center justify-between">
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <p className="text-xs font-semibold text-primary">
-            Selamat datang kembali 👋
-          </p>
-
-          <h2 className="mt-1 text-base font-extrabold leading-tight text-foreground">
-            {props.name}
-          </h2>
-
-          <p className="mt-1 max-w-64 text-xs leading-4 text-muted-foreground">
-            Pantau iuran, pengumuman, dan jadwal kegiatan RT dengan lebih mudah
-            melalui SiWarga.
-          </p>
-
-          <Button asChild size="sm">
-            <Link href="/pengumuman" className="text-xs">
-              Lihat Info RT
-              <ChevronRight size={12} />
-            </Link>
-          </Button>
+    <section
+      className="relative overflow-hidden rounded-[20px] bg-gradient-to-br from-[#E8F5EC] to-[#F5FAF6] shadow-sm"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="relative overflow-hidden">
+        <div
+          className="flex items-stretch transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${current * 100}%)` }}
+        >
+          {slides.map((slide, i) => (
+            <div
+              key={i}
+              className="relative w-full flex-shrink-0"
+            >
+              <img
+                src={slide.bgImage}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+              <div className="relative flex items-end justify-between gap-4 p-5 pb-12">
+                <div className="min-w-0 flex-1 space-y-2 rounded-xl bg-black/10 p-3 backdrop-blur-[2px]">
+                  <h2 className="text-xl font-extrabold leading-tight text-white drop-shadow">
+                    {slide.title}
+                  </h2>
+                  <p className="max-w-64 text-[13px] leading-relaxed text-white/95 drop-shadow">
+                    {slide.description}
+                  </p>
+                </div>
+                <div className="mt-2 shrink-0">{slide.icon}</div>
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary">
-          <Sparkles size={34} strokeWidth={2.3} />
+        <div className="absolute inset-x-0 bottom-3 mx-auto flex w-fit gap-1.5 rounded-full bg-white/60 px-4 py-2 backdrop-blur-sm">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goTo(i)}
+              className={cn(
+                "size-2 rounded-full transition-all duration-300",
+                current === i ? "w-5 bg-white" : "bg-white/40",
+              )}
+            />
+          ))}
         </div>
       </div>
     </section>
-  );
+  )
 }
