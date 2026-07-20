@@ -111,9 +111,8 @@ export default function DashboardPage({
   return (
     <>
       <HeaderProfile name={userName} />
-      <HeaderProfile name={userName} />
 
-      <div className="flex min-h-dvh flex-col gap-4 bg-muted/40 px-4 py-4">
+      <div className="flex flex-col gap-4 px-4 py-4 min-h-dvh bg-muted/40">
         <WelcomeCard
           name={userName}
           currentMonthDue={currentMonthDue}
@@ -136,7 +135,7 @@ export default function DashboardPage({
 
             <section>
               <SectionHeader title="Ringkasan Iuran" to="/iuran" />
-              <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-3">
                 <StatCard
                   icon={<CalendarClockIcon size={18} />}
                   label="Iuran Bulan Ini"
@@ -173,7 +172,7 @@ export default function DashboardPage({
 
             <section>
               <SectionHeader title="Ringkasan Keuangan" to="/iuran" />
-              <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mt-3">
                 <StatCard
                   icon={<CalendarClockIcon size={18} />}
                   label="Iuran Bulan Ini"
@@ -220,7 +219,7 @@ export default function DashboardPage({
             <SectionHeader title="Pengumuman Terbaru" to="/pengumuman" />
             <div className="mt-3 flex flex-col divide-y divide-[#F0F0F0] rounded-[20px] border border-[#F0F0F0] bg-white shadow-sm">
               {announcements.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">
+                <p className="py-10 text-sm text-center text-muted-foreground">
                   Belum ada pengumuman.
                 </p>
               )}
@@ -233,7 +232,7 @@ export default function DashboardPage({
                   <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#E8F5EC] text-[#1B6B3A]">
                     <Megaphone size={18} strokeWidth={1.8} />
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-semibold text-[#111827]">
                       {a.title}
                     </p>
@@ -285,7 +284,7 @@ export default function DashboardPage({
                       {p.hari.slice(0, 3).toUpperCase()}
                     </span>
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-semibold text-[#111827]">
                       {p.nama}
                     </p>
@@ -393,7 +392,7 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3 rounded-[20px] border border-amber-200 bg-amber-50 p-4">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-100">
+        <div className="flex items-center justify-center size-9 shrink-0 rounded-xl bg-amber-100">
           <Info size={16} className="text-amber-600" />
         </div>
         <div>
@@ -430,7 +429,7 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
             {dues.map((due) => (
               <li
                 key={due.id}
-                className="flex flex-col rounded-xl bg-white/70 px-3 py-2 text-sm"
+                className="flex flex-col px-3 py-2 text-sm rounded-xl bg-white/70"
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
@@ -458,7 +457,7 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
           <Button
             asChild
             size="sm"
-            className="w-full rounded-xl bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700"
+            className="w-full text-white rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700"
           >
             <Link href="/iuran">
               Bayar Tagihan Tertunggak <ChevronRight size={14} />
@@ -548,7 +547,7 @@ function HighlightBanner({
             asChild
             variant="outline"
             size="sm"
-            className="mt-2 rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
+            className="mt-2 text-white rounded-xl border-white/30 bg-white/10 hover:bg-white/20"
           >
             <Link href="/iuran">
               Bayar Sekarang <ChevronRight size={14} />
