@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   AlertTriangle,
   Ban,
@@ -13,13 +13,13 @@ import {
   Megaphone,
   Receipt,
   Users,
-} from "lucide-react"
-import Link from "next/link"
-import type { ReactNode } from "react"
-import HeaderProfile from "../components/header-profile"
-import WelcomeCard from "../components/welcome-card"
-import { FeatureGrid } from "../components/feature-grid"
-import { Button } from "@/components/ui/button"
+} from "lucide-react";
+import Link from "next/link";
+import type { ReactNode } from "react";
+import HeaderProfile from "../components/header-profile";
+import WelcomeCard from "../components/welcome-card";
+import { FeatureGrid } from "../components/feature-grid";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,48 +28,53 @@ import {
   AlertDialogHeader,
   AlertDialogMedia,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 const piket = [
   { hari: "Senin", nama: "Budi Santoso" },
   { hari: "Selasa", nama: "Siti Aminah" },
   { hari: "Rabu", nama: "Andi Prasetyo" },
   { hari: "Kamis", nama: "Rina Wulandari" },
-]
+];
 
 interface CurrentMonthDue {
-  status: "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT"
-  amount: number
-  dueDate: string
+  status: "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT";
+  amount: number;
+  dueDate: string;
 }
 
 interface DashboardPageProps {
-  userName: string
-  currentMonthName: string
-  currentMonthDue: CurrentMonthDue | null
+  userName: string;
+  currentMonthName: string;
+  currentMonthDue: CurrentMonthDue | null;
   yearlyStats: {
-    paidMonths: number
-    totalMonths: number
-  }
+    paidMonths: number;
+    totalMonths: number;
+  };
   announcements: Array<{
-    id: number
-    title: string
-    excerpt: string
-    date: string
-  }>
-  totalResidents: number
-  recentAnnouncementCount: number
+    id: number;
+    title: string;
+    excerpt: string;
+    date: string;
+  }>;
+  totalResidents: number;
+  recentAnnouncementCount: number;
   overdueDues: Array<{
-    id: string
-    month: number
-    year: number
-    amount: number
-    label: string
-    dueDate: string
-  }>
+    id: string;
+    month: number;
+    year: number;
+    amount: number;
+    label: string;
+    dueDate: string;
+  }>;
 }
 
-const comingSoonFeatures = ["Surat Menyurat", "Layanan Warga", "Agenda", "Lainnya"]
+const comingSoonFeatures = [
+  "Surat Menyurat",
+  "Layanan Warga",
+  "Agenda",
+  "Lainnya",
+];
 
 export default function DashboardPage({
   userName,
@@ -81,9 +86,9 @@ export default function DashboardPage({
   recentAnnouncementCount,
   overdueDues,
 }: DashboardPageProps) {
-  const [selectedFeature, setSelectedFeature] = useState("Iuran Warga")
-  const [comingSoonOpen, setComingSoonOpen] = useState(false)
-  const [comingSoonFeature, setComingSoonFeature] = useState("")
+  const [selectedFeature, setSelectedFeature] = useState("Iuran Warga");
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState("");
 
   const iuranStatus =
     currentMonthDue === null
@@ -92,19 +97,20 @@ export default function DashboardPage({
         ? { label: "Lunas", tone: "success" as const }
         : currentMonthDue.status === "TERTUNDA"
           ? { label: "Tertunda", tone: "warning" as const }
-          : { label: "Belum Dibuat", tone: "muted" as const }
+          : { label: "Belum Dibuat", tone: "muted" as const };
 
   function handleSelect(label: string) {
     if (comingSoonFeatures.includes(label)) {
-      setComingSoonFeature(label)
-      setComingSoonOpen(true)
-      return
+      setComingSoonFeature(label);
+      setComingSoonOpen(true);
+      return;
     }
-    setSelectedFeature(label)
+    setSelectedFeature(label);
   }
 
   return (
     <>
+      <HeaderProfile name={userName} />
       <HeaderProfile name={userName} />
 
       <div className="flex min-h-dvh flex-col gap-4 bg-muted/40 px-4 py-4">
@@ -121,7 +127,10 @@ export default function DashboardPage({
 
         {selectedFeature === "Iuran Warga" && (
           <>
-            <HighlightBanner monthName={currentMonthName} due={currentMonthDue} />
+            <HighlightBanner
+              monthName={currentMonthName}
+              due={currentMonthDue}
+            />
 
             {overdueDues.length > 0 && <OverdueAlert dues={overdueDues} />}
 
@@ -132,7 +141,11 @@ export default function DashboardPage({
                   icon={<CalendarClockIcon size={18} />}
                   label="Iuran Bulan Ini"
                   value={iuranStatus.label}
-                  footnote={currentMonthDue ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}` : "—"}
+                  footnote={
+                    currentMonthDue
+                      ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}`
+                      : "—"
+                  }
                   variant={iuranStatus.tone}
                 />
                 <StatCard
@@ -140,7 +153,11 @@ export default function DashboardPage({
                   label="Iuran Tahunan"
                   value={`${yearlyStats.paidMonths}/${yearlyStats.totalMonths}`}
                   footnote="bulan lunas"
-                  variant={yearlyStats.paidMonths === yearlyStats.totalMonths ? "success" : "warning"}
+                  variant={
+                    yearlyStats.paidMonths === yearlyStats.totalMonths
+                      ? "success"
+                      : "warning"
+                  }
                 />
               </div>
             </section>
@@ -149,7 +166,10 @@ export default function DashboardPage({
 
         {selectedFeature === "Keuangan" && (
           <>
-            <HighlightBanner monthName={currentMonthName} due={currentMonthDue} />
+            <HighlightBanner
+              monthName={currentMonthName}
+              due={currentMonthDue}
+            />
 
             <section>
               <SectionHeader title="Ringkasan Keuangan" to="/iuran" />
@@ -158,7 +178,11 @@ export default function DashboardPage({
                   icon={<CalendarClockIcon size={18} />}
                   label="Iuran Bulan Ini"
                   value={iuranStatus.label}
-                  footnote={currentMonthDue ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}` : "—"}
+                  footnote={
+                    currentMonthDue
+                      ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}`
+                      : "—"
+                  }
                   variant={iuranStatus.tone}
                 />
                 <StatCard
@@ -173,7 +197,11 @@ export default function DashboardPage({
                   label="Iuran Tahunan"
                   value={`${yearlyStats.paidMonths}/${yearlyStats.totalMonths}`}
                   footnote="bulan lunas"
-                  variant={yearlyStats.paidMonths === yearlyStats.totalMonths ? "success" : "warning"}
+                  variant={
+                    yearlyStats.paidMonths === yearlyStats.totalMonths
+                      ? "success"
+                      : "warning"
+                  }
                 />
                 <StatCard
                   icon={<Users size={18} />}
@@ -229,15 +257,27 @@ export default function DashboardPage({
                 >
                   <div className="flex w-12 shrink-0 flex-col items-center rounded-xl bg-[#E8F5EC] px-2 py-1.5 leading-tight">
                     <span className="text-sm font-extrabold text-[#1B6B3A]">
-                      {["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"].indexOf(
-                        p.hari.slice(0, 3).toUpperCase(),
-                      ) === -1
+                      {[
+                        "MIN",
+                        "SEN",
+                        "SEL",
+                        "RAB",
+                        "KAM",
+                        "JUM",
+                        "SAB",
+                      ].indexOf(p.hari.slice(0, 3).toUpperCase()) === -1
                         ? "—"
                         : String(
                             new Date().getDate() +
-                              ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"].indexOf(
-                                p.hari.slice(0, 3).toUpperCase(),
-                              ) -
+                              [
+                                "MIN",
+                                "SEN",
+                                "SEL",
+                                "RAB",
+                                "KAM",
+                                "JUM",
+                                "SAB",
+                              ].indexOf(p.hari.slice(0, 3).toUpperCase()) -
                               new Date().getDay(),
                           ).padStart(2, "0")}
                     </span>
@@ -269,8 +309,8 @@ export default function DashboardPage({
             </AlertDialogMedia>
             <AlertDialogTitle>Fitur Segera Hadir</AlertDialogTitle>
             <AlertDialogDescription>
-              Fitur <strong>{comingSoonFeature}</strong> sedang dalam pengembangan
-              dan akan tersedia segera.
+              Fitur <strong>{comingSoonFeature}</strong> sedang dalam
+              pengembangan dan akan tersedia segera.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogAction onClick={() => setComingSoonOpen(false)}>
@@ -279,7 +319,7 @@ export default function DashboardPage({
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -288,8 +328,8 @@ function SectionHeader({
   title,
   to,
 }: {
-  title: string
-  to: "/pengumuman" | "/piket" | "/iuran"
+  title: string;
+  to: "/pengumuman" | "/piket" | "/iuran";
 }) {
   return (
     <div className="flex items-center justify-between">
@@ -303,7 +343,7 @@ function SectionHeader({
         Lihat Semua <ChevronRight size={14} />
       </Link>
     </div>
-  )
+  );
 }
 
 function StatCard({
@@ -313,41 +353,43 @@ function StatCard({
   footnote,
   variant,
 }: {
-  icon: ReactNode
-  label: string
-  value: string
-  footnote: string
-  variant: "success" | "primary" | "warning" | "muted"
+  icon: ReactNode;
+  label: string;
+  value: string;
+  footnote: string;
+  variant: "success" | "primary" | "warning" | "muted";
 }) {
   const accentClass = {
     success: "bg-[#E8F5EC] text-[#1B6B3A]",
     primary: "bg-[#E8F5EC] text-[#1B6B3A]",
     warning: "bg-[#E8F5EC] text-[#1B6B3A]",
     muted: "bg-[#F5FAF6] text-[#6B7280]",
-  }[variant]
+  }[variant];
 
   const valueClass = {
     success: "text-[#1B6B3A]",
     primary: "text-[#1B6B3A]",
     warning: "text-[#1B6B3A]",
     muted: "text-[#111827]",
-  }[variant]
+  }[variant];
 
   return (
     <div className="rounded-[20px] border border-[#F0F0F0] bg-white p-4 shadow-sm">
-      <div className={`grid size-9 place-items-center rounded-xl ${accentClass}`}>
+      <div
+        className={`grid size-9 place-items-center rounded-xl ${accentClass}`}
+      >
         {icon}
       </div>
       <p className="mt-2 text-xs font-medium text-[#6B7280]">{label}</p>
       <p className={`mt-0.5 text-lg font-extrabold ${valueClass}`}>{value}</p>
       <p className="text-[11px] text-[#6B7280]">{footnote}</p>
     </div>
-  )
+  );
 }
 
 // ─── Overdue Alert ───────────────────────────────────────────────────────────
 function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
-  const totalOverdue = dues.reduce((sum, d) => sum + d.amount, 0)
+  const totalOverdue = dues.reduce((sum, d) => sum + d.amount, 0);
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3 rounded-[20px] border border-amber-200 bg-amber-50 p-4">
@@ -425,15 +467,15 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function HighlightBanner({
   monthName,
   due,
 }: {
-  monthName: string
-  due: CurrentMonthDue | null
+  monthName: string;
+  due: CurrentMonthDue | null;
 }) {
   if (due === null) {
     return (
@@ -449,10 +491,10 @@ function HighlightBanner({
           </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const isLunas = due.status === "LUNAS"
+  const isLunas = due.status === "LUNAS";
 
   return (
     <div
@@ -472,9 +514,7 @@ function HighlightBanner({
       <div className="relative space-y-0.5">
         <div
           className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
-            isLunas
-              ? "bg-white/15 text-white"
-              : "bg-white/15 text-white"
+            isLunas ? "bg-white/15 text-white" : "bg-white/15 text-white"
           }`}
         >
           {isLunas ? <CheckCircle2 size={13} /> : <AlertTriangle size={13} />}
@@ -504,7 +544,12 @@ function HighlightBanner({
         )}
 
         {!isLunas && due.status !== "BELUM_DIBUAT" && (
-          <Button asChild variant="outline" size="sm" className="mt-2 rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="mt-2 rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
+          >
             <Link href="/iuran">
               Bayar Sekarang <ChevronRight size={14} />
             </Link>
@@ -519,5 +564,5 @@ function HighlightBanner({
         )}
       </div>
     </div>
-  )
+  );
 }

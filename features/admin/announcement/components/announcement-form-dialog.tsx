@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, useMemo, useRef } from "react";
+import { useState, useTransition, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogDescription,
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
@@ -33,6 +35,7 @@ import { ImageIcon, Loader2, X, CalendarIcon } from "lucide-react";
 import {
   createAnnouncement,
   updateAnnouncement,
+  type AnnouncementFormData,
   type AnnouncementFormData,
 } from "@/app/admin/announcement/actions";
 import { uploadAnnouncementImage } from "@/features/admin/announcement/actions/upload-image";
@@ -378,7 +381,9 @@ export function AnnouncementFormDialog({
                   >
                     <CalendarIcon className="mr-2 size-4" />
                     {form.eventDate
-                      ? new Date(form.eventDate + "T00:00:00").toLocaleDateString("id-ID", {
+                      ? new Date(
+                          form.eventDate + "T00:00:00",
+                        ).toLocaleDateString("id-ID", {
                           day: "numeric",
                           month: "long",
                           year: "numeric",
@@ -402,7 +407,6 @@ export function AnnouncementFormDialog({
                           : "",
                       }))
                     }
-
                   />
                 </PopoverContent>
               </Popover>

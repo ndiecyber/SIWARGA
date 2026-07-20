@@ -9,7 +9,7 @@ env:
   STAGING_DIR: /opt/lexa/siwarga-staging
   RELEASES_DIR: /opt/lexa/siwarga-releases
   APP_LINK: /opt/lexa/apps/siwarga
-  KEEP_RELEASES: 5
+  KEEP_RELEASES: 2
 
 jobs:
   build-and-deploy:
