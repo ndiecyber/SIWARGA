@@ -2,12 +2,11 @@
 
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { housesLogger } from "@/lib/logger";
 import { ActionResponse } from "@/lib/types";
 import { House } from "@/generated/prisma/browser";
-import { HouseStatus } from "@/generated/prisma/enums";
 
 import { createFormSchema, InputFormSchema, updateFormSchema } from "./schemas";
-import { housesLogger } from "@/lib/logger";
 
 export async function createHouseAction(
   data: InputFormSchema,
@@ -25,7 +24,7 @@ export async function createHouseAction(
       data: result,
     };
   } catch (error) {
-    housesLogger.error({ err: error }, 'Gagal tambah rumah')
+    housesLogger.error({ err: error }, "Gagal tambah rumah");
     return {
       success: false,
       message: "Data rumah gagal ditambahkan",
@@ -55,7 +54,7 @@ export async function updateHouseAction(
       data: result,
     };
   } catch (error) {
-    housesLogger.error({ err: error, houseId: id }, 'Gagal update rumah')
+    housesLogger.error({ err: error, houseId: id }, "Gagal update rumah");
     return {
       success: false,
       message: "Data rumah gagal diperbarui",
@@ -79,7 +78,7 @@ export async function deleteHouseAction(
       data: "",
     };
   } catch (error) {
-    housesLogger.error({ err: error, houseId: id }, 'Gagal hapus rumah')
+    housesLogger.error({ err: error, houseId: id }, "Gagal hapus rumah");
 
     return {
       success: false,
@@ -95,7 +94,10 @@ export async function deleteBatchHousesAction(ids: string[]) {
     await prisma.house.deleteMany({ where: { id: { in: ids } } });
     revalidatePath("/admin/houses");
   } catch (error) {
-    housesLogger.error({ err: error, houseIds: ids }, 'Gagal hapus batch rumah')
+    housesLogger.error(
+      { err: error, houseIds: ids },
+      "Gagal hapus batch rumah",
+    );
   }
 }
 
@@ -137,7 +139,7 @@ export async function getOwnersLookupAction(
       })),
     };
   } catch (error) {
-    housesLogger.warn({ err: error, search }, 'Gagal ambil data pemilik')
+    housesLogger.warn({ err: error, search }, "Gagal ambil data pemilik");
     return {
       success: false,
       message: "Gagal mengambil data pemilik",
@@ -158,20 +160,27 @@ export async function getResidentsLookupAction(
         name: { contains: sanitizedSearch, mode: "insensitive" },
         OR: [
           { residentProfile: null },
-          ...(excludeHouseId ? [{ residentProfile: { houseId: excludeHouseId } }] : []),
+          ...(excludeHouseId
+            ? [{ residentProfile: { houseId: excludeHouseId } }]
+            : []),
         ],
       },
       select: { id: true, name: true },
       take: 10,
       orderBy: { name: "asc" },
     });
-    return { success: true, message: "Data pengguna berhasil diambil", data: users };
+    return {
+      success: true,
+      message: "Data pengguna berhasil diambil",
+      data: users,
+    };
   } catch (error) {
-    housesLogger.warn({ err: error, search }, 'Gagal ambil data pengguna')
+    housesLogger.warn({ err: error, search }, "Gagal ambil data pengguna");
     return {
       success: false,
       message: "Gagal mengambil data pengguna",
-      globalError: error instanceof Error ? error.message : "Unknown error occurred",
+      globalError:
+        error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 }

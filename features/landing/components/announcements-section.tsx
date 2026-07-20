@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Megaphone, Calendar, ChevronRight, Info } from "lucide-react";
+
+import { toast } from "sonner";
+import { CalendarIcon, ChevronRightIcon, MegaphoneIcon } from "lucide-react";
+
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,24 +69,32 @@ export function AnnouncementsSection() {
   return (
     <section
       id="pengumuman"
-      className="relative py-8 md:py-12 overflow-hidden bg-white text-foreground"
+      className="relative py-8 overflow-hidden bg-white md:py-12 text-foreground"
     >
       {/* Background */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-35">
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-35">
         <div
           className="absolute"
           style={{
-            top: "10%", right: "5%", width: "450px", height: "450px",
+            top: "10%",
+            right: "5%",
+            width: "450px",
+            height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
           }}
         />
         <div
           className="absolute"
           style={{
-            bottom: "10%", left: "5%", width: "450px", height: "450px",
+            bottom: "10%",
+            left: "5%",
+            width: "450px",
+            height: "450px",
             borderRadius: "50%",
-            background: "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, hsl(var(--primary)/.06) 0%, transparent 70%)",
           }}
         />
         <div
@@ -97,13 +107,16 @@ export function AnnouncementsSection() {
         />
       </div>
 
-      <div className="container relative z-10 mx-auto max-w-[1100px] px-4 sm:px-6">
-
+      <div className="container relative z-10 px-4 mx-auto max-w-275 sm:px-6">
         {/* Header */}
-        <div className="mb-6 md:mb-10 text-center max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mb-6 text-center md:mb-10">
           <h2
             className="font-fraunces font-semibold leading-[1.1] tracking-tight text-foreground"
-            style={{ fontSize: "clamp(20px, 4.5vw, 42px)", letterSpacing: "-0.5px", marginBottom: "6px" }}
+            style={{
+              fontSize: "clamp(20px, 4.5vw, 42px)",
+              letterSpacing: "-0.5px",
+              marginBottom: "6px",
+            }}
           >
             Pengumuman & Kegiatan <em className="italic text-primary">RT 04</em>
           </h2>
@@ -115,7 +128,7 @@ export function AnnouncementsSection() {
           className={`transition-all duration-700 ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
         >
           {/* ── Desktop grid ── */}
-          <div className="hidden md:grid md:grid-cols-3 gap-5">
+          <div className="hidden gap-5 md:grid md:grid-cols-3">
             {announcements.map((item) => (
               <Card
                 key={item.id}
@@ -124,7 +137,7 @@ export function AnnouncementsSection() {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">
                     <span className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                      <Calendar className="h-3.5 w-3.5 text-muted-foreground/85" />
+                      <CalendarIcon className="h-3.5 w-3.5 text-muted-foreground/85" />
                       {item.date}
                     </span>
                     <Badge
@@ -134,10 +147,10 @@ export function AnnouncementsSection() {
                       {item.tag}
                     </Badge>
                   </div>
-                  <h3 className="text-lg font-fraunces font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
+                  <h3 className="mb-3 text-lg font-bold leading-snug transition-colors duration-200 font-fraunces text-foreground group-hover:text-primary">
                     {item.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                  <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
                     {item.desc}
                   </p>
                 </div>
@@ -145,10 +158,10 @@ export function AnnouncementsSection() {
                   variant="outline"
                   size="sm"
                   onClick={() => handleDetailClick(item.title)}
-                  className="mt-auto self-start rounded-lg h-9 text-xs font-semibold border-primary/20 text-primary bg-transparent hover:bg-primary hover:text-primary-foreground flex items-center gap-1 transition-all duration-300"
+                  className="flex items-center self-start gap-1 mt-auto text-xs font-semibold transition-all duration-300 bg-transparent rounded-lg h-9 border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground"
                 >
                   <span>Baca Selengkapnya</span>
-                  <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               </Card>
             ))}
@@ -163,9 +176,9 @@ export function AnnouncementsSection() {
                 className="group w-full text-left flex items-start gap-3 p-3.5 rounded-xl border border-border bg-card hover:border-primary/30 active:bg-muted/40 transition-all duration-200"
               >
                 {/* Left accent strip */}
-                <div className="flex-shrink-0 mt-0.5 flex flex-col items-center gap-1">
-                  <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                    <Megaphone className="h-4 w-4" />
+                <div className="shrink-0 mt-0.5 flex flex-col items-center gap-1">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary">
+                    <MegaphoneIcon className="w-4 h-4" />
                   </div>
                 </div>
 
@@ -179,7 +192,7 @@ export function AnnouncementsSection() {
                       {item.tag}
                     </Badge>
                     <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                      <Calendar className="h-3 w-3" />
+                      <CalendarIcon className="w-3 h-3" />
                       {item.date}
                     </span>
                   </div>
@@ -194,12 +207,11 @@ export function AnnouncementsSection() {
                 </div>
 
                 {/* Chevron */}
-                <ChevronRight className="h-4 w-4 text-muted-foreground/50 flex-shrink-0 mt-1 group-hover:text-primary transition-colors duration-200" />
+                <ChevronRightIcon className="w-4 h-4 mt-1 transition-colors duration-200 shrink-0 text-muted-foreground/50 group-hover:text-primary" />
               </button>
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

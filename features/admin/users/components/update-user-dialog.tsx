@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 import { Controller, useForm } from "react-hook-form";
-import { Loader2, Pencil, UserPlus } from "lucide-react";
+import { Loader2Icon, PencilIcon } from "lucide-react";
 
 import { z } from "zod/v4";
+import { usersLogger } from "@/lib/logger";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Select,
@@ -38,14 +40,12 @@ import {
 } from "@/components/ui/dialog";
 
 import { updateUserAction } from "../action";
-import { usersLogger } from "@/lib/logger";
 import FileUploadField from "./file-upload-field";
 import {
   createUserSchema,
   updateUserSchema,
   UpdateUserSchema,
 } from "../schema";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type User = {
   role: Role;
@@ -213,7 +213,7 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="ghost" className="justify-start w-full gap-2">
-          <Pencil className="w-4 h-4" />
+          <PencilIcon className="w-4 h-4" />
           <span>Ubah</span>
         </Button>
       </DialogTrigger>
@@ -483,7 +483,9 @@ export function UpdateUserDialog(props: UpdateUserDialogProps) {
                 </Button>
 
                 <Button type="submit" disabled={isSubmitting} className="gap-2">
-                  {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {isSubmitting && (
+                    <Loader2Icon className="w-4 h-4 animate-spin" />
+                  )}
                   {isSubmitting ? "Menyimpan..." : "Simpan"}
                 </Button>
               </DialogFooter>

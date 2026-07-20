@@ -2,20 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import {
-  ChevronDown,
-  LogIn,
-  LogOut,
-  LucideLayoutDashboard,
-} from "lucide-react";
+import { LucideLayoutDashboard } from "lucide-react";
 
 import Link from "next/link";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import SignIn from "@/features/auth/pages/sign-in";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
 
 const navItems = [
   {
@@ -122,7 +116,7 @@ function Navbar() {
               width={140}
               height={38}
               priority
-              className="h-auto w-36 object-contain"
+              className="object-contain h-auto w-36"
             />
           </Link>
 
@@ -133,13 +127,11 @@ function Navbar() {
                   <Button
                     variant="ghost"
                     asChild
-                    className="font-medium text-foreground/80 hover:text-primary hover:bg-primary/5 px-3 py-2 rounded-lg text-sm transition-all"
+                    className="px-3 py-2 text-sm font-medium transition-all rounded-lg text-foreground/80 hover:text-primary hover:bg-primary/5"
                   >
                     <Link
                       href={item.href}
-                      onClick={(event) =>
-                        handleSmoothScroll(event, item.href)
-                      }
+                      onClick={(event) => handleSmoothScroll(event, item.href)}
                     >
                       {item.title}
                     </Link>
@@ -155,7 +147,7 @@ function Navbar() {
                 href={session.user.role === "admin" ? "/admin" : "/dashboard"}
               >
                 <Button variant="outline" className="gap-2">
-                  <LucideLayoutDashboard className="h-4 w-4" />
+                  <LucideLayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </Button>
               </Link>
@@ -164,15 +156,13 @@ function Navbar() {
                 <SignIn>
                   <Button
                     variant="outline"
-                    className="border border-input hover:bg-muted font-medium text-sm px-4 py-2 rounded-lg"
+                    className="px-4 py-2 text-sm font-medium border rounded-lg border-input hover:bg-muted"
                   >
                     Masuk
                   </Button>
                 </SignIn>
                 <SignIn>
-                  <Button
-                    className="bg-primary hover:bg-primary/90 text-white font-medium text-sm px-4 py-2 rounded-lg"
-                  >
+                  <Button className="px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary hover:bg-primary/90">
                     Daftar
                   </Button>
                 </SignIn>
@@ -200,7 +190,7 @@ function Navbar() {
               width={102}
               height={28}
               priority
-              className="h-auto w-28 object-contain"
+              className="object-contain h-auto w-28"
             />
           </Link>
         </div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { SortingState } from "@tanstack/react-table";
-import { ActiveSort, SortDirection } from "@/lib/types/sort";
+import { ActiveSort } from "@/lib/types/sort";
 
 export function useSortState<TData>() {
   const [activeSort, setActiveSort] = useState<ActiveSort<TData> | null>(null);

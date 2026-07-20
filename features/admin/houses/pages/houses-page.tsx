@@ -3,8 +3,7 @@
 import { useState } from "react";
 
 import {
-  ArrowLeft,
-  DownloadIcon,
+  ArrowLeftIcon,
   EyeIcon,
   HomeIcon,
   HousePlusIcon,
@@ -236,7 +235,7 @@ export default function HousesPage({ houses }: Props) {
                   size="icon"
                   onClick={() => setSelectedHouse(null)}
                 >
-                  <ArrowLeft size={16} />
+                  <ArrowLeftIcon size={16} />
                 </Button>
                 <div>
                   <SheetTitle>Kembali</SheetTitle>

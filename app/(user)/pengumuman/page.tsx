@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+
+import prisma from "@/lib/db";
+import AnnouncementPage from "@/features/users/pages/announcement-page";
+import { calculateAnnouncementStatus } from "@/lib/announcement-status";
 import layoutWithAuthUser, {
   LayoutWithAuthUserProps,
 } from "@/components/layouts/auth/layout-with-auth-user";
-import AnnouncementPage from "@/features/users/pages/announcement-page";
-import prisma from "@/lib/db";
-import { calculateAnnouncementStatus } from "@/lib/announcement-status";
 
 export const metadata: Metadata = {
   title: "Pengumuman Warga",

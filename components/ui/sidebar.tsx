@@ -1,14 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { Slot } from "radix-ui";
 
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Slot } from "radix-ui";
+import { MenuIcon, PanelLeftIcon } from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
+
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Sheet,
   SheetContent,
@@ -16,13 +24,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { MenuIcon, PanelLeftIcon, SidebarIcon } from "lucide-react";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -198,7 +199,7 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex flex-col w-full h-full">{children}</div>
         </SheetContent>
       </Sheet>
     );
@@ -206,7 +207,7 @@ function Sidebar({
 
   return (
     <div
-      className="group peer hidden text-sidebar-foreground md:block"
+      className="hidden group peer text-sidebar-foreground md:block"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -602,7 +603,7 @@ function SidebarMenuSkeleton({
     >
       {showIcon && (
         <Skeleton
-          className="size-4 rounded-md"
+          className="rounded-md size-4"
           data-sidebar="menu-skeleton-icon"
         />
       )}

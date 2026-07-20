@@ -1,35 +1,31 @@
 import type { Metadata } from "next";
-import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
+import {
+  ArrowUpRight,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Home,
+  MapPin,
+  Megaphone,
+  Moon,
+  Shield,
+  Users,
+  Wallet,
+  XCircle,
+} from "lucide-react";
+
+import Link from "next/link";
 import prisma from "@/lib/db";
+import { connection } from "next/server";
+import layoutWithAuthAdmin from "@/components/layouts/auth/layout-with-auth-admin";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Users,
-  Home,
-  Megaphone,
-  Wallet,
-  PlusCircle,
-  Calendar,
-  ChevronRight,
-  Activity,
-  ArrowUpDown,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ArrowUpRight,
-  TrendingUp,
-  MapPin,
-  Shield,
-  Moon,
-} from "lucide-react";
-import Link from "next/link";
-import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "Dashboard Admin | SIWARGA",
@@ -283,7 +279,7 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
             <CardTitle className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
               Pengeluaran (Bln Ini)
             </CardTitle>
-            <div className="grid size-9 place-items-center rounded-xl bg-red-500/10 text-red-500">
+            <div className="grid text-red-500 size-9 place-items-center rounded-xl bg-red-500/10">
               <ArrowUpDown className="size-5" />
             </div>
           </CardHeader>
@@ -320,15 +316,15 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <Card size="sm">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">
-              Kas Bersih
-            </CardTitle>
+            <CardTitle className="text-sm font-semibold">Kas Bersih</CardTitle>
             <CardDescription className="text-xs">
               Total pemasukan - pengeluaran (tahun ini)
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${netCashFlow >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+            <div
+              className={`text-2xl font-bold ${netCashFlow >= 0 ? "text-emerald-600" : "text-red-600"}`}
+            >
               {formatRupiah(Math.abs(netCashFlow))}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -734,11 +730,11 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
           </CardHeader>
           <CardContent className="py-2">
             {todayRonda.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-muted-foreground text-center">
-                <div className="grid size-12 place-items-center rounded-full bg-muted/40 text-muted-foreground mb-3">
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                <div className="grid mb-3 rounded-full size-12 place-items-center bg-muted/40 text-muted-foreground">
                   <Shield className="size-6 stroke-muted-foreground/60" />
                 </div>
-                <span className="text-xs font-medium block">
+                <span className="block text-xs font-medium">
                   Belum ada petugas ronda terjadwal
                 </span>
                 <span className="text-[10px] text-muted-foreground mt-1">
@@ -753,7 +749,7 @@ async function Page({ user }: { user: { name: string; email?: string } }) {
                     className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="grid text-xs font-bold rounded-full size-8 place-items-center bg-indigo-500/10 text-indigo-600">
+                      <div className="grid text-xs font-bold text-indigo-600 rounded-full size-8 place-items-center bg-indigo-500/10">
                         {item.user.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
