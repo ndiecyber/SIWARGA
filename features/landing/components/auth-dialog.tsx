@@ -193,7 +193,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
       <DialogTrigger asChild>
         {children ?? (
           <Button className="gap-2">
-            <LogIn className="h-4 w-4" />
+            <LogIn className="w-4 h-4" />
             Masuk
           </Button>
         )}
@@ -214,12 +214,12 @@ export function AuthDialog({ children }: AuthDialogProps) {
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="user" className="gap-2">
-              <UserRound className="h-4 w-4" />
+              <UserRound className="w-4 h-4" />
               Warga
             </TabsTrigger>
 
             <TabsTrigger value="admin" className="gap-2">
-              <ShieldCheck className="h-4 w-4" />
+              <ShieldCheck className="w-4 h-4" />
               Pengurus
             </TabsTrigger>
           </TabsList>
@@ -270,7 +270,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
 
                 <Button type="submit" disabled={isSubmitting} className="gap-2">
                   {isUserSubmitting && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   )}
                   {isUserSubmitting ? "Memproses..." : "Masuk sebagai warga"}
                 </Button>
@@ -348,7 +348,7 @@ export function AuthDialog({ children }: AuthDialogProps) {
 
                 <Button type="submit" disabled={isSubmitting} className="gap-2">
                   {isAdminSubmitting && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                   )}
                   {isAdminSubmitting
                     ? "Memproses..."

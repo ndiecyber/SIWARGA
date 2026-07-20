@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { type LucideIcon } from "lucide-react";
 
 type FieldDialogContextValue = {
   close: () => void;

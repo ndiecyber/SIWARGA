@@ -3,8 +3,7 @@
 import { useState } from "react";
 
 import {
-  AlertTriangle,
-  Download,
+  AlertTriangleIcon,
   EyeIcon,
   PencilIcon,
   Trash2Icon,
@@ -16,6 +15,7 @@ import { FilterCategory } from "@/lib/types/filter";
 import { UserGetPayload } from "@/generated/prisma/models";
 import type { User as UserBase } from "@/generated/prisma/browser";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
 import {
   ActionOption,
   DataTable,
@@ -24,12 +24,11 @@ import {
 } from "@/components/shared/data-table";
 
 import { columns } from "../components/columns";
+import { deleteBatchUsersAction } from "../action";
 import DetailUserDialog from "../components/detail-user-dialog";
 import { CreateUserDialog } from "../components/create-user-dialog";
 import { UpdateUserDialog } from "../components/update-user-dialog";
 import { DeleteUserDialog } from "../components/delete-user-dialog";
-import { BatchDeleteDialog } from "@/components/shared/batch-delete-dialog";
-import { deleteBatchUsersAction } from "../action";
 
 type User = UserGetPayload<{
   include: {
@@ -147,7 +146,7 @@ const UserPage = (props: Props) => {
         </div>
 
         <Alert className="text-yellow-800 border-yellow-200 bg-yellow-50">
-          <AlertTriangle className="w-4 h-4" />
+          <AlertTriangleIcon className="w-4 h-4" />
           <AlertTitle>Perhatian</AlertTitle>
           <AlertDescription>
             Periksa kembali data sebelum disimpan. Pastikan nama, nomor telepon,

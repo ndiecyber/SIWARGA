@@ -1,36 +1,29 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import {
-  AlertTriangle,
-  CalendarClockIcon,
-  CheckCircle2,
-  ClockAlert,
-  Megaphone,
-  Users,
-} from "lucide-react"
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface CurrentMonthDue {
-  status: "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT"
-  amount: number
-  dueDate: string
+  status: "LUNAS" | "TERTUNDA" | "BELUM_DIBUAT";
+  amount: number;
+  dueDate: string;
 }
 
 interface OverdueDue {
-  id: string
-  amount: number
-  label: string
+  id: string;
+  amount: number;
+  label: string;
 }
 
 interface WelcomeCardProps {
-  name: string
-  currentMonthDue: CurrentMonthDue | null
-  overdueDues: OverdueDue[]
-  recentAnnouncementCount: number
-  totalResidents: number
-  currentMonthName: string
+  name: string;
+  currentMonthDue: CurrentMonthDue | null;
+  overdueDues: OverdueDue[];
+  recentAnnouncementCount: number;
+  totalResidents: number;
+  currentMonthName: string;
 }
 
 export default function WelcomeCard({
@@ -41,12 +34,12 @@ export default function WelcomeCard({
   totalResidents,
   currentMonthName,
 }: WelcomeCardProps) {
-  const [current, setCurrent] = useState(0)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const [paused, setPaused] = useState(false)
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [paused, setPaused] = useState(false);
 
-  const totalOverdue = overdueDues.reduce((sum, d) => sum + d.amount, 0)
-  const isLunas = currentMonthDue?.status === "LUNAS"
+  const totalOverdue = overdueDues.reduce((sum, d) => sum + d.amount, 0);
+  const isLunas = currentMonthDue?.status === "LUNAS";
 
   const slides = [
     {
@@ -57,7 +50,8 @@ export default function WelcomeCard({
       icon: <></>,
     },
     {
-      title: currentMonthDue === null ? "Status Iuran" : `Iuran ${currentMonthName}`,
+      title:
+        currentMonthDue === null ? "Status Iuran" : `Iuran ${currentMonthName}`,
       description:
         currentMonthDue === null
           ? "Kamu belum terdaftar di rumah manapun."
@@ -89,25 +83,25 @@ export default function WelcomeCard({
       bgImage: "/images/banner/pengumuman-banner.png",
       icon: <></>,
     },
-  ]
+  ];
 
   const startTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current)
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length)
-    }, 4000)
-  }, [slides.length])
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 4000);
+  }, [slides.length]);
 
   useEffect(() => {
-    if (!paused) startTimer()
+    if (!paused) startTimer();
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [paused, startTimer])
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [paused, startTimer]);
 
   function goTo(index: number) {
-    setCurrent(index)
-    startTimer()
+    setCurrent(index);
+    startTimer();
   }
 
   return (
@@ -122,16 +116,13 @@ export default function WelcomeCard({
           style={{ transform: `translateX(-${current * 100}%)` }}
         >
           {slides.map((slide, i) => (
-            <div
-              key={i}
-              className="relative w-full flex-shrink-0"
-            >
-              <img
+            <div key={i} className="relative flex-shrink-0 w-full">
+              <Image
                 src={slide.bgImage}
                 alt=""
-                className="absolute inset-0 size-full object-cover"
+                className="absolute inset-0 object-cover size-full"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent" />
               <div className="relative flex items-end justify-between gap-4 p-5 pb-12">
                 <div className="min-w-0 flex-1 space-y-2 rounded-xl bg-black/10 p-3 backdrop-blur-[2px]">
                   <h2 className="text-xl font-extrabold leading-tight text-white drop-shadow">
@@ -162,5 +153,5 @@ export default function WelcomeCard({
         </div>
       </div>
     </section>
-  )
+  );
 }

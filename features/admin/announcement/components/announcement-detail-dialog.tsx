@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Info, Tag, X } from "lucide-react";
+import { CalendarDaysIcon, InfoIcon, TagIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,12 +85,12 @@ export function AnnouncementDetailDialog({
           {/* Meta */}
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
-              <Tag className="size-4" />
+              <TagIcon className="size-4" />
               {announcement.category}
             </span>
             {announcement.eventDate && (
               <span className="flex items-center gap-1.5">
-                <CalendarDays className="size-4" />
+                <CalendarDaysIcon className="size-4" />
                 {new Date(announcement.eventDate).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "long",
@@ -99,7 +99,7 @@ export function AnnouncementDetailDialog({
               </span>
             )}
             <span className="flex items-center gap-1.5">
-              <Info className="size-4" />
+              <InfoIcon className="size-4" />
               Dibuat{" "}
               {new Date(announcement.createdAt).toLocaleDateString("id-ID", {
                 day: "numeric",

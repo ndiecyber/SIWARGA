@@ -12,19 +12,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    minimumFractionDigits: 0,
-  }).format(amount);
+// const formatCurrency = (amount: number) =>
+//   new Intl.NumberFormat("id-ID", {
+//     style: "currency",
+//     currency: "IDR",
+//     minimumFractionDigits: 0,
+//   }).format(amount);
 
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
+// const formatDate = (dateStr: string) =>
+//   new Date(dateStr).toLocaleDateString("id-ID", {
+//     day: "2-digit",
+//     month: "long",
+//     year: "numeric",
+//   });
 
 export const columns: ColumnDef<
   UserGetPayload<{
