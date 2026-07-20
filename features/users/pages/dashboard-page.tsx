@@ -1,25 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import {
-  ChevronRight,
-  Megaphone,
-  Users,
-  Wallet,
-  CalendarDays,
-  CalendarClockIcon,
-  CheckCircle2,
   AlertTriangle,
   Ban,
+  CalendarClockIcon,
+  CheckCircle2,
+  ChevronRight,
   ClockAlert,
-  Receipt,
+  Construction,
   Info,
+  Megaphone,
+  Receipt,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import HeaderProfile from "../components/header-profile";
 import WelcomeCard from "../components/welcome-card";
+import { FeatureGrid } from "../components/feature-grid";
 import { Button } from "@/components/ui/button";
-import DuesProgressCard from "../components/dues-progress-card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const piket = [
   { hari: "Senin", nama: "Budi Santoso" },
@@ -60,6 +69,13 @@ interface DashboardPageProps {
   }>;
 }
 
+const comingSoonFeatures = [
+  "Surat Menyurat",
+  "Layanan Warga",
+  "Agenda",
+  "Lainnya",
+];
+
 export default function DashboardPage({
   userName,
   currentMonthName,
@@ -70,6 +86,10 @@ export default function DashboardPage({
   recentAnnouncementCount,
   overdueDues,
 }: DashboardPageProps) {
+  const [selectedFeature, setSelectedFeature] = useState("Iuran Warga");
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  const [comingSoonFeature, setComingSoonFeature] = useState("");
+
   const iuranStatus =
     currentMonthDue === null
       ? { label: "—", tone: "muted" as const }
@@ -79,107 +99,225 @@ export default function DashboardPage({
           ? { label: "Tertunda", tone: "warning" as const }
           : { label: "Belum Dibuat", tone: "muted" as const };
 
+  function handleSelect(label: string) {
+    if (comingSoonFeatures.includes(label)) {
+      setComingSoonFeature(label);
+      setComingSoonOpen(true);
+      return;
+    }
+    setSelectedFeature(label);
+  }
+
   return (
     <>
       <HeaderProfile name={userName} />
+      <HeaderProfile name={userName} />
 
-      <div className="flex min-h-dvh flex-col gap-6 bg-muted/40 px-4 py-6">
-        {/* Welcome Banner */}
-        <WelcomeCard name={userName} />
-
-        {/* Highlight banner */}
-        <HighlightBanner monthName={currentMonthName} due={currentMonthDue} />
-
-        {/* Overdue Alert */}
-        {overdueDues.length > 0 && <OverdueAlert dues={overdueDues} />}
-
-        {/* Summary grid */}
-        <section className="overflow-x-auto pb-1 scrollbar-hide">
-          <div className="flex snap-x justify-evenly gap-4">
-            <SummaryCard
-              icon={<Wallet size={18} />}
-              label={`Iuran ${currentMonthName}`}
-              value={iuranStatus.label}
-              badgeTone={iuranStatus.tone}
-            />
-            <SummaryCard
-              icon={<Megaphone size={18} />}
-              label="Pengumuman"
-              value={`${recentAnnouncementCount} baru`}
-              badgeTone={recentAnnouncementCount > 0 ? "primary" : "muted"}
-            />
-            <SummaryCard
-              icon={<CalendarDays size={18} />}
-              label="Piket Kamu"
-              value="Senin, 16 Jun"
-              badgeTone="warning"
-            />
-            <SummaryCard
-              icon={<Users size={18} />}
-              label="Warga Aktif"
-              value={`${totalResidents} warga`}
-              badgeTone="muted"
-            />
-          </div>
-        </section>
-
-        {/* Summary Statistic */}
-        <DuesProgressCard
-          paidMonths={yearlyStats.paidMonths}
-          totalMonths={yearlyStats.totalMonths}
+      <div className="flex min-h-dvh flex-col gap-4 bg-muted/40 px-4 py-4">
+        <WelcomeCard
+          name={userName}
+          currentMonthDue={currentMonthDue}
+          overdueDues={overdueDues}
+          recentAnnouncementCount={recentAnnouncementCount}
+          totalResidents={totalResidents}
+          currentMonthName={currentMonthName}
         />
 
-        {/* Announcements */}
-        <section>
-          <SectionHeader title="Pengumuman Terbaru" to="/pengumuman" />
+        <FeatureGrid selected={selectedFeature} onSelect={handleSelect} />
 
-          <div className="mt-3 flex flex-col gap-2.5">
-            {announcements.length === 0 && (
-              <p className="py-8 text-center text-sm text-muted-foreground">
-                Belum ada pengumuman.
-              </p>
-            )}
-            {announcements.slice(0, 3).map((a) => (
-              <article
-                key={a.id}
-                className="rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="truncate text-sm font-semibold">{a.title}</h3>
-                  <span className="shrink-0 text-[11px] text-muted-foreground">
-                    {a.date}
+        {selectedFeature === "Iuran Warga" && (
+          <>
+            <HighlightBanner
+              monthName={currentMonthName}
+              due={currentMonthDue}
+            />
+
+            {overdueDues.length > 0 && <OverdueAlert dues={overdueDues} />}
+
+            <section>
+              <SectionHeader title="Ringkasan Iuran" to="/iuran" />
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <StatCard
+                  icon={<CalendarClockIcon size={18} />}
+                  label="Iuran Bulan Ini"
+                  value={iuranStatus.label}
+                  footnote={
+                    currentMonthDue
+                      ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}`
+                      : "—"
+                  }
+                  variant={iuranStatus.tone}
+                />
+                <StatCard
+                  icon={<CheckCircle2 size={18} />}
+                  label="Iuran Tahunan"
+                  value={`${yearlyStats.paidMonths}/${yearlyStats.totalMonths}`}
+                  footnote="bulan lunas"
+                  variant={
+                    yearlyStats.paidMonths === yearlyStats.totalMonths
+                      ? "success"
+                      : "warning"
+                  }
+                />
+              </div>
+            </section>
+          </>
+        )}
+
+        {selectedFeature === "Keuangan" && (
+          <>
+            <HighlightBanner
+              monthName={currentMonthName}
+              due={currentMonthDue}
+            />
+
+            <section>
+              <SectionHeader title="Ringkasan Keuangan" to="/iuran" />
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <StatCard
+                  icon={<CalendarClockIcon size={18} />}
+                  label="Iuran Bulan Ini"
+                  value={iuranStatus.label}
+                  footnote={
+                    currentMonthDue
+                      ? `Rp ${currentMonthDue.amount.toLocaleString("id-ID")}`
+                      : "—"
+                  }
+                  variant={iuranStatus.tone}
+                />
+                <StatCard
+                  icon={<Megaphone size={18} />}
+                  label="Pengumuman Baru"
+                  value={`${recentAnnouncementCount}`}
+                  footnote="dalam 7 hari terakhir"
+                  variant={recentAnnouncementCount > 0 ? "primary" : "muted"}
+                />
+                <StatCard
+                  icon={<CheckCircle2 size={18} />}
+                  label="Iuran Tahunan"
+                  value={`${yearlyStats.paidMonths}/${yearlyStats.totalMonths}`}
+                  footnote="bulan lunas"
+                  variant={
+                    yearlyStats.paidMonths === yearlyStats.totalMonths
+                      ? "success"
+                      : "warning"
+                  }
+                />
+                <StatCard
+                  icon={<Users size={18} />}
+                  label="Total Warga"
+                  value={`${totalResidents}`}
+                  footnote="terdaftar"
+                  variant="muted"
+                />
+              </div>
+            </section>
+          </>
+        )}
+
+        {selectedFeature === "Pengumuman" && (
+          <section>
+            <SectionHeader title="Pengumuman Terbaru" to="/pengumuman" />
+            <div className="mt-3 flex flex-col divide-y divide-[#F0F0F0] rounded-[20px] border border-[#F0F0F0] bg-white shadow-sm">
+              {announcements.length === 0 && (
+                <p className="py-10 text-center text-sm text-muted-foreground">
+                  Belum ada pengumuman.
+                </p>
+              )}
+              {announcements.slice(0, 3).map((a) => (
+                <Link
+                  key={a.id}
+                  href="/pengumuman"
+                  className="flex items-center gap-3 px-4 py-3.5 no-underline transition-colors hover:bg-[#F5FAF6] active:bg-[#E8F5EC]"
+                >
+                  <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#E8F5EC] text-[#1B6B3A]">
+                    <Megaphone size={18} strokeWidth={1.8} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-[#111827]">
+                      {a.title}
+                    </p>
+                    <p className="text-xs text-[#6B7280]">{a.date}</p>
+                  </div>
+                  <ChevronRight size={16} className="shrink-0 text-[#6B7280]" />
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {selectedFeature === "Kegiatan" && (
+          <section>
+            <SectionHeader title="Jadwal Piket Minggu Ini" to="/piket" />
+            <div className="mt-3 flex flex-col divide-y divide-[#F0F0F0] rounded-[20px] border border-[#F0F0F0] bg-white shadow-sm">
+              {piket.map((p) => (
+                <div
+                  key={p.hari}
+                  className="flex items-center gap-3 px-4 py-3.5"
+                >
+                  <div className="flex w-12 shrink-0 flex-col items-center rounded-xl bg-[#E8F5EC] px-2 py-1.5 leading-tight">
+                    <span className="text-sm font-extrabold text-[#1B6B3A]">
+                      {[
+                        "MIN",
+                        "SEN",
+                        "SEL",
+                        "RAB",
+                        "KAM",
+                        "JUM",
+                        "SAB",
+                      ].indexOf(p.hari.slice(0, 3).toUpperCase()) === -1
+                        ? "—"
+                        : String(
+                            new Date().getDate() +
+                              [
+                                "MIN",
+                                "SEN",
+                                "SEL",
+                                "RAB",
+                                "KAM",
+                                "JUM",
+                                "SAB",
+                              ].indexOf(p.hari.slice(0, 3).toUpperCase()) -
+                              new Date().getDay(),
+                          ).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] font-semibold text-[#2E8B4F]">
+                      {p.hari.slice(0, 3).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-[#111827]">
+                      {p.nama}
+                    </p>
+                    <p className="text-xs text-[#6B7280]">{p.hari}</p>
+                  </div>
+                  <span className="shrink-0 rounded-full bg-[#E8F5EC] px-2.5 py-1 text-[11px] font-medium text-[#1B6B3A]">
+                    Piket
                   </span>
                 </div>
-                <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">
-                  {a.excerpt}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* Piket */}
-        <section className="pb-2">
-          <SectionHeader title="Jadwal Piket Minggu Ini" to="/piket" />
-
-          <ul className="mt-3 divide-y divide-border rounded-2xl border border-border bg-card text-card-foreground shadow-sm">
-            {piket.map((p) => (
-              <li key={p.hari} className="flex items-center gap-3 px-4 py-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <CalendarDays size={18} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">{p.nama}</p>
-                  <p className="text-xs text-muted-foreground">{p.hari}</p>
-                </div>
-                <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
-                  Piket
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
+
+      <AlertDialog open={comingSoonOpen} onOpenChange={setComingSoonOpen}>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia>
+              <Construction className="text-orange-500" />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Fitur Segera Hadir</AlertDialogTitle>
+            <AlertDialogDescription>
+              Fitur <strong>{comingSoonFeature}</strong> sedang dalam
+              pengembangan dan akan tersedia segera.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogAction onClick={() => setComingSoonOpen(false)}>
+            Mengerti
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
@@ -195,12 +333,12 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <h2 className="text-sm font-bold tracking-tight text-foreground">
+      <h2 className="text-sm font-extrabold tracking-tight text-[#111827]">
         {title}
       </h2>
       <Link
         href={to}
-        className="inline-flex items-center gap-0.5 text-xs font-semibold text-primary"
+        className="inline-flex items-center gap-0.5 text-xs font-semibold text-[#1B6B3A]"
       >
         Lihat Semua <ChevronRight size={14} />
       </Link>
@@ -208,33 +346,43 @@ function SectionHeader({
   );
 }
 
-function SummaryCard({
+function StatCard({
   icon,
   label,
   value,
-  badgeTone,
+  footnote,
+  variant,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
-  badgeTone: "success" | "primary" | "warning" | "muted";
+  footnote: string;
+  variant: "success" | "primary" | "warning" | "muted";
 }) {
-  const toneClass = {
-    success: "bg-primary/10 text-primary",
-    primary: "bg-secondary text-secondary-foreground",
-    warning: "bg-accent text-accent-foreground",
-    muted: "bg-muted text-muted-foreground",
-  }[badgeTone];
+  const accentClass = {
+    success: "bg-[#E8F5EC] text-[#1B6B3A]",
+    primary: "bg-[#E8F5EC] text-[#1B6B3A]",
+    warning: "bg-[#E8F5EC] text-[#1B6B3A]",
+    muted: "bg-[#F5FAF6] text-[#6B7280]",
+  }[variant];
+
+  const valueClass = {
+    success: "text-[#1B6B3A]",
+    primary: "text-[#1B6B3A]",
+    warning: "text-[#1B6B3A]",
+    muted: "text-[#111827]",
+  }[variant];
 
   return (
-    <div className="min-w-38 snap-start rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
-      <div className={`grid size-8 place-items-center rounded-lg ${toneClass}`}>
+    <div className="rounded-[20px] border border-[#F0F0F0] bg-white p-4 shadow-sm">
+      <div
+        className={`grid size-9 place-items-center rounded-xl ${accentClass}`}
+      >
         {icon}
       </div>
-      <div className="mt-0.5">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="text-sm font-bold text-foreground">{value}</p>
-      </div>
+      <p className="mt-2 text-xs font-medium text-[#6B7280]">{label}</p>
+      <p className={`mt-0.5 text-lg font-extrabold ${valueClass}`}>{value}</p>
+      <p className="text-[11px] text-[#6B7280]">{footnote}</p>
     </div>
   );
 }
@@ -243,28 +391,26 @@ function SummaryCard({
 function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
   const totalOverdue = dues.reduce((sum, d) => sum + d.amount, 0);
   return (
-    <div className="space-y-2">
-      {/* Info Banner */}
-      <div className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-amber-100">
-          <Info size={15} className="text-amber-600" />
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 rounded-[20px] border border-amber-200 bg-amber-50 p-4">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-100">
+          <Info size={16} className="text-amber-600" />
         </div>
         <div>
-          <p className="text-[13px] font-medium text-amber-900">
+          <p className="text-[13px] font-semibold text-amber-900">
             Info Pembayaran
           </p>
-          <p className="mt-0.5 text-[12.5px] leading-relaxed text-amber-700">
+          <p className="mt-0.5 text-xs leading-relaxed text-amber-700">
             Pastikan Anda membayar sebelum tanggal jatuh tempo demi
             kesejahteraan Bersama.
           </p>
         </div>
       </div>
 
-      {/* Overdue Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+      <div className="relative overflow-hidden rounded-[20px] border border-amber-200 bg-amber-50 p-5 shadow-sm">
         <div className="relative space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-sm bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
-            <ClockAlert size={12} />
+          <div className="inline-flex items-center gap-1.5 rounded-lg bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700">
+            <ClockAlert size={14} />
             Tagihan Tertunggak
           </div>
           <div className="space-y-1">
@@ -281,16 +427,16 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
             </p>
           </div>
           <ul className="space-y-1.5">
-            {dues.map((d) => (
+            {dues.map((due) => (
               <li
-                key={d.id}
-                className="flex flex-col rounded-lg bg-white/70 px-3 py-2 text-sm"
+                key={due.id}
+                className="flex flex-col rounded-xl bg-white/70 px-3 py-2 text-sm"
               >
-                <div className="flex items-center gap-2 justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <Receipt size={14} className="text-amber-500" />
                     <span className="font-medium text-amber-900">
-                      {d.label}
+                      {due.label}
                     </span>
                   </div>
                   <div className="flex flex-col items-end gap-0.5">
@@ -299,10 +445,10 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
                         style: "currency",
                         currency: "IDR",
                         minimumFractionDigits: 0,
-                      }).format(d.amount)}
+                      }).format(due.amount)}
                     </span>
                     <span className="text-xs text-amber-600">
-                      Jatuh tempo {d.dueDate}
+                      Jatuh tempo {due.dueDate}
                     </span>
                   </div>
                 </div>
@@ -312,7 +458,7 @@ function OverdueAlert({ dues }: { dues: DashboardPageProps["overdueDues"] }) {
           <Button
             asChild
             size="sm"
-            className="w-full bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700"
+            className="w-full rounded-xl bg-amber-500 text-white hover:bg-amber-600 active:bg-amber-700"
           >
             <Link href="/iuran">
               Bayar Tagihan Tertunggak <ChevronRight size={14} />
@@ -333,13 +479,13 @@ function HighlightBanner({
 }) {
   if (due === null) {
     return (
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-muted p-5 shadow-sm">
+      <div className="relative overflow-hidden rounded-[20px] border border-[#F0F0F0] bg-white p-5 shadow-sm">
         <div className="relative space-y-0.5">
-          <div className="inline-flex items-center gap-1.5 rounded-sm bg-muted-foreground/15 px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
-            <Ban size={12} />
+          <div className="inline-flex items-center gap-1.5 rounded-lg bg-[#F5FAF6] px-3 py-1.5 text-xs font-semibold text-[#6B7280]">
+            <Ban size={13} />
             Belum Terdaftar
           </div>
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-3 text-sm text-[#6B7280]">
             Kamu belum terdaftar di rumah manapun. Hubungi admin untuk
             pendaftaran.
           </p>
@@ -352,28 +498,26 @@ function HighlightBanner({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border p-5 shadow-sm ${
+      className={`relative overflow-hidden rounded-[20px] border p-5 shadow-sm ${
         isLunas
           ? "border-emerald-200 bg-emerald-600 text-white"
-          : "border-border bg-primary text-primary-foreground"
+          : "border-[#F0F0F0] bg-[#1B6B3A] text-white"
       }`}
     >
       <div
-        className={`absolute -right-6 -top-6 h-28 w-28 rounded-full ${isLunas ? "bg-white/10" : "bg-primary-foreground/10"}`}
+        className={`absolute -right-6 -top-6 h-28 w-28 rounded-full ${isLunas ? "bg-white/10" : "bg-white/10"}`}
       />
       <div
-        className={`absolute -bottom-10 -right-2 h-32 w-32 rounded-full ${isLunas ? "bg-white/5" : "bg-primary-foreground/5"}`}
+        className={`absolute -bottom-10 -right-2 h-32 w-32 rounded-full ${isLunas ? "bg-white/5" : "bg-white/5"}`}
       />
 
       <div className="relative space-y-0.5">
         <div
-          className={`inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-[11px] font-semibold ${
-            isLunas
-              ? "bg-white/15 text-white"
-              : "bg-primary-foreground/15 text-primary-foreground"
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
+            isLunas ? "bg-white/15 text-white" : "bg-white/15 text-white"
           }`}
         >
-          {isLunas ? <CheckCircle2 size={12} /> : <AlertTriangle size={12} />}
+          {isLunas ? <CheckCircle2 size={13} /> : <AlertTriangle size={13} />}
           {isLunas ? `Iuran ${monthName} — Lunas` : `Status ${monthName}`}
         </div>
 
@@ -386,22 +530,27 @@ function HighlightBanner({
         </p>
 
         {due.status === "BELUM_DIBUAT" ? (
-          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-primary-foreground/85">
+          <p className="mt-0.5 flex items-center gap-1.5 text-xs text-white/85">
             <CalendarClockIcon size={14} />
             Tagihan belum dibuat oleh admin
           </p>
         ) : (
           <div className="flex items-center gap-1.5">
             <CalendarClockIcon size={14} />
-            <p className="mt-0.5 text-xs text-primary-foreground/85">
+            <p className="mt-0.5 text-xs text-white/85">
               Jatuh tempo {due.dueDate}
             </p>
           </div>
         )}
 
         {!isLunas && due.status !== "BELUM_DIBUAT" && (
-          <Button asChild variant="outline" size="sm" className="mt-0.5">
-            <Link href="/iuran" className="text-xs text-muted-foreground">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="mt-2 rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
+          >
+            <Link href="/iuran">
               Bayar Sekarang <ChevronRight size={14} />
             </Link>
           </Button>

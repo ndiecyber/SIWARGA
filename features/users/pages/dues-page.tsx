@@ -9,11 +9,11 @@ import {
   ChevronRight,
   ArrowDownUp,
 } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import HeaderProfile from "../components/header-profile";
+import { PaymentDrawer } from "../components/payment-drawer";
 import { cn } from "@/lib/utils";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -96,9 +96,7 @@ export default function DuesPage({
       <div className="flex min-h-dvh flex-col gap-6 bg-muted/40 px-4 py-6">
         {/* Title */}
         <div>
-          <h1 className="text-lg font-extrabold tracking-tight">
-            Iuran Saya
-          </h1>
+          <h1 className="text-lg font-extrabold tracking-tight">Iuran Saya</h1>
           <p className="mt-0.5 text-xs text-muted-foreground">
             Riwayat dan status pembayaran iuran bulanan
           </p>
@@ -129,10 +127,7 @@ export default function DuesPage({
 
             {/* Current Month Highlight */}
             {currentDue && (
-              <CurrentMonthCard
-                monthName={currentMonthName}
-                due={currentDue}
-              />
+              <CurrentMonthCard monthName={currentMonthName} due={currentDue} />
             )}
 
             {/* Overdue Summary */}
@@ -235,12 +230,7 @@ function StatCard({
       <p className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p
-        className={cn(
-          "mt-1 text-lg font-extrabold tabular-nums",
-          valueClass,
-        )}
-      >
+      <p className={cn("mt-1 text-lg font-extrabold tabular-nums", valueClass)}>
         {value}
       </p>
     </div>
@@ -301,11 +291,11 @@ function CurrentMonthCard({
         </div>
 
         {due.status === "TERTUNDA" && (
-          <Button asChild size="sm" className="shrink-0">
-            <Link href="/bayar">
+          <PaymentDrawer amount={due.amount}>
+            <Button size="sm" className="shrink-0">
               Bayar <ChevronRight size={14} />
-            </Link>
-          </Button>
+            </Button>
+          </PaymentDrawer>
         )}
       </div>
     </div>
@@ -334,16 +324,15 @@ function OverdueSummary({
             {formatRupiah(total)}
           </p>
         </div>
-        <Button
-          asChild
-          size="sm"
-          variant="destructive"
-          className="shrink-0"
-        >
-          <Link href="/bayar">
+        <PaymentDrawer amount={total}>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="shrink-0"
+          >
             Bayar Semua <ChevronRight size={14} />
-          </Link>
-        </Button>
+          </Button>
+        </PaymentDrawer>
       </div>
     </div>
   );

@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Play, ClipboardList, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SignIn from "@/features/auth/pages/sign-in";
-
-const avatarInitials = ["BS", "SR", "AF", "DA"];
+import Image from "next/image";
 
 export function Hero() {
   const [mounted, setMounted] = useState(false);
@@ -15,325 +14,118 @@ export function Hero() {
   }, []);
 
   return (
-    <>
-      <style>{`
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
-        @keyframes float1 {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes float2 {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(5px); }
-        }
-        .animate-float1 { animation: float1 3s ease-in-out infinite; }
-        .animate-float2 { animation: float2 3.5s ease-in-out infinite; }
-        .animate-blink  { animation: blink 1.8s infinite; }
+    <section
+      id="home"
+      className="relative overflow-hidden bg-radial from-emerald-50/40 via-background to-background pt-24 pb-24 md:pt-28 md:pb-36 border-b border-border/40"
+    >
+      {/* Background decorations */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        {/* Background photo */}
+        <Image
+          src="/images/hero-bg.png"
+          alt="Hero Background"
+          fill
+          priority
+          className="object-cover opacity-65 object-right md:object-center"
+        />
+        {/* Readability gradient overlays */}
+        <div className="absolute inset-y-0 left-0 w-full lg:w-[65%] bg-gradient-to-r from-background via-background/90 to-transparent z-10" />
+        <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-background to-transparent z-10" />
 
-        /* ── MOBILE (≤ 860px) ── */
-        /* Mobile: visual tetap di bawah, tapi lebih compact & rapi */
-        @media (max-width: 860px) {
-          #hero {
-            padding: 80px 0 48px !important;
-          }
-          .hero-inner {
-            grid-template-columns: 1fr !important;
-            text-align: center;
-            gap: 24px !important;
-          }
-          /* Tidak perlu order — biarkan urutan asli (teks dulu, visual bawah) */
+        {/* Soft grid background */}
+        <div
+          className="absolute inset-0 opacity-[0.025] z-10"
+          style={{
+            backgroundImage: `
+              linear-gradient(var(--primary) 1.5px, transparent 1.5px),
+              linear-gradient(90deg, var(--primary) 1.5px, transparent 1.5px)
+            `,
+            backgroundSize: "40px 40px",
+          }}
+        />
+        {/* Colorful blobs */}
+        <div className="absolute -top-40 right-0 h-[400px] w-[400px] rounded-full bg-emerald-100/10 blur-3xl z-10" />
+      </div>
 
-          .hero-desc   { margin-left: auto !important; margin-right: auto !important; }
-          .hero-actions { justify-content: center !important; }
-          .hero-trust  { justify-content: center !important; }
-
-          /* Float cards masuk ke dalam boundary visual agar tidak terpotong */
-          .hero-float-1 {
-            top: -10px !important;
-            right: 8px !important;   /* dari -20px → dalam layar */
-          }
-          .hero-float-2 {
-            bottom: 16px !important;
-            left: 8px !important;    /* dari -30px → dalam layar */
-          }
-
-          /* Ukuran float card lebih kecil */
-          .hero-float-1,
-          .hero-float-2 {
-            padding: 8px 12px !important;
-            border-radius: 12px !important;
-          }
-          .hero-float-1 .float-val { font-size: 14px !important; }
-          .hero-float-1 .float-lbl { font-size: 9px  !important; }
-          .hero-float-2 .float-val { font-size: 12px !important; }
-          .hero-float-2 .float-lbl { font-size: 9px  !important; }
-
-          /* Phone mockup lebih kecil agar muat */
-          .hero-phone-wrap {
-            max-width: 220px !important;
-          }
-        }
-      `}</style>
-
-      <section
-        id="hero"
-        className="relative overflow-hidden"
-        style={{ padding: "130px 0 80px" }}
-      >
-        {/* ── background decoration ── */}
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <div
-            className="absolute"
-            style={{
-              top: "-120px",
-              right: "-80px",
-              width: "500px",
-              height: "500px",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, hsl(var(--primary)/.08) 0%, transparent 70%)",
-            }}
-          />
-          <div
-            className="absolute"
-            style={{
-              bottom: "-60px",
-              left: "-100px",
-              width: "400px",
-              height: "400px",
-              borderRadius: "50%",
-              background:
-                "radial-gradient(circle, rgba(201,151,58,.06) 0%, transparent 70%)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(hsl(var(--primary)/.04) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)/.04) 1px, transparent 1px)",
-              backgroundSize: "60px 60px",
-              maskImage:
-                "radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 100%)",
-            }}
-          />
-        </div>
-
-        <div className="container relative z-10 mx-auto max-w-275 px-6">
-          <div
-            className="hero-inner"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "60px",
-              alignItems: "center",
-            }}
-          >
-            {/* ── TEXT SIDE ── */}
-            <div
-              className={`hero-text transition-all duration-700 ${mounted ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
-            >
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
-                <span className="animate-blink h-1.5 w-1.5 rounded-full bg-primary" />
-                <span className="text-xs font-semibold text-primary">
-                  Sistem Informasi Warga RT 04 RW 07 Perumahan Arjamukti
-                </span>
-              </div>
-
-              <h1
-                className="font-fraunces font-bold leading-[1.1] tracking-tight text-foreground"
-                style={{
-                  fontSize: "clamp(24px, 5vw, 46px)",
-                  letterSpacing: "-1px",
-                  marginBottom: "16px",
-                }}
-              >
-                Satu Platform untuk
-                <br />
-                <em className="italic text-primary">Warga & Pengurus RT</em>
-              </h1>
-
-              <p
-                className="hero-desc text-[14px] md:text-[17px] leading-[1.7] text-muted-foreground"
-                style={{ marginBottom: "28px", maxWidth: "480px" }}
-              >
-                Platform digital terpadu untuk administrasi RT — iuran, data
-                warga, pengumuman, dan laporan keuangan dalam satu genggaman.
-              </p>
-
-              <div
-                className="hero-actions flex flex-wrap"
-                style={{ gap: "12px" }}
-              >
-                <SignIn>
-                  <Button size="lg">
-                    <ArrowRight className="h-4 w-4" />
-                    Masuk sebagai Warga
-                  </Button>
-                </SignIn>
-              </div>
-
-              <div
-                className="hero-trust flex items-center"
-                style={{ marginTop: "20px", gap: "10px" }}
-              >
-                <div className="flex">
-                  {avatarInitials.map((init, i) => (
-                    <span
-                      key={i}
-                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-primary text-[11px] font-bold text-primary-foreground"
-                      style={{ marginLeft: i === 0 ? 0 : -8 }}
-                    >
-                      {init}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  <strong className="font-semibold text-foreground">
-                    120+ warga
-                  </strong>{" "}
-                  telah bergabung
-                </p>
-              </div>
+      <div className="container relative z-20 mx-auto max-w-275 px-6">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+          {/* LEFT SIDE: Content */}
+          <div className="flex flex-col items-start lg:col-span-6 space-y-6 order-2 lg:order-1">
+            {/* Pill Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100/60 border border-emerald-200/50 px-4 py-1.5 text-emerald-800 font-semibold text-xs transition-all duration-300">
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+              SISTEM INFORMASI RT RW
             </div>
 
-            {/* ── VISUAL SIDE ── */}
-            <div
-              className={`hero-visual relative transition-all duration-700 delay-200 ${mounted ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"}`}
-            >
-              {/* Float top-right */}
-              <div
-                className="hero-float-1 animate-float1 absolute z-[3] rounded-2xl border border-border bg-card px-4 py-2.5 shadow-[0_8px_24px_rgba(0,0,0,.08)]"
-                style={{ top: "-20px", right: "-20px" }}
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[52px] font-bold leading-[1.1] tracking-tight text-foreground">
+              <span className="block whitespace-nowrap">Informasi Lengkap,</span>
+              <span className="block whitespace-nowrap">Layanan Mudah,</span>
+              <span className="block whitespace-nowrap text-primary bg-primary bg-clip-text text-transparent">Warga Nyaman.</span>
+            </h1>
+
+            {/* Sub-headline / Paragraph */}
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed max-w-lg">
+              Sistem informasi terpadu yang memudahkan warga mengakses informasi,
+              layanan, and kegiatan di lingkungan RT RW secara cepat dan transparan.
+            </p>
+
+            {/* Buttons Row */}
+            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+              <SignIn>
+                <Button className="bg-primary hover:bg-primary/95 text-white font-medium text-base px-6 py-6 rounded-xl shadow-lg shadow-emerald-700/10 hover:shadow-emerald-700/20 hover:-translate-y-0.5 transition-all duration-300 gap-2 shrink-0">
+                  <ClipboardList className="h-5 w-5" />
+                  Daftar Sekarang
+                </Button>
+              </SignIn>
+
+              <Button
+                variant="outline"
+                className="bg-card border-border hover:bg-muted/80 text-foreground font-medium text-base px-6 py-6 rounded-xl hover:-translate-y-0.5 transition-all duration-300 gap-2 shrink-0"
+                onClick={() => {
+                  const el = document.getElementById("layanan");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
               >
-                <div
-                  className="float-val text-xl font-bold text-foreground"
-                  style={{ fontFamily: "var(--font-fraunces)" }}
-                >
-                  Rp2,75 jt
-                </div>
-                <div className="float-lbl text-[10px] text-muted-foreground">
-                  Iuran terkumpul
-                </div>
-              </div>
+                <span className="flex items-center justify-center h-6 w-6 rounded-full bg-primary/10 text-primary">
+                  <Play className="h-3 w-3 fill-primary ml-0.5" />
+                </span>
+                Lihat Video
+              </Button>
+            </div>
 
-              {/* Phone mockup */}
-              <div className="hero-phone-wrap relative z-[2] mx-auto max-w-[280px] overflow-hidden rounded-[28px] border border-border bg-card shadow-[0_24px_60px_hsl(var(--primary)/.12),0_4px_12px_rgba(0,0,0,.06)]">
-                <div className="flex h-7 items-center justify-center bg-foreground">
-                  <div
-                    className="h-3.5 w-20 rounded-full"
-                    style={{ background: "#1a2a28" }}
-                  />
+            {/* Bottom Badges */}
+            <div className="flex flex-wrap lg:flex-nowrap items-center gap-x-4 lg:gap-x-6 gap-y-3 pt-4 border-t border-border/60 w-full">
+              {[
+                "Mudah Digunakan",
+                "Aman & Terpercaya",
+                "Informasi Terupdate",
+              ].map((text) => (
+                <div key={text} className="flex items-center gap-2 text-sm text-foreground/80 font-medium whitespace-nowrap">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-primary">
+                    <Check className="h-3.5 w-3.5 stroke-[3]" />
+                  </span>
+                  {text}
                 </div>
+              ))}
+            </div>
+          </div>
 
-                <div className="p-3.5" style={{ background: "#f0f7f6" }}>
-                  {/* Header card */}
-                  <div className="mb-3 rounded-2xl bg-primary p-3.5 text-primary-foreground">
-                    <div className="mb-0.5 text-[10px] opacity-70">
-                      Selamat datang,
-                    </div>
-                    <div
-                      className="text-[15px] font-bold"
-                      style={{ fontFamily: "var(--font-fraunces)" }}
-                    >
-                      Randi Rizal
-                    </div>
-                    <div className="mt-2.5 flex items-center justify-between rounded-[9px] bg-primary-foreground/15 px-2.5 py-2">
-                      <div>
-                        <div className="text-[9px] opacity-70">
-                          Iuran Juni 2025
-                        </div>
-                        <div className="text-[13px] font-bold">Rp 25.000</div>
-                      </div>
-                      <span className="rounded-[10px] bg-green-100 px-2 py-0.5 text-[9px] font-bold text-green-700">
-                        ✓ Lunas
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="mb-2.5 grid grid-cols-3 gap-1.5">
-                    {[
-                      { val: "15", lbl: "Rumah", cls: "text-foreground" },
-                      { val: "12", lbl: "Lunas", cls: "text-green-600" },
-                      { val: "2", lbl: "Nunggak", cls: "text-red-600" },
-                    ].map(({ val, lbl, cls }) => (
-                      <div
-                        key={lbl}
-                        className="rounded-[9px] bg-card px-1.5 py-2 text-center"
-                      >
-                        <div className={`text-[15px] font-bold ${cls}`}>
-                          {val}
-                        </div>
-                        <div className="mt-0.5 text-[8px] text-muted-foreground">
-                          {lbl}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Announcements */}
-                  <div className="flex flex-col gap-1.5">
-                    {[
-                      {
-                        dot: "bg-green-600",
-                        text: "Kerja Bakti 15 Jun",
-                        tagClass: "bg-green-100 text-green-700",
-                        tag: "Kegiatan",
-                      },
-                      {
-                        dot: "bg-red-600",
-                        text: "Tagihan Iuran Juni",
-                        tagClass: "bg-red-100 text-red-700",
-                        tag: "Penting",
-                      },
-                      {
-                        dot: "bg-primary",
-                        text: "Rapat RT 20 Jun",
-                        tagClass: "bg-primary/10 text-primary",
-                        tag: "Info",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.text}
-                        className="flex items-center gap-2 rounded-[9px] bg-card px-2.5 py-2"
-                      >
-                        <div
-                          className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${item.dot}`}
-                        />
-                        <span className="flex-1 text-[10px] font-medium text-foreground">
-                          {item.text}
-                        </span>
-                        <span
-                          className={`rounded-[6px] px-1.5 py-0.5 text-[8px] font-bold ${item.tagClass}`}
-                        >
-                          {item.tag}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Float bottom-left */}
-              <div
-                className="hero-float-2 animate-float2 absolute z-[3] rounded-2xl bg-primary px-3.5 py-2.5 text-primary-foreground shadow-[0_8px_24px_hsl(var(--primary)/.25)]"
-                style={{ bottom: "30px", left: "-30px" }}
-              >
-                <div className="float-val flex items-center gap-1.5 text-base font-bold">
-                  <CheckCircle className="h-4 w-4" strokeWidth={2.5} />
-                  87% Lunas
-                </div>
-                <div className="float-lbl mt-0.5 text-[10px] opacity-75">
-                  Iuran bulan ini
-                </div>
-              </div>
+          {/* RIGHT SIDE: Device Mockup */}
+          <div className="relative flex justify-center lg:col-span-6 w-full mt-6 lg:mt-0 lg:-mr-20 xl:-mr-32 z-20 order-1 lg:order-2">
+            <div className="relative w-[100%] lg:w-[120%] h-[320px] sm:h-[450px] md:h-[540px] lg:h-[580px] xl:h-[660px] select-none pointer-events-none transform lg:scale-110 origin-left">
+              <Image
+                src="/images/Mockup.png"
+                alt="SIWARGA Desktop and Mobile Dashboard Mockup"
+                fill
+                priority
+                className="object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.12)] hover:scale-[1.02] transition-transform duration-700"
+                sizes="(max-width: 1024px) 100vw, 1000px"
+              />
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
