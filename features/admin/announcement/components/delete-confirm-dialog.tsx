@@ -1,19 +1,21 @@
 "use client";
 
 import { useTransition } from "react";
+
 import { toast } from "sonner";
+import { AlertTriangle, Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { announcementLogger } from "@/lib/logger";
+import { deleteAnnouncement } from "@/app/admin/announcement/actions";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { Loader2, AlertTriangle } from "lucide-react";
-import { deleteAnnouncement } from "@/app/admin/announcement/actions";
-import { announcementLogger } from "@/lib/logger";
 
 type Props = {
   open: boolean;
@@ -37,7 +39,10 @@ export function DeleteConfirmDialog({
         toast.success("Pengumuman berhasil dihapus!");
         onOpenChange(false);
       } catch (error) {
-        announcementLogger.error({ err: error, announcementId }, 'Gagal hapus pengumuman dari dialog')
+        announcementLogger.error(
+          { err: error, announcementId },
+          "Gagal hapus pengumuman dari dialog",
+        );
         toast.error("Terjadi kesalahan. Silakan coba lagi.");
       }
     });
@@ -48,7 +53,7 @@ export function DeleteConfirmDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full shrink-0 bg-destructive/10">
               <AlertTriangle className="size-5 text-destructive" />
             </div>
             <DialogTitle>Hapus Pengumuman</DialogTitle>

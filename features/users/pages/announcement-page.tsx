@@ -1,29 +1,37 @@
 "use client";
 
 import { useMemo, useState } from "react";
+
 import {
   CalendarDays,
-  Megaphone,
-  Search,
-  X,
-  Clock,
   CheckCircle2,
   ChevronRight,
+  Clock,
+  Megaphone,
+  Search,
   Waves,
+  X,
 } from "lucide-react";
-import HeaderProfile from "../components/header-profile";
+
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AnimatePresence, motion } from "motion/react";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "motion/react";
+
+import HeaderProfile from "../components/header-profile";
+import {
+  DialogClose,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -120,12 +128,12 @@ export default function AnnouncementPage({
     <>
       <HeaderProfile name="Warga" />
 
-      <div className="flex min-h-dvh flex-col gap-4 bg-muted/40 px-4 py-6">
+      <div className="flex flex-col gap-4 px-4 py-6 min-h-dvh bg-muted/40">
         {/* ── Hero Section ───────────────────────────────────────── */}
-        <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-primary to-primary/80 p-5 text-primary-foreground shadow-sm">
+        <div className="relative p-5 overflow-hidden shadow-sm rounded-2xl bg-linear-to-br from-primary to-primary/80 text-primary-foreground">
           {/* Decorative circles */}
-          <div className="pointer-events-none absolute -right-6 -top-6 size-28 rounded-full bg-white/10" />
-          <div className="pointer-events-none absolute -bottom-8 -left-8 size-36 rounded-full bg-white/5" />
+          <div className="absolute rounded-full pointer-events-none -right-6 -top-6 size-28 bg-white/10" />
+          <div className="absolute rounded-full pointer-events-none -bottom-8 -left-8 size-36 bg-white/5" />
 
           <div className="relative space-y-4">
             {/* Greeting */}
@@ -146,17 +154,17 @@ export default function AnnouncementPage({
 
             {/* Search */}
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="absolute -translate-y-1/2 pointer-events-none left-3 top-1/2 size-4 text-muted-foreground" />
               <Input
                 placeholder="Cari pengumuman..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-10 rounded-xl border-0 bg-white/20 pl-9 text-sm text-primary-foreground placeholder:text-primary-foreground/60 ring-1 ring-white/20 focus-visible:ring-white/40 focus-visible:ring-2"
+                className="h-10 text-sm border-0 rounded-xl bg-white/20 pl-9 text-primary-foreground placeholder:text-primary-foreground/60 ring-1 ring-white/20 focus-visible:ring-white/40 focus-visible:ring-2"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-primary-foreground/70 hover:text-primary-foreground"
+                  className="absolute -translate-y-1/2 right-3 top-1/2 text-primary-foreground/70 hover:text-primary-foreground"
                 >
                   <X className="size-4" />
                 </button>
@@ -166,8 +174,8 @@ export default function AnnouncementPage({
         </div>
 
         {/* ── Category Filter ────────────────────────────────────── */}
-        <div className="-mx-4 overflow-x-auto px-4 pb-1 scrollbar-hide">
-          <div className="flex snap-x gap-2">
+        <div className="px-4 pb-1 -mx-4 overflow-x-auto scrollbar-hide">
+          <div className="flex gap-2 snap-x">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -232,7 +240,7 @@ export default function AnnouncementPage({
           if (!open) setSelected(null);
         }}
       >
-        <DrawerContent className="rounded-t-xl max-w-2xl mx-auto">
+        <DrawerContent className="max-w-2xl mx-auto rounded-t-xl">
           {selected && <AnnouncementDetail item={selected} />}
         </DrawerContent>
       </Drawer>
@@ -316,7 +324,7 @@ function SocialCard({
     >
       <div className="p-4">
         {/* Top row: category + status */}
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 mb-3">
           <span
             className={cn(
               "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
@@ -351,7 +359,7 @@ function SocialCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+        <h3 className="text-sm font-bold transition-colors duration-200 text-foreground group-hover:text-primary">
           {item.title}
         </h3>
 
@@ -392,7 +400,7 @@ function SocialCardWithImage({
       className="group w-full text-left overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.99]"
     >
       {/* Thumbnail Image — full width, top of card (like Instagram/Facebook) */}
-      <div className="relative aspect-video w-full overflow-hidden bg-muted">
+      <div className="relative w-full overflow-hidden aspect-video bg-muted">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={item.imageUrl}
@@ -404,7 +412,7 @@ function SocialCardWithImage({
 
       <div className="p-4">
         {/* Top row: category + status */}
-        <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 mb-3">
           <span
             className={cn(
               "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
@@ -436,239 +444,7 @@ function SocialCardWithImage({
         </div>
 
         {/* Title */}
-        <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200">
-          {item.title}
-        </h3>
-
-        {/* Description */}
-        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-2">
-          {item.description}
-        </p>
-
-        {/* Read more - always visible */}
-        <div className="mt-3 flex items-center gap-0.5 text-xs font-semibold text-primary">
-          Baca Selengkapnya
-          <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-        </div>
-      </div>
-    </button>
-  );
-}
-
-// ─── Detail Dialog Content ───────────────────────────────────────────────────
-
-function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
-  const statusInfo = getStatusLabel(item.status);
-  const [imgError, setImgError] = useState(false);
-
-  return (
-    <div className="flex max-h-[75vh] flex-col overflow-y-auto px-4 pb-8">
-      {/* Image at top — fills width, limited height */}
-      {item.imageUrl && !imgError && (
-        <div className="-mx-4 mt-2 shrink-0 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.imageUrl}
-            alt={item.title}
-            className="h-52 w-full object-cover"
-            onError={() => setImgError(true)}
-          />
-        </div>
-      )}
-
-      {/* Header: category + status badges */}
-      <div className="mt-4 flex items-center justify-between gap-2">
-        <span
-          className={cn(
-            "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
-            getCategoryColor(item.category),
-          )}
-        >
-          {item.category}
-        </span>
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
-            statusInfo.color,
-          )}
-        >
-          {statusInfo.label}
-        </span>
-      </div>
-
-      {/* Title */}
-      <DrawerTitle className="mt-3 text-base font-extrabold text-left">
-        {item.title}
-      </DrawerTitle>
-
-      {/* Dates */}
-      <div className="mt-1 space-y-0.5">
-        <DrawerDescription className="flex items-center gap-1.5 text-xs">
-          <CalendarDays className="size-3.5 shrink-0" />
-          Dipublikasikan {item.createdAt}
-        </DrawerDescription>
-        {item.eventDate && (
-          <DrawerDescription className="flex items-center gap-1.5 text-xs">
-            <Clock className="size-3.5 shrink-0" />
-            Tanggal Acara: {item.eventDate}
-          </DrawerDescription>
-        )}
-      </div>
-
-      {/* Description */}
-      <div className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
-        {item.description}
-      </div>
-
-      {/* Close button */}
-      <DrawerClose asChild>
-        <Button variant="outline" className="mt-6 w-full shrink-0 rounded-xl">
-          Tutup
-        </Button>
-      </DrawerClose>
-    </div>
-  );
-}
-
-// ─── Social Card (Without Image) ─────────────────────────────────────────────
-
-function SocialCard({
-  item,
-  onDetail,
-}: {
-  item: AnnouncementItem;
-  onDetail: () => void;
-}) {
-  const statusInfo = getStatusLabel(item.status);
-
-  return (
-    <button
-      onClick={onDetail}
-      className="group w-full text-left rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.99]"
-    >
-      <div className="p-4">
-        {/* Top row: category + status */}
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
-              getCategoryColor(item.category),
-            )}
-          >
-            {item.category}
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
-              statusInfo.color,
-            )}
-          >
-            {item.status === "upcoming" && <Clock className="size-3" />}
-            {item.status === "ongoing" && <CheckCircle2 className="size-3" />}
-            {item.status === "done" && <CheckCircle2 className="size-3" />}
-            {statusInfo.label}
-          </span>
-        </div>
-
-        {/* Date */}
-        <div className="mb-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <CalendarDays className="size-3.5" />
-          {item.createdAt}
-          {item.eventDate && (
-            <>
-              <span className="text-muted-foreground/40">•</span>
-              <span>Acara: {item.eventDate}</span>
-            </>
-          )}
-        </div>
-
-        {/* Title */}
-        <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200">
-          {item.title}
-        </h3>
-
-        {/* Description */}
-        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground line-clamp-3">
-          {item.description}
-        </p>
-
-        {/* Read more - always visible */}
-        <div className="mt-3 flex items-center gap-0.5 text-xs font-semibold text-primary">
-          Baca Selengkapnya
-          <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-        </div>
-      </div>
-    </button>
-  );
-}
-
-// ─── Social Card (With Image) ────────────────────────────────────────────────
-
-function SocialCardWithImage({
-  item,
-  onDetail,
-}: {
-  item: AnnouncementItem;
-  onDetail: () => void;
-}) {
-  const statusInfo = getStatusLabel(item.status);
-  const [imgError, setImgError] = useState(false);
-
-  if (imgError || !item.imageUrl) {
-    return <SocialCard item={item} onDetail={onDetail} />;
-  }
-
-  return (
-    <button
-      onClick={onDetail}
-      className="group w-full text-left overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.99]"
-    >
-      {/* Thumbnail Image — full width, top of card (like Instagram/Facebook) */}
-      <div className="relative aspect-video w-full overflow-hidden bg-muted">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.imageUrl}
-          alt={item.title}
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          onError={() => setImgError(true)}
-        />
-      </div>
-
-      <div className="p-4">
-        {/* Top row: category + status */}
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <span
-            className={cn(
-              "inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold",
-              getCategoryColor(item.category),
-            )}
-          >
-            {item.category}
-          </span>
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold",
-              statusInfo.color,
-            )}
-          >
-            {statusInfo.label}
-          </span>
-        </div>
-
-        {/* Date */}
-        <div className="mb-1.5 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <CalendarDays className="size-3.5" />
-          {item.createdAt}
-          {item.eventDate && (
-            <>
-              <span className="text-muted-foreground/40">•</span>
-              <span>Acara: {item.eventDate}</span>
-            </>
-          )}
-        </div>
-
-        {/* Title */}
-        <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+        <h3 className="text-sm font-bold transition-colors duration-200 text-foreground group-hover:text-primary">
           {item.title}
         </h3>
 
@@ -738,18 +514,18 @@ function AnnouncementDetail({ item }: { item: AnnouncementItem }) {
           <img
             src={item.imageUrl}
             alt={item.title}
-            className="aspect-video w-full object-cover"
+            className="object-cover w-full aspect-video"
             onError={() => setImgError(true)}
           />
         </div>
       )}
 
-      <div className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+      <div className="text-sm leading-relaxed whitespace-pre-wrap text-foreground">
         {item.description}
       </div>
 
       <DialogClose asChild>
-        <Button variant="outline" className="mt-2 w-full rounded-xl">
+        <Button variant="outline" className="w-full mt-2 rounded-xl">
           Tutup
         </Button>
       </DialogClose>

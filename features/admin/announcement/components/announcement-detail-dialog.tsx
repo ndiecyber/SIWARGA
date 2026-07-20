@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { CalendarDays, Info, Tag, X } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogClose,
 } from "@/components/ui/dialog";
-import { CalendarDays, Tag, Info, X } from "lucide-react";
 
 type Announcement = {
   id: number;
@@ -29,16 +29,26 @@ type Props = {
   announcement: Announcement | null;
 };
 
-const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+const STATUS_MAP: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "outline" }
+> = {
   upcoming: { label: "Akan Datang", variant: "default" },
   ongoing: { label: "Berlangsung", variant: "secondary" },
   done: { label: "Selesai", variant: "outline" },
 };
 
-export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: Props) {
+export function AnnouncementDetailDialog({
+  open,
+  onOpenChange,
+  announcement,
+}: Props) {
   if (!announcement) return null;
 
-  const status = STATUS_MAP[announcement.status] ?? { label: announcement.status, variant: "outline" as const };
+  const status = STATUS_MAP[announcement.status] ?? {
+    label: announcement.status,
+    variant: "outline" as const,
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,7 +60,7 @@ export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: P
             <img
               src={announcement.imageUrl}
               alt={announcement.title}
-              className="aspect-video w-full object-cover"
+              className="object-cover w-full aspect-video"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
@@ -71,7 +81,7 @@ export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: P
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 py-1">
+        <div className="py-1 space-y-4">
           {/* Meta */}
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-1.5">
@@ -103,7 +113,7 @@ export function AnnouncementDetailDialog({ open, onOpenChange, announcement }: P
           <hr className="border-border" />
 
           {/* Description */}
-          <p className="text-sm leading-relaxed text-foreground whitespace-pre-line">
+          <p className="text-sm leading-relaxed whitespace-pre-line text-foreground">
             {announcement.description}
           </p>
         </div>

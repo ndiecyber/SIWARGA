@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
+import { revalidatePath } from "next/cache";
 import { announcementLogger } from "@/lib/logger";
 import { calculateAnnouncementStatus } from "@/lib/announcement-status";
 
@@ -10,9 +10,7 @@ export type AnnouncementFormData = {
   title: string;
   description: string;
   imageUrl?: string | null;
-  imageUrl?: string | null;
   eventDate?: string | null;
-  status?: string;
   status?: string;
 };
 
@@ -61,7 +59,6 @@ export async function createAnnouncement(data: AnnouncementFormData) {
 export async function updateAnnouncement(
   id: number,
   data: AnnouncementFormData,
-  data: AnnouncementFormData,
 ) {
   try {
     await prisma.announcement.update({
@@ -85,35 +82,6 @@ export async function updateAnnouncement(
 }
 
 export async function deleteAnnouncement(id: number) {
-  try {
-    await prisma.announcement.delete({ where: { id } });
-    announcementLogger.info(
-      { announcementId: id },
-      "Pengumuman berhasil dihapus",
-    );
-    revalidatePath("/admin/announcment");
-  } catch (error) {
-    announcementLogger.error(
-      { err: error, announcementId: id },
-      "Gagal hapus pengumuman",
-    );
-  }
-}
-
-export async function deleteBatchAnnouncementsAction(ids: number[]) {
-  try {
-    await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
-    announcementLogger.info(
-      { announcementIds: ids },
-      "Batch pengumuman berhasil dihapus",
-    );
-    revalidatePath("/admin/announcment");
-  } catch (error) {
-    announcementLogger.error(
-      { err: error, announcementIds: ids },
-      "Gagal hapus batch pengumuman",
-    );
-  }
   try {
     await prisma.announcement.delete({ where: { id } });
     announcementLogger.info(
